@@ -101,6 +101,7 @@ This file is the single source of truth for the project. It is stored in the rep
 | D26 | The planning helper scripts stay in scripts/ in the project folder, ignored by Git | Owner's decision. They check the planning docs and are not part of the platform | — |
 | D27 | uv cache on the SSD through UV_CACHE_DIR in the owner's ~/.zshrc (only when the SSD is connected) | Project/uv.toml is ignored inside a project whose pyproject.toml has a [tool.uv...] section, which this repo needs for the package name mrag | Project/uv.toml alone |
 | D28 | Product comparisons removed from the repo and banned by rule C14. Each one replaced by a description of the real feature (for example "chat and document question-answering assistant", "notebooks (workspaces on one topic)") | Owner's decision: the words are vague and were only planning shorthand | "ChatGPT-style", "ChatGPT-like", "NotebookLM-style" |
+| D29 | The coding assistant's rules file and settings stay out of Git through the local ignore file .git/info/exclude (not .gitignore). Repo files and commit messages name no assistant product (rule C15). The GitHub repo was deleted and created again on 31 October 2026 with one fresh commit, so the old history is gone | Owner's decision: the repo shows the project, not the tools used to build it | Rules file in the repo |
 
 ### 4.2 Open questions (answer before or during the named phase)
 
@@ -155,6 +156,8 @@ This file is the single source of truth for the project. It is stored in the rep
 | C12 | Verification loop. For every step the coding assistant gives the code, the exact commands and the expected output, including the verification number of each Python code file. You run the commands with uv and compare. Everything matches: the step is done and you send nothing. Anything differs: you send only the different output. The coding assistant finds the real cause and gives the fix with new expected output. When an output can't be predicted exactly (for example real training results or live data), the coding assistant says so and you send that output before committing |
 | C13 | Verification number: the first 12 characters of the SHA-256 of the file's Python syntax tree, `ast.dump(ast.parse(...))`. Comments and formatting do not change it. You run one inline command that lists the files: `uv run python -c "import ast, hashlib ..."` |
 | C14 | No product comparisons such as "ChatGPT-style" or "NotebookLM-style" in any file in the repo (code, docs, README, commit messages). Describe what the feature does instead. The owner used such words in planning only to explain ideas |
+| C15 | Repo files and commit messages never name the coding assistant product or its files. Its rules file and settings stay local (D29) |
+| C16 | Code comments, config comments and commit messages never use the words "step" or "phase" and never use plan numbers. Describe the change itself. The docs keep the plan numbering |
 
 ## 6. Environments, storage and backup
 

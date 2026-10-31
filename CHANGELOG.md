@@ -18,3 +18,5 @@ Versions are tagged at the end of each phase (WORK_PLAN.md rule G).
 - WORK_PLAN.md v1.9: product comparisons replaced by descriptions of the real features
   (decision D28, new rule C14).
 - README.md description replaced by "Work in Progress" until features exist.
+- WORK_PLAN.md: no assistant product names in repo files (decision D29, new rule C15).
+  Repo history started again with one fresh commit.

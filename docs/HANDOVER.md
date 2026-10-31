@@ -7,15 +7,17 @@ Report of the last work session. Read this after docs/WORK_PLAN.md at the start 
 Step: 0.1 Project setup. Status: done except 2 checks (see "Exact next step").
 Sub-steps 0.1.1 and 0.1.2 written and tested by the coding assistant, then verified by the owner (output
 and verification numbers matched). 0.1.3 organization and public repo created by the owner.
-0.1.4 two commits pushed (7d6b082, 518addb). 0.1.5 one member invited. 0.1.6 this update.
+0.1.4 first commits pushed, then the repo was deleted and created again with one fresh commit
+(decision D29). The earlier commits no longer exist on GitHub. 0.1.5 one member invited.
+0.1.6 this update.
 
 ### Done-when test of step 0.1
 
 | Check | Result |
 |---|---|
 | uv run python -m mrag.config prints the settings | Passed (owner) |
-| Repo on GitHub with no data files | Passed. Checked by the coding assistant through the GitHub API: 125 files, no .env, no database, nothing from data/private, data/public, scripts/ or .vscode/ |
-| Members accepted the invitation and can push | Open. Invitation sent to the first member as organization Member in team "members". The owner gave the team the Admin role on the repo (owner's report, not checkable from here). Not accepted yet. Other members' addresses come later from the owner |
+| Repo on GitHub with no data files | Passed. Checked by the coding assistant through the GitHub API after the repo was created again: 124 files, no .env, no database, nothing from data/private, data/public, scripts/ or .vscode/ |
+| Members accepted the invitation and can push | Open. Invitation sent to the first member as organization Member in team "members". The repo was created again, so the team needs the Admin role on the new repo (owner to confirm, not checkable from here). Not accepted yet. Other members' addresses come later from the owner |
 | The coding assistant has loaded its local rules file | Open. The file was created during this session, so it can only be checked in a new session |
 | Verification numbers match (rule C13) | Passed (owner) |
 
@@ -84,7 +86,20 @@ Verification numbers (rule C13): src/mrag/__init__.py 3543b4693a36, src/mrag/con
   milestones.md: status and decided items. ADR-005 title fixed (it said Phase 1, the decision says Phase 15).
 - .gitignore also ignores .vscode/ (personal editor settings).
 
-### Second commit: vague wording removed (WORK_PLAN.md v1.9)
+### Repo created again: no assistant names
+
+- Owner's decision D29 and new rule C15: the coding assistant's rules file and settings stay
+  local (.git/info/exclude, never pushed). Repo files and commit messages name no assistant
+  product. Every such mention in README.md, CHANGELOG.md and docs/ now says "the coding assistant".
+- The GitHub repo was deleted and created again with one fresh commit, so the old
+  history is gone. Checked: the GitHub API no longer finds the old commits.
+- Owner's rule C16: no "step", "phase" or plan numbers in code comments, config comments or commit
+  messages. Comments in db.py, config.py and .env.example reworded (verification numbers unchanged,
+  only comments changed). The message of the first commit was corrected the same way.
+- Owner's feedback: fix only exactly what needs fixing. Never delete and re-push everything when
+  a targeted fix is possible.
+
+### Earlier: vague wording removed (WORK_PLAN.md v1.9)
 
 - First commit pushed to github.com/mdu-ai-lab/multiagent-ai-lab (organization and public repo
   created by the owner).
