@@ -13,7 +13,7 @@
 | Stakeholder | Role | Needs | Status |
 |---|---|---|---|
 | Hossain (owner) | Builds and maintains the platform | Clear plan, free tools, phase-by-phase progress | Confirmed |
-| MDU group members | Users and GitHub collaborators | Working platform, access to the repo | Confirmed as intended users. Names and emails: REQUIRES CONFIRMATION (Q7) |
+| MDU group members | Users and GitHub collaborators | Working platform, access to the repo | Confirmed as intended users. |
 | Group supervisor | Reviews direction and may request changes | Honest results, change requests applied cleanly | Role confirmed. Approval of plan: REQUIRES CONFIRMATION |
 | Demo visitors | Try the public demo | Simple demo on public documents | Planned |
 | Future company evaluators | May pilot the platform internally | On-prem deployment, audit trail, security guide | Hypothetical. No company involved yet |

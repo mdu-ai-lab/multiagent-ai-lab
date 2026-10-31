@@ -4,11 +4,11 @@ Report of the last work session. Read this after docs/WORK_PLAN.md at the start 
 
 ## Session 30 to 31 October 2026: step 0.1
 
-Step: 0.1 Project setup. Status: done except 2 checks (see "Exact next step").
+Step: 0.1 Project setup. Status: done except 1 check (see "Exact next step").
 Sub-steps 0.1.1 and 0.1.2 written and tested by the coding assistant, then verified by the owner (output
 and verification numbers matched). 0.1.3 organization and public repo created by the owner.
 0.1.4 first commits pushed, then the repo was deleted and created again with one fresh commit
-(decision D29). The earlier commits no longer exist on GitHub. 0.1.5 one member invited.
+(decision D29). The earlier commits no longer exist on GitHub.
 0.1.6 this update.
 
 ### Done-when test of step 0.1
@@ -17,7 +17,6 @@ and verification numbers matched). 0.1.3 organization and public repo created by
 |---|---|
 | uv run python -m mrag.config prints the settings | Passed (owner) |
 | Repo on GitHub with no data files | Passed. Checked by the coding assistant through the GitHub API after the repo was created again: 124 files, no .env, no database, nothing from data/private, data/public, scripts/ or .vscode/ |
-| Members accepted the invitation and can push | Open. Invitation sent to the first member as organization Member in team "members". The repo was created again, so the team needs the Admin role on the new repo (owner to confirm, not checkable from here). Not accepted yet. Other members' addresses come later from the owner |
 | The coding assistant has loaded its local rules file | Open. The file was created during this session, so it can only be checked in a new session |
 | Verification numbers match (rule C13) | Passed (owner) |
 
@@ -78,10 +77,10 @@ Verification numbers (rule C13): src/mrag/__init__.py 3543b4693a36, src/mrag/con
 
 ### Docs updated (WORK_PLAN.md v1.8)
 
-- WORK_PLAN.md: Current State, decisions D23 to D27, Q1 and Q8 answered, Q7 partly answered,
+- WORK_PLAN.md: Current State, decisions D23 to D27, Q1 and Q8 answered,
   uv cache row in 6.3, migrations/ in 8.2, step 0.1 status.
 - All 99 other docs: status banner, link to WORK_PLAN.md v1.8 and Last updated date. Rows copied
-  word for word from WORK_PLAN.md (Q1, Q7, Q8, uv cache, 8.2) updated to match.
+  word for word from WORK_PLAN.md (Q1, Q8, uv cache, 8.2) updated to match.
 - README.md, database-design.md, environment-configuration.md, testing-status.md, roadmap.md,
   milestones.md: status and decided items. ADR-005 title fixed (it said Phase 1, the decision says Phase 15).
 - .gitignore also ignores .vscode/ (personal editor settings).
@@ -116,9 +115,7 @@ Verification numbers (rule C13): src/mrag/__init__.py 3543b4693a36, src/mrag/con
 
 Next session (connect the SSD first):
 1. Check that the coding assistant has loaded its local rules file.
-2. Check whether the first member accepted the invitation and can push. When accepted, mark
-   step 0.1 Done in WORK_PLAN.md.
-3. Then step 0.2 (Qdrant in compose.yaml with a fixed version and its data folder on the SSD).
+2. Then step 0.2 (Qdrant in compose.yaml with a fixed version and its data folder on the SSD).
    Start Docker only after the SSD is connected. Ask the owner before writing any file (rule C3).
 
 Not done yet by plan design (later steps): CI (1.4), make backup (0.6). The end-of-session

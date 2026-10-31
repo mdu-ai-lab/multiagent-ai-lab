@@ -12,7 +12,7 @@
 
 | Item | Rule | Source |
 |---|---|---|
-| Owner | Repo in a free GitHub organization. Members invited by email with the agreed role | D16, 0.1, Q7 to Q8 |
+| Owner | Repo in a free GitHub organization | D16, 0.1, Q8 |
 | Main branch | Protected for everyone | 1.1 |
 | Branches | One per phase. remote/YYYY-MM-DD for Colab work | 1.1, section 6.4 |
 | Commits | After every step | Rule G |

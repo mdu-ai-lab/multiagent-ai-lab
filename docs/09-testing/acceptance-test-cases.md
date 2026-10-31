@@ -14,7 +14,7 @@ Copied from the done-when column of WORK_PLAN.md section 12. The plan stays the 
 
 | ID | Step | Pass condition | Result |
 |---|---|---|---|
-| AT-0.1 | Project setup | uv run python -m mrag.config prints the settings. The repo is on GitHub with no data files. Members have accepted the invitation and can push. The coding assistant has loaded its local rules file. The uv check command (rule C13) prints the same numbers as the coding assistant for every Python file of this step. | Not run |
+| AT-0.1 | Project setup | uv run python -m mrag.config prints the settings. The repo is on GitHub with no data files. The coding assistant has loaded its local rules file. The uv check command (rule C13) prints the same numbers as the coding assistant for every Python file of this step. | Not run |
 | AT-0.2 | Search database | Health check returns OK. Data is still there after a restart. | Not run |
 | AT-0.3 | Mac model server | 5 test calls succeed: text chat, chat with an image, embedding, reranking and JSON output. | Not run |
 | AT-0.4 | Measure the Mac | Peak RAM < 13 GB with main + embedding + reranker loaded. Settings saved in config. | Not run |

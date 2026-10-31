@@ -130,7 +130,6 @@ Full list: [threat model](07-security/threat-model.md).
 | Q4 | SPACE dataset licence (not yet verified). Replace if it blocks use | Step 2.1 |
 | Q5 | SPACE key points: written by hand (default) or LLM-assisted (counts as synthetic, needs your approval) | Step 9.3 |
 | Q6 | Swedish documents in v1 or later | Step 2.2 |
-| Q7 | Email addresses of the group members to invite | Partly answered 31 October 2026: one member's address received (kept out of the repo because it is public). The owner sends the others later. Step 0.1 |
 | Q8 | Which role "full access" means: Owner (controls the whole organization, including deleting it) or Admin (full control of the repo only) | Answered 31 October 2026: Admin on the repo (D24) |
 | Q9 | Which domain ontology to build first (for example research papers or industrial documents) | Step 9A.1 |
 | Q10 | Add audio overviews (spoken summaries of sources)? This needs a text-to-speech model and changes a non-goal | Before Phase 9B |
