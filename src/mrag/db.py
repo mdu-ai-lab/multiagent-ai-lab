@@ -1,6 +1,6 @@
 # Database layer: one SQLAlchemy engine and session factory for the app database.
-# SQLite on the Mac now. PostgreSQL in step 15.3 only needs a different MRAG_DATABASE_URL.
-# Tables are added in later steps as classes based on Base. Alembic tracks every change.
+# SQLite on the Mac now. PostgreSQL later only needs a different MRAG_DATABASE_URL.
+# Tables are added later as classes based on Base. Alembic tracks every change.
 
 from functools import lru_cache
 from pathlib import Path
@@ -18,7 +18,7 @@ class Base(DeclarativeBase):
 
 def _set_sqlite_pragmas(dbapi_connection, connection_record):
     # SQLite turns foreign keys off by default. WAL mode lets the API read
-    # while the worker writes (step 3.1)
+    # while the background worker writes
     cursor = dbapi_connection.cursor()
     cursor.execute("PRAGMA foreign_keys=ON")
     cursor.execute("PRAGMA journal_mode=WAL")

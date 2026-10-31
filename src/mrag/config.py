@@ -20,7 +20,7 @@ class Settings(BaseSettings):
         extra="ignore",
     )
 
-    # Which machine we run on. Later steps choose model backend and storage from this
+    # Which machine we run on. Model backend and storage are chosen from this later
     profile: Literal["mac", "gpu", "demo", "ci", "company"] = "mac"
 
     # Holds private/, public/, annotations/ and the SQLite file. A relative path is
@@ -31,7 +31,7 @@ class Settings(BaseSettings):
     # tools and this config use the same variable. None means the Hugging Face default
     hf_home: Path | None = Field(default=None, validation_alias="HF_HOME")
 
-    # Empty means SQLite at <data_dir>/app.db. PostgreSQL by URL in step 15.3
+    # Empty means SQLite at <data_dir>/app.db. A PostgreSQL URL here switches the database
     database_url: str = ""
 
     # Service addresses. Only the Mac itself, nothing listens on the network
