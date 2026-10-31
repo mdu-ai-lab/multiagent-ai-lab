@@ -40,6 +40,11 @@ class Settings(BaseSettings):
     # Port 5000 is taken by the macOS AirPlay Receiver, so MLflow uses 5001
     mlflow_tracking_uri: str = "http://127.0.0.1:5001"
 
+    # Mac model server: the llama-server program and the folder with the GGUF files
+    # converted locally. Both live outside the repo. None means not set on this machine
+    llama_server: Path | None = None
+    models_dir: Path | None = None
+
     @model_validator(mode="after")
     def fill_paths(self) -> "Settings":
         if not self.data_dir.is_absolute():

@@ -9,8 +9,8 @@ This file is the single source of truth for the project. It is stored in the rep
 | Item | Value |
 |---|---|
 | Plan status | Phase 0 in progress |
-| Last completed step | Step 0.3 done. Details in docs/HANDOVER.md |
-| Current phase | Phase 0. Next: step 0.4 |
+| Last completed step | Step 0.4 done. Details in docs/HANDOVER.md |
+| Current phase | Phase 0. Next: step 0.5 |
 | Repo | github.com/mdu-ai-lab/multiagent-ai-lab (public, owned by the GitHub organization mdu-ai-lab). Created 31 October 2026 |
 | Live dashboard URL | Not created yet |
 | Live demo URL | Not created yet |
@@ -105,6 +105,7 @@ This file is the single source of truth for the project. It is stored in the rep
 | D30 | Qdrant keeps its data in the Docker volume multiagent-ai-lab_qdrant_data inside Docker Desktop's disk image on the SSD | Tested 31 October 2026: with a folder shared from macOS, Qdrant v1.20.0 sees a FUSE file system and logs "Filesystem check failed ... may cause data corruption". The Docker volume (ext4) gives no warning. On Linux company servers both ways work | qdrant_storage/ folder in the repo |
 | D31 | Large local files of this project (model files, converted models, programs) live in /Volumes/MacbookAPFS/Project/multiagent-ai-lab-local, next to the repo, not inside it | Owner's decision. One clearly named folder keeps the Project folder tidy. Outside the repo, git clean, editors, Docker builds and backups cannot delete or copy the large model files by accident | .hf-cache, tools and models directly in /Volumes/MacbookAPFS/Project |
 | D32 | Mac model server: llama.cpp b11960 (the v0.8.0 release) and llama-swap v268 from their GitHub releases, checked by SHA-256. Qwen3.5-9B Q4_K_M and Qwen3.5-2B Q8_0 from unsloth GGUF files at pinned revisions. Qwen3-VL-Embedding-2B and Qwen3-VL-Reranker-2B converted locally from the official Qwen weights with the llama.cpp converter of the same build (Q8_0, image part F16) | No official GGUF files exist. The community reranker GGUF lacks the rank pooling and the classifier tensor, so it cannot rerank. Homebrew would install to the internal disk and change versions on upgrade | Homebrew, community GGUF files for all models |
+| D33 | Mac model settings chosen by measurement (results/p0_resources.csv): main Qwen3.5-9B Q4_K_M, context 8192. Embedding Q4_K_M, image part Q8_0, context 2048, image limit 1280 tokens. Reranker Q4_K_M text only, context 4096. Main, embedding and reranker stay loaded together. The helper swaps with them | The 8-bit set ran out of GPU memory. This set peaks at 10.7 to 11.0 GB of the 12.1 GB GPU limit | One model at a time |
 
 ### 4.2 Open questions (answer before or during the named phase)
 
@@ -145,7 +146,7 @@ This file is the single source of truth for the project. It is stored in the rep
 | ID | Rule |
 |---|---|
 | C1 | Very easy English, step by step, with why each step is needed |
-| C2 | Flat modules in src/mrag/. Run with uv run python -m mrag.<module> |
+| C2 | Flat modules in src/mrag/ for platform code only. Run with uv run python -m mrag.<module>. Other tools live in top-level folders such as benchmarks/ |
 | C3 | Code files are written by the coding assistant in the project folder, only after the owner approves each change. Never through terminal commands such as heredoc |
 | C4 | Give a short hash check for every code file plus the Mac command to compute it |
 | C5 | Write every command in full. Never say "the command from step X". Group independent commands |
@@ -300,6 +301,7 @@ multiagent-ai-lab/
 ├── data/            private/ public/ annotations/ (only annotations in Git)
 ├── results/         exported result summaries (in Git)
 ├── tests/           unit/ integration/ e2e/ fixtures/
+├── benchmarks/      measuring tools, for example measure_mac.py
 ├── docs/            WORK_PLAN.md, HANDOVER.md, guides, data cards, system card
 ├── .github/workflows/  ci.yml pages.yml demo.yml health.yml release.yml
 ├── compose.yaml  Makefile  pyproject.toml  uv.lock  .env.example  LICENSE  README.md  CHANGELOG.md
@@ -392,7 +394,7 @@ weekly: health.yml checks both URLs and opens a GitHub issue if one is down
 | 0.1 Project setup | Create multiagent-ai-lab in /Volumes/MacbookAPFS/Project on the SSD. The existing Project/uv.toml keeps the uv cache on the SSD. Set up uv with Python 3.12 and the folders src/mrag, configs, data, results, tests, notebooks, demo and docs. Add a .gitignore so private data, public datasets, models, MLflow and Qdrant files never go to GitHub. Add .env.example for paths, ports and HF_HOME (/Volumes/MacbookAPFS/Project/.hf-cache). Write config.py to load all settings, including the profile (Mac, GPU, demo, CI or company server). Set up the database layer with SQLAlchemy (SQLite now). Add LICENSE (after Q1), a short README and CHANGELOG.md. Add a local rules file for the coding assistant, kept out of Git (D29): the working rules in short form (under 200 lines) and the instruction to read docs/WORK_PLAN.md and docs/HANDOVER.md before any work. Create the free GitHub organization mdu-ai-lab. Create the public GitHub repo inside the organization and push the first commit. | A clean, repeatable base. The profile switch lets the same code run everywhere. | uv run python -m mrag.config prints the settings. The repo is on GitHub with no data files. The coding assistant has loaded its local rules file. The uv check command (rule C13) prints the same numbers as the coding assistant for every Python file of this step. | Done |
 | 0.2 Search database | Write compose.yaml with Qdrant, a fixed version and its data folder on the SSD. Start Docker only after the SSD is connected. | Qdrant stores all search data and must survive restarts. | Health check returns OK. Data is still there after a restart. | Done |
 | 0.3 Mac model server | Install llama.cpp with Metal support and llama-swap. Download from Hugging Face, with fixed versions, to the SSD: Qwen3.5-9B (main), Qwen3.5-2B (helper), Qwen3-VL-Embedding-2B and Qwen3-VL-Reranker-2B. Write the llama-swap config: how each model starts and when it unloads after idle time. | One local address serves all models. Only models in use take RAM. | 5 test calls succeed: text chat, chat with an image, embedding, reranking and JSON output. | Done |
-| 0.4 Measure the Mac | A script loads the models alone and together. It records peak RAM, words per second and time to first word, and saves them to results/p0_resources.csv. Then we choose context size and quantisation. | 16 GB RAM is the Mac limit. We decide with numbers. | Peak RAM < 13 GB with main + embedding + reranker loaded. Settings saved in config. | Not done |
+| 0.4 Measure the Mac | A script loads the models alone and together. It records peak RAM, words per second and time to first word, and saves them to results/p0_resources.csv. Then we choose context size and quantisation. | 16 GB RAM is the Mac limit. We decide with numbers. | Peak RAM < 13 GB with main + embedding + reranker loaded. Settings saved in config. | Done |
 | 0.5 Model client | Write llm_client.py, one wrapper for all model calls. It supports an OpenAI-style server (llama.cpp on the Mac, vLLM on GPU) and a Transformers backend for the demo. The profile decides which one is used. | Moving between Mac, Colab, Kaggle, demo and company server needs no code change. | The same test call works through the wrapper with the Mac profile. | Not done |
 | 0.6 Backup and sync | Install rclone and connect it to Google Drive. Create multiagent-ai-lab-backup with backup/ and inbox/ folders. Add make backup (one-way copy with a dated version folder, nothing deleted), make pull-inbox (copies only new files from inbox to the SSD) and make restore-test. Write the rules of section 6.4 into docs. Decide Q2. | Protects work that is not in Git. Allows work to continue from Colab without conflicts. | Backup runs. A file restored into a temp folder matches the original. Drive usage recorded. | Not done |
 | 0.7 Plan in the repo | Put this file into docs/WORK_PLAN.md. Update its Current State and step status at the end of every step. | Every new chat and every group member reads the same, current plan. | docs/WORK_PLAN.md is on GitHub and shows Phase 0 progress. | Not done |

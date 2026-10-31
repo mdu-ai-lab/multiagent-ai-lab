@@ -3,9 +3,9 @@
 #   MRAG_LLAMA_SERVER  path to the llama-server program
 #   HF_HOME            Hugging Face cache with the downloaded GGUF files
 #   MRAG_MODELS_DIR    folder with the GGUF files converted locally
-# Context sizes and idle times are first values. They are tuned after the RAM measurements.
-# Only one model runs at a time (llama-swap default). With the main, embedding and
-# reranker models loaded together the Mac ran out of GPU memory.
+# Settings come from the measurements in results/p0_resources.csv.
+# Main, embedding and reranker stay loaded together (measured peak about 11 GB of the
+# 12 GB GPU limit). The helper swaps with them, because all four do not fit.
 
 macros:
   "server": >-
@@ -34,21 +34,44 @@ models:
       --model ${hub}/models--unsloth--Qwen3.5-2B-GGUF/snapshots/f6d5376be1edb4d416d56da11e5397a961aca8ae/Qwen3.5-2B-Q8_0.gguf
       --ctx-size 4096
 
+  # 4-bit with an 8-bit image part to fit next to the main model. A page image is
+  # limited to 1280 tokens, the limit in the model's own image settings
   "qwen3-vl-embedding-2b":
     name: "Qwen3-VL-Embedding-2B (search vectors)"
     cmd: |
       ${server}
-      --model ${env.MRAG_MODELS_DIR}/Qwen3-VL-Embedding-2B-Q8_0.gguf
-      --mmproj ${env.MRAG_MODELS_DIR}/mmproj-Qwen3-VL-Embedding-2B-F16.gguf
+      --model ${env.MRAG_MODELS_DIR}/Qwen3-VL-Embedding-2B-Q4_K_M.gguf
+      --mmproj ${env.MRAG_MODELS_DIR}/mmproj-Qwen3-VL-Embedding-2B-Q8_0.gguf
       --embedding
-      --ctx-size 4096
-      --ubatch-size 4096
+      --ctx-size 2048
+      --ubatch-size 2048
+      --image-max-tokens 1280
 
+  # 4-bit and text only to fit next to the main model and the embedding model
   "qwen3-vl-reranker-2b":
-    name: "Qwen3-VL-Reranker-2B (reranking)"
+    name: "Qwen3-VL-Reranker-2B (reranking, text only)"
     cmd: |
       ${server}
-      --model ${env.MRAG_MODELS_DIR}/Qwen3-VL-Reranker-2B-Q8_0.gguf
-      --mmproj ${env.MRAG_MODELS_DIR}/mmproj-Qwen3-VL-Reranker-2B-F16.gguf
+      --model ${env.MRAG_MODELS_DIR}/Qwen3-VL-Reranker-2B-Q4_K_M.gguf
       --rerank
-      --ctx-size 8192
+      --ctx-size 4096
+
+routing:
+  router:
+    use: group
+    settings:
+      groups:
+        # Loaded together. Loading a member unloads the helper group
+        "rag":
+          swap: false
+          exclusive: true
+          members:
+            - "qwen3.5-9b"
+            - "qwen3-vl-embedding-2b"
+            - "qwen3-vl-reranker-2b"
+        # Loading the helper unloads the rag group
+        "helper":
+          swap: true
+          exclusive: true
+          members:
+            - "qwen3.5-2b"

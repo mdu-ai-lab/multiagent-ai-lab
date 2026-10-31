@@ -2,6 +2,107 @@
 
 Report of the last work session. Read this after docs/WORK_PLAN.md at the start of every session.
 
+## Session 31 October to 1 November 2026: step 0.4
+
+Step: 0.4 Measure the Mac. Status: done.
+
+### What was done
+
+- Smaller model variants made from the official weights already on the SSD (no download):
+  Q4_K_M of the embedding and reranker models (through an F16 file and llama-quantize) and
+  Q8_0 image parts. All in multiagent-ai-lab-local/models. The Q4_K_M reranker keeps
+  pooling_type 4 (rank), the classifier labels and cls.output.weight.
+- benchmarks/measure_mac.py: starts llama-server for each scenario, runs a fixed workload
+  (streamed chat without thinking, one image question, 16 text pieces and one image for the
+  embedding model, one question against 20 documents and one image for the reranker), samples
+  wired memory twice per second, reads each server's total memory with footprint and writes
+  results/p0_resources.csv.
+- src/mrag/config.py: new settings llama_server and models_dir (from MRAG_LLAMA_SERVER and
+  MRAG_MODELS_DIR in .env).
+- configs/llama-swap.yaml: measured settings (D33). Main, embedding and reranker in the group
+  "rag" (loaded together). The helper in its own group swaps with them.
+- Verification numbers: src/mrag/__init__.py 3543b4693a36, src/mrag/config.py 24c7a5d4b87c,
+  src/mrag/db.py 511eeaebbdbd, migrations/env.py c95357b4cf62, benchmarks/measure_mac.py
+  7c010b9ebef2. The verification command now also lists the benchmarks folder. The SHA-256 of
+  configs/llama-swap.yaml starts with 8e64339f8d6e.
+
+Commands for the variants (from multiagent-ai-lab-local/tools/llama.cpp-src-b11960, shown for
+the reranker, the embedding model is the same with its own snapshot folder and names):
+
+```
+HF_HUB_OFFLINE=1 ../llama-convert-venv/bin/python convert_hf_to_gguf.py <snapshot folder> --outtype f16 --outfile ../../models/Qwen3-VL-Reranker-2B-F16.gguf
+../llama.cpp-b11960/llama-quantize ../../models/Qwen3-VL-Reranker-2B-F16.gguf ../../models/Qwen3-VL-Reranker-2B-Q4_K_M.gguf Q4_K_M
+HF_HUB_OFFLINE=1 ../llama-convert-venv/bin/python convert_hf_to_gguf.py <snapshot folder> --mmproj --outtype q8_0 --outfile ../../models/mmproj-Qwen3-VL-Reranker-2B-Q8_0.gguf
+```
+
+### How to run the measurement
+
+Close browsers and other large apps. In Terminal, in /Volumes/MacbookAPFS/Project/multiagent-ai-lab:
+
+```
+set -a
+source .env
+set +a
+uv run python benchmarks/measure_mac.py
+```
+
+It takes about 15 minutes and overwrites results/p0_resources.csv.
+
+### Test results (run on 31 October 2026, commit d3c54be, llama.cpp b11960, GPU limit 12124 MB)
+
+| Scenario | Status | Peak wired increase | Speed |
+|---|---|---|---|
+| Main alone, ctx 8192 | ok | 6983 MB | First token 0.42 s, 14.6 tokens/s, image answer 3.4 s |
+| Main alone, ctx 32768 | ok | 7757 MB | First token 0.41 s, 14.1 tokens/s |
+| Helper alone, ctx 4096 | ok | 2242 MB | First token 0.11 s, 40.2 tokens/s |
+| Embedding alone, Q8_0, image F16, ctx 4096 | ok | 3996 MB | 7.4 s |
+| Reranker alone, Q8_0, image F16, ctx 8192 | ok | 4158 MB | 11.3 s |
+| Main + embedding Q8_0 + reranker Q8_0, images Q8_0 | out of memory | 12055 MB | - |
+| Main + embedding Q4_K_M + reranker Q4_K_M, images Q8_0 | ok | 11839 MB | Embedding 8.3 s, reranking 12.8 s |
+| Main + embedding Q4_K_M + reranker Q4_K_M text only | ok | 10968 MB | Chat 14.7 tokens/s, embedding 8.3 s, reranking 12.2 s |
+
+Extra test through llama-swap with the chosen settings and a full page image (1240 x 1754):
+the embedding model and the main model both handled the page, peak wired increase 10738 MB,
+no out-of-memory error. The 5 test calls of step 0.3 pass with the new settings. Embedding
+similar 0.891 and unrelated 0.26. Reranking keeps the correct document first (0.686).
+
+### Problems and fixes
+
+- llama-server picks a new image placeholder at every start. Its README still shows the old
+  fixed one. The script reads the current placeholder from /props (media_marker).
+- A full page image needs about 2150 tokens, more than the embedding context of 2048. Fix:
+  --image-max-tokens 1280, the image limit in the model's own preprocessor_config.json.
+- Swap use grew from 1.5 GB to 3.9 GB during the out-of-memory scenario. macOS released it
+  slowly afterwards.
+
+### Deviations from the plan
+
+- The reranker runs text only next to the other two models. Step 5.4 planned image reranking.
+  To be revisited in 5.4 (for example a separate image reranker that swaps in when needed).
+- The quality of the Q4_K_M embedding and reranker models is not measured yet. Step 5.5.
+- The helper cannot stay loaded with the other three models (all four do not fit). Phase 7
+  decides whether the helper is kept.
+- The scenario "current settings together" was not repeated. Step 0.3 already showed it runs
+  out of memory.
+- New top-level folder benchmarks/ for tools that are not platform code (rule C2, section 8.2).
+
+### Notes for later steps
+
+- Reranking costs about 0.6 s per document on the Mac. Phase 5 sets how many candidates are
+  reranked.
+- A larger main context is cheap: ctx 32768 costs about 0.8 GB more than ctx 8192 (step 6.2).
+- The margin to the GPU limit is about 1.3 GB. Other large GPU apps can still cause an
+  out-of-memory error.
+- The F16 files of the embedding and reranker models stay in multiagent-ai-lab-local/models for
+  other quantisations later.
+
+### Exact next step
+
+Next session (connect the SSD first):
+1. Step 0.5 Model client: llm_client.py, one wrapper for all model calls (OpenAI-style server
+   on the Mac and on GPU, Transformers for the demo), chosen by profile. Ask the owner before
+   writing any file (rule C3).
+
 ## Session 31 October 2026: step 0.3
 
 Step: 0.3 Mac model server. Status: done.

@@ -1,0 +1,9 @@
+run_at,git_commit,llama_cpp_build,gpu_limit_mb,scenario,status,load_s,peak_wired_increase_mb,servers_total_mb,chat_first_token_s,chat_tokens_per_s,image_chat_s,embed_s,rerank_s,swap_used_start_mb,swap_used_end_mb,note
+2026-10-31T21:48:48+00:00,d3c54be,b11960,12124,"main alone, ctx 8192",ok,6.1,6983,6746,0.42,14.58,3.38,,,1508,1508,
+2026-10-31T21:48:48+00:00,d3c54be,b11960,12124,"main alone, ctx 32768",ok,3.0,7757,7403,0.41,14.09,3.59,,,1508,1508,
+2026-10-31T21:48:48+00:00,d3c54be,b11960,12124,"helper alone, ctx 4096",ok,4.0,2242,2191,0.11,40.19,,,,1500,1500,
+2026-10-31T21:48:48+00:00,d3c54be,b11960,12124,"embedding alone, Q8_0, image F16, ctx 4096",ok,5.0,3996,3271,,,,7.37,,1500,1500,
+2026-10-31T21:48:48+00:00,d3c54be,b11960,12124,"reranker alone, Q8_0, image F16, ctx 8192",ok,5.0,4158,3641,,,,,11.34,1500,1500,
+2026-10-31T21:48:48+00:00,d3c54be,b11960,12124,"main + embedding Q8_0 + reranker Q8_0, images Q8_0, ctx 2048/4096",out of memory,33.6,12055,,,,,,,1500,3862,HTTP Error 500: Internal Server Error
+2026-10-31T21:48:48+00:00,d3c54be,b11960,12124,"main + embedding Q4_K_M + reranker Q4_K_M, images Q8_0, ctx 2048/4096",ok,19.1,11839,10516,0.81,14.71,4.09,8.33,12.79,3710,3036,
+2026-10-31T21:48:48+00:00,d3c54be,b11960,12124,"main + embedding Q4_K_M + reranker Q4_K_M text only, ctx 2048/4096",ok,4.0,10968,10359,0.51,14.72,3.49,8.25,12.22,3028,2972,
