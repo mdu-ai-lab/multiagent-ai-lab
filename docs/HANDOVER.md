@@ -2,6 +2,68 @@
 
 Report of the last work session. Read this after docs/WORK_PLAN.md at the start of every session.
 
+## Session 31 October 2026: step 0.2
+
+Step: 0.2 Search database. Status: done.
+
+### Start-of-session checks
+
+- Mac and GitHub in sync, all files from the last handover present, uv sync and
+  mrag.config work, verification numbers unchanged, the rules file is only in
+  .git/info/exclude and no assistant names are on GitHub.
+- Step 0.1 marked done (all its done-when checks passed).
+
+### What was done
+
+- compose.yaml: Qdrant v1.20.0 (latest stable release, 22 October 2026, arm64 image),
+  REST port 6333 on 127.0.0.1 only, data in the Docker volume
+  multiagent-ai-lab_qdrant_data, usage statistics off (QDRANT__TELEMETRY_DISABLED).
+- File check: the SHA-256 of compose.yaml starts with 91e40b0d630d. No Python file
+  changed, so the verification numbers are unchanged.
+
+### Test results (owner and coding assistant)
+
+| Test | Result |
+|---|---|
+| docker compose up -d | Network, volume and container created |
+| Health check /healthz | healthz check passed |
+| Qdrant log | No filesystem warning. "Telemetry reporting disabled". Version 1.20.0 |
+| Storage file system inside the container | ext2/ext3 (ext4 family) |
+| Collection restart_test after docker compose restart | Still there |
+| Collection after docker compose down and up (container created again) | Still there |
+| Test collection deleted | Collections list empty |
+
+### Problems and fixes
+
+- A folder shared from macOS shows up as FUSE inside the container. Qdrant v1.20.0 then
+  logs "Filesystem check failed ... FUSE filesystems may cause data corruption due to
+  caching issues" (tested with a temporary folder on the SSD, deleted afterwards).
+  Fix (owner approved, D30): a Docker volume inside Docker Desktop's disk image, which
+  is on the SSD (/Volumes/MacbookAPFS/Project/docker-data/DockerDesktop).
+
+### Deviations from the plan
+
+- Section 6.3 named qdrant_storage/ in the repo. Qdrant now uses the Docker volume (D30).
+  qdrant_storage/ stays in .gitignore (unused, harmless).
+- Only port 6333 is published. The gRPC port 6334 is added when a module needs it.
+
+### Notes for later steps
+
+- docker compose down -v, docker volume prune --all and a Docker Desktop reset delete the
+  Qdrant data. It can be rebuilt from the documents.
+- The volume name comes from the folder name multiagent-ai-lab.
+- The Python Qdrant client added later must match server v1.20.0.
+- Company guide (15.5): on Linux a volume or a folder on a dedicated disk both work.
+  On Mac and Windows use a volume.
+
+### Exact next step
+
+Next session (connect the SSD first, then start Docker Desktop):
+1. Step 0.3 Mac model server: llama.cpp with Metal, llama-swap and the 4 models
+   downloaded to /Volumes/MacbookAPFS/Project/.hf-cache. HF_HOME must reach the
+   download tools (see the step 0.1 deviations below). Ask the owner before writing
+   any file (rule C3).
+
 ## Session 30 to 31 October 2026: step 0.1
 
 Step: 0.1 Project setup. Status: done.

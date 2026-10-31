@@ -19,4 +19,4 @@
 | Tests failed | 0 |
 | Tests missing | All planned tests (see test plan) |
 
-Reason: no tests exist yet. Step 0.1 was checked with the verification loop (rules C12, C13), see docs/HANDOVER.md. Unit tests and CI come in step 1.4. Update this file at the end of every step.
+Reason: no tests exist yet. Steps 0.1 and 0.2 were checked with the verification loop (rules C12, C13), see docs/HANDOVER.md. Unit tests and CI come in step 1.4. Update this file at the end of every step.

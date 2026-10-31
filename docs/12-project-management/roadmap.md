@@ -12,8 +12,8 @@
 
 | State | Content |
 |---|---|
-| Existing functionality | Project setup only (step 0.1): settings, database layer, Alembic |
-| Work in progress | Phase 0, step 0.1 |
+| Existing functionality | Project setup (step 0.1): settings, database layer, Alembic. Qdrant in Docker (step 0.2) |
+| Work in progress | Phase 0. Next: step 0.3 |
 | Planned | Phases 0 to 16 (below) |
 | Future possibilities | SSO, multi-server scaling, fine-tuning, more languages (not in v1) |
 

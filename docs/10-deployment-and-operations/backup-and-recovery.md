@@ -23,7 +23,7 @@ Plan gap: the knowledge graph store (Phase 9A) and notebook data (Phase 9B) are 
 | .../multiagent-ai-lab/data/public/ | Public datasets | No | No (re-downloaded from pinned versions) |
 | .../multiagent-ai-lab/data/annotations/ | Hand-made labels, golden insights, human judge checks | Yes (small text) | Yes |
 | .../multiagent-ai-lab/mlflow/ | MLflow database and artifacts | No | Yes |
-| .../multiagent-ai-lab/qdrant_storage/ | Search index | No | No (rebuilt from data) |
+| Docker volume multiagent-ai-lab_qdrant_data (inside Docker Desktop's disk image on the SSD, see D30) | Search index | No | No (rebuilt from data) |
 | .../multiagent-ai-lab/results/ | Exported result summaries for the dashboard | Yes | Through GitHub |
 | /Volumes/MacbookAPFS/Project/.hf-cache/ | Model files (HF_HOME) | No | No (re-downloaded) |
 | /Volumes/MacbookAPFS/Project/.uv-cache/ | uv cache (set by UV_CACHE_DIR in ~/.zshrc, see D27) | No | No |

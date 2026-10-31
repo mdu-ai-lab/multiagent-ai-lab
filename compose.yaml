@@ -1,0 +1,21 @@
+# Local services for the Mac profile.
+# Docker Desktop keeps its disk image on the SSD, so start it only
+# after the SSD is connected.
+
+services:
+  qdrant:
+    # Fixed version so every run uses the same Qdrant
+    image: qdrant/qdrant:v1.20.0
+    ports:
+      # REST API, reachable only from this Mac
+      - "127.0.0.1:6333:6333"
+    volumes:
+      # Docker volume: a Linux disk inside Docker's disk image on the SSD.
+      # Qdrant reports folders shared from macOS as unsafe for its data.
+      - qdrant_data:/qdrant/storage
+    environment:
+      # Do not send usage statistics to the Qdrant developers
+      QDRANT__TELEMETRY_DISABLED: "true"
+
+volumes:
+  qdrant_data:

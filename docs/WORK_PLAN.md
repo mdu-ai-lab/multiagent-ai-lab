@@ -9,8 +9,8 @@ This file is the single source of truth for the project. It is stored in the rep
 | Item | Value |
 |---|---|
 | Plan status | Phase 0 in progress |
-| Last completed step | Step 0.1 done. Details in docs/HANDOVER.md |
-| Current phase | Phase 0. Next: step 0.2 |
+| Last completed step | Step 0.2 done. Details in docs/HANDOVER.md |
+| Current phase | Phase 0. Next: step 0.3 |
 | Repo | github.com/mdu-ai-lab/multiagent-ai-lab (public, owned by the GitHub organization mdu-ai-lab). Created 31 October 2026 |
 | Live dashboard URL | Not created yet |
 | Live demo URL | Not created yet |
@@ -102,6 +102,7 @@ This file is the single source of truth for the project. It is stored in the rep
 | D27 | uv cache on the SSD through UV_CACHE_DIR in the owner's ~/.zshrc (only when the SSD is connected) | Project/uv.toml is ignored inside a project whose pyproject.toml has a [tool.uv...] section, which this repo needs for the package name mrag | Project/uv.toml alone |
 | D28 | Product comparisons removed from the repo and banned by rule C14. Each one replaced by a description of the real feature (for example "chat and document question-answering assistant", "notebooks (workspaces on one topic)") | Owner's decision: the words are vague and were only planning shorthand | "ChatGPT-style", "ChatGPT-like", "NotebookLM-style" |
 | D29 | The coding assistant's rules file and settings stay out of Git through the local ignore file .git/info/exclude (not .gitignore). Repo files and commit messages name no assistant product (rule C15). The GitHub repo was deleted and created again on 31 October 2026 with one fresh commit, so the old history is gone | Owner's decision: the repo shows the project, not the tools used to build it | Rules file in the repo |
+| D30 | Qdrant keeps its data in the Docker volume multiagent-ai-lab_qdrant_data inside Docker Desktop's disk image on the SSD | Tested 31 October 2026: with a folder shared from macOS, Qdrant v1.20.0 sees a FUSE file system and logs "Filesystem check failed ... may cause data corruption". The Docker volume (ext4) gives no warning. On Linux company servers both ways work | qdrant_storage/ folder in the repo |
 
 ### 4.2 Open questions (answer before or during the named phase)
 
@@ -198,7 +199,7 @@ Rule of thumb: private data → Mac. Needs a GPU and the data is public → Cola
 | .../multiagent-ai-lab/data/public/ | Public datasets | No | No (re-downloaded from pinned versions) |
 | .../multiagent-ai-lab/data/annotations/ | Hand-made labels, golden insights, human judge checks | Yes (small text) | Yes |
 | .../multiagent-ai-lab/mlflow/ | MLflow database and artifacts | No | Yes |
-| .../multiagent-ai-lab/qdrant_storage/ | Search index | No | No (rebuilt from data) |
+| Docker volume multiagent-ai-lab_qdrant_data (inside Docker Desktop's disk image on the SSD, see D30) | Search index | No | No (rebuilt from data) |
 | .../multiagent-ai-lab/results/ | Exported result summaries for the dashboard | Yes | Through GitHub |
 | /Volumes/MacbookAPFS/Project/.hf-cache/ | Model files (HF_HOME) | No | No (re-downloaded) |
 | /Volumes/MacbookAPFS/Project/.uv-cache/ | uv cache (set by UV_CACHE_DIR in ~/.zshrc, see D27) | No | No |
@@ -385,7 +386,7 @@ weekly: health.yml checks both URLs and opens a GitHub issue if one is down
 | Step | What we will do | Why | Done-when test | Status |
 |---|---|---|---|---|
 | 0.1 Project setup | Create multiagent-ai-lab in /Volumes/MacbookAPFS/Project on the SSD. The existing Project/uv.toml keeps the uv cache on the SSD. Set up uv with Python 3.12 and the folders src/mrag, configs, data, results, tests, notebooks, demo and docs. Add a .gitignore so private data, public datasets, models, MLflow and Qdrant files never go to GitHub. Add .env.example for paths, ports and HF_HOME (/Volumes/MacbookAPFS/Project/.hf-cache). Write config.py to load all settings, including the profile (Mac, GPU, demo, CI or company server). Set up the database layer with SQLAlchemy (SQLite now). Add LICENSE (after Q1), a short README and CHANGELOG.md. Add a local rules file for the coding assistant, kept out of Git (D29): the working rules in short form (under 200 lines) and the instruction to read docs/WORK_PLAN.md and docs/HANDOVER.md before any work. Create the free GitHub organization mdu-ai-lab. Create the public GitHub repo inside the organization and push the first commit. | A clean, repeatable base. The profile switch lets the same code run everywhere. | uv run python -m mrag.config prints the settings. The repo is on GitHub with no data files. The coding assistant has loaded its local rules file. The uv check command (rule C13) prints the same numbers as the coding assistant for every Python file of this step. | Done |
-| 0.2 Search database | Write compose.yaml with Qdrant, a fixed version and its data folder on the SSD. Start Docker only after the SSD is connected. | Qdrant stores all search data and must survive restarts. | Health check returns OK. Data is still there after a restart. | Not done |
+| 0.2 Search database | Write compose.yaml with Qdrant, a fixed version and its data folder on the SSD. Start Docker only after the SSD is connected. | Qdrant stores all search data and must survive restarts. | Health check returns OK. Data is still there after a restart. | Done |
 | 0.3 Mac model server | Install llama.cpp with Metal support and llama-swap. Download from Hugging Face, with fixed versions, to the SSD: Qwen3.5-9B (main), Qwen3.5-2B (helper), Qwen3-VL-Embedding-2B and Qwen3-VL-Reranker-2B. Write the llama-swap config: how each model starts and when it unloads after idle time. | One local address serves all models. Only models in use take RAM. | 5 test calls succeed: text chat, chat with an image, embedding, reranking and JSON output. | Not done |
 | 0.4 Measure the Mac | A script loads the models alone and together. It records peak RAM, words per second and time to first word, and saves them to results/p0_resources.csv. Then we choose context size and quantisation. | 16 GB RAM is the Mac limit. We decide with numbers. | Peak RAM < 13 GB with main + embedding + reranker loaded. Settings saved in config. | Not done |
 | 0.5 Model client | Write llm_client.py, one wrapper for all model calls. It supports an OpenAI-style server (llama.cpp on the Mac, vLLM on GPU) and a Transformers backend for the demo. The profile decides which one is used. | Moving between Mac, Colab, Kaggle, demo and company server needs no code change. | The same test call works through the wrapper with the Mac profile. | Not done |
