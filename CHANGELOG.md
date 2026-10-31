@@ -7,6 +7,8 @@ Versions are tagged at the end of each phase (WORK_PLAN.md rule G).
 
 ### Added
 
+- Step 0.3: `configs/llama-swap.yaml` (4 models, one at a time, port 8080 on this Mac only).
+  `.env.example`: new HF_HOME path, MRAG_LLAMA_SERVER and MRAG_MODELS_DIR.
 - Step 0.2: `compose.yaml` with Qdrant v1.20.0 (port 6333 on this Mac only, data in a Docker volume,
   usage statistics off).
 - Step 0.1: uv project with Python 3.12, package `mrag` in `src/`,
@@ -15,6 +17,8 @@ Versions are tagged at the end of each phase (WORK_PLAN.md rule G).
 
 ### Changed
 
+- WORK_PLAN.md: decisions D31 (large local files in multiagent-ai-lab-local) and D32 (model server
+  versions and model sources), storage table and step 0.3 status.
 - WORK_PLAN.md: decision D30 (Qdrant data in a Docker volume), storage table and step 0.2 status.
 - WORK_PLAN.md v1.8: decisions D23 to D27, open questions Q1 and Q8 answered, step 0.1 status.
   All docs updated to match.

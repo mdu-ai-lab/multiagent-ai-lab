@@ -2,6 +2,107 @@
 
 Report of the last work session. Read this after docs/WORK_PLAN.md at the start of every session.
 
+## Session 31 October 2026: step 0.3
+
+Step: 0.3 Mac model server. Status: done.
+
+### What was done
+
+- llama.cpp build b11960 (the code of release v0.8.0, 28 October 2026) and llama-swap v268 from
+  their GitHub releases. The SHA-256 of both downloads matched the published values. Metal works:
+  Apple M2 with about 12 GB usable GPU memory (MTL0 12124 MiB).
+- Models (all Apache-2.0, pinned revisions, SHA-256 of every large file checked):
+
+| Model | Source | Files |
+|---|---|---|
+| Qwen3.5-9B (main) | unsloth/Qwen3.5-9B-GGUF at 3885219b6810 | Qwen3.5-9B-Q4_K_M.gguf, mmproj-F16.gguf |
+| Qwen3.5-2B (helper) | unsloth/Qwen3.5-2B-GGUF at f6d5376be1ed | Qwen3.5-2B-Q8_0.gguf (text only) |
+| Qwen3-VL-Embedding-2B | Qwen/Qwen3-VL-Embedding-2B at 9f2f7e710d6d, converted locally | Qwen3-VL-Embedding-2B-Q8_0.gguf, mmproj-Qwen3-VL-Embedding-2B-F16.gguf |
+| Qwen3-VL-Reranker-2B | Qwen/Qwen3-VL-Reranker-2B at 4bd860ac4f15, converted locally | Qwen3-VL-Reranker-2B-Q8_0.gguf, mmproj-Qwen3-VL-Reranker-2B-F16.gguf |
+
+- configs/llama-swap.yaml: one llama-server per model, paths from environment variables,
+  127.0.0.1 only, --offline, unload after 600 s without requests.
+- .env.example: HF_HOME now points to multiagent-ai-lab-local/hf-cache. New MRAG_LLAMA_SERVER and
+  MRAG_MODELS_DIR.
+- File check: the SHA-256 of configs/llama-swap.yaml starts with a8dc4b57d2c8. No Python file
+  changed, so the verification numbers are unchanged.
+
+### How to repeat the conversion
+
+The Python environment comes from requirements/requirements-convert_hf_to_gguf.txt of the same
+build (torch 2.11.0, transformers 4.57.6, numpy 2.2.6). Commands for the reranker (the embedding
+model is the same with its own snapshot folder and file names):
+
+```
+cd /Volumes/MacbookAPFS/Project/multiagent-ai-lab-local/tools/llama.cpp-src-b11960
+HF_HUB_OFFLINE=1 ../llama-convert-venv/bin/python convert_hf_to_gguf.py /Volumes/MacbookAPFS/Project/multiagent-ai-lab-local/hf-cache/hub/models--Qwen--Qwen3-VL-Reranker-2B/snapshots/4bd860ac4f15ad1897a214615cccc700f8f71818 --outtype q8_0 --outfile /Volumes/MacbookAPFS/Project/multiagent-ai-lab-local/models/Qwen3-VL-Reranker-2B-Q8_0.gguf
+HF_HUB_OFFLINE=1 ../llama-convert-venv/bin/python convert_hf_to_gguf.py /Volumes/MacbookAPFS/Project/multiagent-ai-lab-local/hf-cache/hub/models--Qwen--Qwen3-VL-Reranker-2B/snapshots/4bd860ac4f15ad1897a214615cccc700f8f71818 --mmproj --outtype f16 --outfile /Volumes/MacbookAPFS/Project/multiagent-ai-lab-local/models/mmproj-Qwen3-VL-Reranker-2B-F16.gguf
+```
+
+Embedding snapshot folder: models--Qwen--Qwen3-VL-Embedding-2B/snapshots/9f2f7e710d6d81056aa5c0a4f04764fec6bb7bda
+
+### How to start the model server
+
+In Terminal, in /Volumes/MacbookAPFS/Project/multiagent-ai-lab:
+
+```
+set -a
+source .env
+set +a
+/Volumes/MacbookAPFS/Project/multiagent-ai-lab-local/tools/llama-swap-v268/llama-swap --config configs/llama-swap.yaml --listen 127.0.0.1:8080
+```
+
+### Test results (coding assistant, through llama-swap from configs/llama-swap.yaml)
+
+| Test | Result |
+|---|---|
+| Text chat (Qwen3.5-9B) | "The capital of Sweden is Stockholm." About 14 tokens per second |
+| Chat with an image (red and blue halves) | Described the red left half and the blue right half correctly |
+| Embedding | 2048 dimensions. Similar sentences 0.888, unrelated 0.238 |
+| Reranking | Correct document first (0.751), related wrong document 0.446, unrelated 0.249 |
+| JSON output with a schema | {"city": "Stockholm", "country": "Sweden"} |
+| Helper (Qwen3.5-2B) | Answers |
+
+### Problems and fixes
+
+- The community reranker GGUF (mradermacher) has no rank pooling and no cls.output tensor, so it
+  cannot rerank. Fix (D32): converted locally. Its header now has pooling_type 4 (rank) and the
+  classifier labels yes and no. The cls.output.weight tensor is present.
+- GPU out of memory with the main, embedding and reranker models loaded together
+  ("Insufficient Memory", kIOGPUCommandBufferCallbackErrorOutOfMemory) with context sizes
+  8192, 4096 and 8192. The failed llama-server stays broken until it is restarted. Fix for now:
+  only one model runs at a time (llama-swap default).
+- VS Code copies .env into each terminal when the terminal opens. These values override .env. After changing .env, open a new terminal. The start command above loads .env itself.
+- The folders .hf-cache, tools and models were first created directly in Project/ and then moved
+  into Project/multiagent-ai-lab-local (owner's decision, D31). The converter environment was
+  created again after the move. All tests passed again afterwards.
+
+### Deviations from the plan
+
+- One model at a time instead of all models together, until step 0.4 measures what fits.
+- Downloads are in multiagent-ai-lab-local/hf-cache instead of Project/.hf-cache (D31).
+- llama-server uses the rerank template written by the converter. It adds empty think tags that
+  Qwen's own reranker template does not have, so scores can differ slightly from Qwen's
+  reference. To be measured in steps 5.4 and 5.5.
+- Qwen3.5-9B thinks before it answers by default. When to switch thinking off is decided in
+  later phases.
+- The step 0.1 point "HF_HOME from .env is not exported" is solved for the model server by the
+  start command.
+
+### Notes for later steps
+
+- Step 0.4: context sizes and quantisation in configs/llama-swap.yaml are first values. The GPU
+  limit is about 12 GB.
+- The internal model name of the converted files is the revision hash (cosmetic only).
+- ggml-org/Qwen3.5-0.8B-GGUF (published by the llama.cpp team) exists for the CI tests in step 1.4.
+
+### Exact next step
+
+Next session (connect the SSD first):
+1. Step 0.4 Measure the Mac: a script loads the models alone and together, records peak RAM,
+   words per second and time to first word in results/p0_resources.csv, then context size and
+   quantisation are chosen. Ask the owner before writing any file (rule C3).
+
 ## Session 31 October 2026: step 0.2
 
 Step: 0.2 Search database. Status: done.

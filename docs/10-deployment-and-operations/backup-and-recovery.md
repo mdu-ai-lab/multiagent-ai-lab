@@ -25,7 +25,9 @@ Plan gap: the knowledge graph store (Phase 9A) and notebook data (Phase 9B) are 
 | .../multiagent-ai-lab/mlflow/ | MLflow database and artifacts | No | Yes |
 | Docker volume multiagent-ai-lab_qdrant_data (inside Docker Desktop's disk image on the SSD, see D30) | Search index | No | No (rebuilt from data) |
 | .../multiagent-ai-lab/results/ | Exported result summaries for the dashboard | Yes | Through GitHub |
-| /Volumes/MacbookAPFS/Project/.hf-cache/ | Model files (HF_HOME) | No | No (re-downloaded) |
+| /Volumes/MacbookAPFS/Project/multiagent-ai-lab-local/hf-cache/ | Downloaded model files (HF_HOME) | No | No (re-downloaded from pinned revisions) |
+| .../multiagent-ai-lab-local/models/ | Embedding and reranker GGUF files converted locally (D32) | No | No (converted again, commands in docs/HANDOVER.md) |
+| .../multiagent-ai-lab-local/tools/ | llama.cpp b11960, llama-swap v268, the llama.cpp converter source and its Python environment (D32) | No | No (downloaded again from pinned releases) |
 | /Volumes/MacbookAPFS/Project/.uv-cache/ | uv cache (set by UV_CACHE_DIR in ~/.zshrc, see D27) | No | No |
 | /Volumes/MacbookAPFS/Project/docker-data/ | Docker Desktop disk image (already on the SSD) | No | No |
 

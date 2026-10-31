@@ -1,0 +1,54 @@
+# Model server for the Mac profile: llama-swap starts one llama-server per model.
+# Paths come from environment variables, so no machine-specific path is stored here:
+#   MRAG_LLAMA_SERVER  path to the llama-server program
+#   HF_HOME            Hugging Face cache with the downloaded GGUF files
+#   MRAG_MODELS_DIR    folder with the GGUF files converted locally
+# Context sizes and idle times are first values. They are tuned after the RAM measurements.
+# Only one model runs at a time (llama-swap default). With the main, embedding and
+# reranker models loaded together the Mac ran out of GPU memory.
+
+macros:
+  "server": >-
+    ${env.MRAG_LLAMA_SERVER}
+    --host 127.0.0.1
+    --port ${PORT}
+    --offline
+  "hub": "${env.HF_HOME}/hub"
+
+# Unload a model after 10 minutes without requests
+globalTTL: 600
+
+models:
+  "qwen3.5-9b":
+    name: "Qwen3.5-9B (main, vision)"
+    cmd: |
+      ${server}
+      --model ${hub}/models--unsloth--Qwen3.5-9B-GGUF/snapshots/3885219b6810b007914f3a7950a8d1b469d598a5/Qwen3.5-9B-Q4_K_M.gguf
+      --mmproj ${hub}/models--unsloth--Qwen3.5-9B-GGUF/snapshots/3885219b6810b007914f3a7950a8d1b469d598a5/mmproj-F16.gguf
+      --ctx-size 8192
+
+  "qwen3.5-2b":
+    name: "Qwen3.5-2B (helper, text only)"
+    cmd: |
+      ${server}
+      --model ${hub}/models--unsloth--Qwen3.5-2B-GGUF/snapshots/f6d5376be1edb4d416d56da11e5397a961aca8ae/Qwen3.5-2B-Q8_0.gguf
+      --ctx-size 4096
+
+  "qwen3-vl-embedding-2b":
+    name: "Qwen3-VL-Embedding-2B (search vectors)"
+    cmd: |
+      ${server}
+      --model ${env.MRAG_MODELS_DIR}/Qwen3-VL-Embedding-2B-Q8_0.gguf
+      --mmproj ${env.MRAG_MODELS_DIR}/mmproj-Qwen3-VL-Embedding-2B-F16.gguf
+      --embedding
+      --ctx-size 4096
+      --ubatch-size 4096
+
+  "qwen3-vl-reranker-2b":
+    name: "Qwen3-VL-Reranker-2B (reranking)"
+    cmd: |
+      ${server}
+      --model ${env.MRAG_MODELS_DIR}/Qwen3-VL-Reranker-2B-Q8_0.gguf
+      --mmproj ${env.MRAG_MODELS_DIR}/mmproj-Qwen3-VL-Reranker-2B-F16.gguf
+      --rerank
+      --ctx-size 8192

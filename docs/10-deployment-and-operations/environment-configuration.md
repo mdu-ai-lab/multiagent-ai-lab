@@ -15,14 +15,18 @@ Settings load through config.py from .env (0.1). Variable names are set in step 
 | Setting | Variable | Meaning | Value in .env.example | Source |
 |---|---|---|---|---|
 | Profile | MRAG_PROFILE | mac, gpu, demo, ci or company | mac | 0.1 |
-| HF_HOME | HF_HOME | Model cache | /Volumes/MacbookAPFS/Project/.hf-cache | 0.1 |
+| HF_HOME | HF_HOME | Model cache | /Volumes/MacbookAPFS/Project/multiagent-ai-lab-local/hf-cache | 0.1, 0.3 |
 | Data folder | MRAG_DATA_DIR | private/, public/, annotations/ and the SQLite file | data | 0.1 |
 | Database URL | MRAG_DATABASE_URL | Empty means SQLite at data/app.db. PostgreSQL URL later | (empty) | 0.1, 15.3 |
-| Model server address | MRAG_MODEL_SERVER_URL | llama-swap, vLLM or none (Transformers) | http://127.0.0.1:8080/v1 (placeholder) | 0.3, 0.5 |
+| Model server address | MRAG_MODEL_SERVER_URL | llama-swap, vLLM or none (Transformers) | http://127.0.0.1:8080/v1 | 0.3, 0.5 |
+| llama-server program | MRAG_LLAMA_SERVER | Program that llama-swap starts for each model | /Volumes/MacbookAPFS/Project/multiagent-ai-lab-local/tools/llama.cpp-b11960/llama-server | 0.3 |
+| Converted models folder | MRAG_MODELS_DIR | GGUF files converted locally | /Volumes/MacbookAPFS/Project/multiagent-ai-lab-local/models | 0.3 |
 | Qdrant address or in-process mode | MRAG_QDRANT_URL | Search store | http://127.0.0.1:6333 | 0.2, 5.2 |
 | MLflow tracking address | MRAG_MLFLOW_TRACKING_URI | Experiments and traces. Port 5000 is used by macOS AirPlay Receiver | http://127.0.0.1:5001 (placeholder) | 1.2 |
 
 Existing machine setup: uv cache on the SSD through UV_CACHE_DIR in ~/.zshrc (WORK_PLAN.md D27). Docker data on the SSD. Connect the SSD before starting Docker (WORK_PLAN.md section 6.3).
+
+VS Code copies .env into each terminal when the terminal opens. After changing .env, open a new terminal.
 
 ## Compute profiles (WORK_PLAN.md section 6.1, word for word)
 
