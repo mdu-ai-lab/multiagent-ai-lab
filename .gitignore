@@ -1,0 +1,42 @@
+# Rule V and section 6.3: private documents, public datasets, models, MLflow
+# and Qdrant files never go to GitHub
+
+# Data: only data/annotations/ is in Git
+data/*
+!data/annotations/
+
+# Local settings (copy .env.example to .env)
+.env
+
+# Services and databases
+mlflow/
+qdrant_storage/
+*.db
+*.db-wal
+*.db-shm
+*.sqlite
+*.sqlite3
+
+# Model files (they live in HF_HOME on the SSD)
+.hf-cache/
+*.gguf
+*.safetensors
+
+# Python and tools
+__pycache__/
+*.py[cod]
+.venv/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.ipynb_checkpoints/
+build/
+dist/
+*.egg-info/
+
+# macOS and personal editor settings
+.DS_Store
+.vscode/
+
+# Planning helper scripts. They stay on this Mac only (owner decision, 30 Oct 2026)
+scripts/
