@@ -85,6 +85,7 @@ similar 0.891 and unrelated 0.26. Reranking keeps the correct document first (0.
 - The scenario "current settings together" was not repeated. Step 0.3 already showed it runs
   out of memory.
 - New top-level folder benchmarks/ for tools that are not platform code (rule C2, section 8.2).
+- Step 0.7 marked done in the same session: docs/WORK_PLAN.md is on GitHub and shows Phase 0 progress.
 
 ### Notes for later steps
 
@@ -366,10 +367,9 @@ Verification numbers (rule C13): src/mrag/__init__.py 3543b4693a36, src/mrag/con
 
 - First commit pushed to github.com/mdu-ai-lab/multiagent-ai-lab (organization and public repo
   created by the owner).
-- Owner's decision D28 and new rule C14: no product comparisons ("ChatGPT-style", "ChatGPT-like",
-  "NotebookLM-style") in the repo. All 31 places in README.md and docs/ (13 files) now describe the
-  real feature instead. The words remain only inside rule C14 and decision D28, which name them
-  in order to ban them.
+- Owner's decision D28 and new rule C14: no product comparisons in the repo. All 31 places in
+  README.md and docs/ (13 files) now describe the real feature instead. The banned words appear
+  only inside rule C14 and decision D28, which name them in order to ban them.
 - The local rules file has rule C14. docs/11-development-standards/coding-standards.md has the C14 row
   (word-for-word copy of section 5.2). All doc links point to WORK_PLAN.md v1.9.
 - Owner's decision: the README description is only "Work in Progress" for now. A description

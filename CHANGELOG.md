@@ -20,6 +20,7 @@ Versions are tagged at the end of each phase (WORK_PLAN.md rule G).
 
 ### Changed
 
+- WORK_PLAN.md: step 0.7 status (its test passes). HANDOVER.md: wording fix (rule C14).
 - WORK_PLAN.md: decision D33 (Mac model settings), rule C2, repo structure and step 0.4 status.
 - WORK_PLAN.md: decisions D31 (large local files in multiagent-ai-lab-local) and D32 (model server
   versions and model sources), storage table and step 0.3 status.
