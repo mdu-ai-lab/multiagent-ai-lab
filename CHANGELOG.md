@@ -7,7 +7,7 @@ Versions are tagged at the end of each phase (WORK_PLAN.md rule G).
 
 ### Added
 
-- Step 0.1 (in progress): uv project with Python 3.12, package `mrag` in `src/`,
+- Step 0.1: uv project with Python 3.12, package `mrag` in `src/`,
   `config.py` (settings and profiles), `db.py` (SQLAlchemy, SQLite), Alembic migrations,
   `.gitignore`, `.env.example`, Apache-2.0 licence, README and docs/HANDOVER.md.
 
