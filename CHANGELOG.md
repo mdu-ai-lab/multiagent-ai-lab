@@ -7,6 +7,9 @@ Versions are tagged at the end of each phase (WORK_PLAN.md rule G).
 
 ### Added
 
+- Step 0.5: `src/mrag/llm_client.py` (one client for all model calls, backends openai_server
+  and transformers), `configs/models.yaml`, 24 tests. Dependencies: openai, pyyaml, pytest (dev),
+  transformers, torch, torchvision, pillow (demo group).
 - Step 0.4: `benchmarks/measure_mac.py` (memory and speed of the local models),
   `results/p0_resources.csv`, settings `llama_server` and `models_dir` in `config.py`.
   `configs/llama-swap.yaml`: measured settings, main, embedding and reranker loaded together.
@@ -20,6 +23,7 @@ Versions are tagged at the end of each phase (WORK_PLAN.md rule G).
 
 ### Changed
 
+- WORK_PLAN.md: decision D34 (model client) and step 0.5 status.
 - WORK_PLAN.md: step 0.7 status (its test passes). HANDOVER.md: wording fix (rule C14).
 - WORK_PLAN.md: decision D33 (Mac model settings), rule C2, repo structure and step 0.4 status.
 - WORK_PLAN.md: decisions D31 (large local files in multiagent-ai-lab-local) and D32 (model server

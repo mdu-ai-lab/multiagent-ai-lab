@@ -12,11 +12,11 @@
 
 | Category | Count |
 |---|---|
-| Tests that exist | 0 |
-| Tests inspected | 0 |
-| Tests executed | 0 |
-| Tests passed | 0 |
+| Tests that exist | 24 |
+| Tests inspected | 24 |
+| Tests executed | 24 |
+| Tests passed | 24 |
 | Tests failed | 0 |
-| Tests missing | All planned tests (see test plan) |
+| Tests missing | All other planned tests (see test plan) |
 
-Reason: no tests exist yet. Steps 0.1 to 0.4 were checked with the verification loop (rules C12, C13), see docs/HANDOVER.md. Unit tests and CI come in step 1.4. Update this file at the end of every step.
+Reason: 24 tests for the model client: 14 unit tests, 7 integration tests with the Mac model server and 3 with the transformers backend. Steps 0.1 to 0.5 were also checked with the verification loop (rules C12, C13), see docs/HANDOVER.md. CI comes in step 1.4. Update this file at the end of every step.

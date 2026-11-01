@@ -8,7 +8,9 @@ license-files = ["LICENSE"]
 requires-python = ">=3.12,<3.13"
 dependencies = [
     "alembic>=1.20.1",
+    "openai>=3.42.0",
     "pydantic-settings>=2.16.2",
+    "pyyaml>=6.0.3",
     "sqlalchemy>=2.1.6",
 ]
 
@@ -23,3 +25,22 @@ module-name = "mrag"
 # Alembic reads its settings from here. The database URL comes from mrag.config
 [tool.alembic]
 script_location = "%(here)s/migrations"
+
+# dev is installed by default. demo (transformers backend) only with --group demo
+[dependency-groups]
+demo = [
+    "pillow>=13.0.0",
+    "torch>=2.15.0",
+    "torchvision>=0.29.2",
+    "transformers>=5.22.1",
+]
+dev = [
+    "pytest>=9.2.0",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+markers = [
+    "mac: real calls to the Mac model server (llama-swap must be running)",
+    "transformers: real calls through the transformers backend (needs --group demo)",
+]

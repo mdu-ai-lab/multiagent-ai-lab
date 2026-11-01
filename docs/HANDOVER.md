@@ -2,6 +2,97 @@
 
 Report of the last work session. Read this after docs/WORK_PLAN.md at the start of every session.
 
+## Session 1 November 2026: step 0.5
+
+Step: 0.5 Model client. Status: done.
+
+### What was done
+
+- src/mrag/llm_client.py: one client for all model calls (D34). get_client() reads the profile
+  from .env and the roles from configs/models.yaml. Two backends:
+  - openai_server (llama-swap on the Mac, vLLM on GPU later): chat, chat_stream, embed, rerank.
+  - transformers (demo): chat and chat_stream. embed, rerank and JSON schema output give a
+    NotSupportedError for now.
+- Error types: ModelUnavailableError (server not reachable or timeout), InputTooLongError,
+  ModelServerError (for example out of memory), NotSupportedError, all based on LLMError.
+- Thinking is off unless a caller sets thinking=True. Reasoning text is returned separately.
+- Typed results: ChatResult (text, reasoning, usage, finish_reason) and RerankResult.
+- configs/models.yaml: profiles mac (llama-swap model IDs) and demo (Qwen/Qwen3.5-9B at revision
+  c202236235762e1c871ad0ccb60c8ee5ba337b9a). Other profiles are added when their models are tested.
+- Dependencies: openai 3.42.0 and pyyaml 6.0.3 (main), pytest 9.2.0 (dev group), transformers
+  5.22.1, torch 2.15.0, torchvision 0.29.2 and pillow 13.0.0 (demo group, not installed by default).
+- Test model for the transformers backend: Qwen/Qwen3.5-0.8B at revision
+  2fc06364715b967f1860aea9cf38778875588b17 (Apache-2.0, about 1.8 GB in
+  multiagent-ai-lab-local/hf-cache).
+- Verification numbers: src/mrag/llm_client.py e7db46eb22ad, tests/unit/test_llm_client.py
+  6c1d8f9a44c5, tests/integration/conftest.py 6d596db098e4, tests/integration/test_llm_client_mac.py
+  91f740196030, tests/integration/test_llm_client_transformers.py 9292c4dcf0d8. Unchanged:
+  src/mrag/__init__.py 3543b4693a36, src/mrag/config.py 24c7a5d4b87c, src/mrag/db.py 511eeaebbdbd,
+  migrations/env.py c95357b4cf62, benchmarks/measure_mac.py 7c010b9ebef2. The SHA-256 of
+  configs/models.yaml starts with 7fee9c963b19.
+
+### How to run the tests
+
+In Terminal, in /Volumes/MacbookAPFS/Project/multiagent-ai-lab, first load .env:
+
+```
+set -a
+source .env
+set +a
+```
+
+- All tests (the real-model tests skip themselves when their server or packages are missing):
+  `uv run pytest`
+- Mac model server tests: start llama-swap as described in the step 0.3 section, then
+  `uv run pytest -m mac`
+- Transformers backend tests: `uv run --group demo pytest -m transformers`
+
+### Test results (coding assistant)
+
+| Run | Result |
+|---|---|
+| uv run pytest | 14 passed, 8 skipped |
+| uv run pytest -m mac (llama-swap running) | 7 passed: text, stream, thinking switch, image, JSON schema, embedding, rerank |
+| uv run python -m mrag.llm_client | "mac profile answered: ready" |
+| uv run --group demo pytest -m transformers | 3 passed: text, stream, image |
+| Thinking mode in the transformers backend (checked by hand) | Answer "5", reasoning returned separately |
+| mypy on src/mrag | No issues |
+| ruff 0.17.3 (default rules) on src and tests | All checks passed |
+
+### Problems and fixes
+
+- The Qwen image processor in transformers needs Pillow and torchvision. transformers does not
+  install them, so both are in the demo group.
+- mypy and ruff found three small points (an unused variable in a test, the type of the rerank
+  answer, transformers type hints for model.to). All fixed.
+- macOS Finder writes .DS_Store files into .venv. When uv removes the demo packages, folders with
+  only these files stay behind and Python sees an empty transformers package. Fix: the
+  transformers test skips unless transformers 5.22.1 or newer is really installed (minversion).
+
+### Deviations from the plan
+
+- The transformers backend does chat only. Embedding and reranking for it come with the retrieval
+  work of the demo (steps 1.8 and 5.x). JSON schema output is not available in it.
+- embed() takes text only. Image embeddings are designed in step 5.2.
+
+### Notes for later steps
+
+- Step 1.4: ruff 0.17.3 reports 9 style points in benchmarks/measure_mac.py (subprocess.run without
+  check, one open() without a with block, two newer spellings). Fix them with the project's ruff
+  rules.
+- Step 1.2: confirm that MLflow tracing works with openai 3.x.
+- Step 1.8: on the demo GPU, the fast kernels for Qwen3.5 (causal_conv1d, flash-linear-attention)
+  can replace the slower PyTorch fallback that the Mac uses.
+- End of Phase 0: update the status banner in the 99 docs and docs/README.md (it still says only
+  the step 0.1 setup exists as code).
+
+### Exact next step
+
+Next session (connect the SSD first, then start Docker Desktop):
+1. Step 0.6 Backup and sync: rclone with Google Drive, multiagent-ai-lab-backup with backup/ and
+   inbox/, make backup, make pull-inbox and make restore-test, the rules of section 6.4 in the
+   docs, decide Q2. Ask the owner before writing any file (rule C3).
+
 ## Session 31 October to 1 November 2026: step 0.4
 
 Step: 0.4 Measure the Mac. Status: done.

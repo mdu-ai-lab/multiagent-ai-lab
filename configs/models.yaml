@@ -1,0 +1,22 @@
+# Which model serves which role in each profile. Read by src/mrag/llm_client.py.
+# Roles: main (answers, vision, agents), helper (routing and rewriting),
+# embedding (search vectors), reranker (re-scoring search results).
+# A model is a plain name or a name with a pinned Hugging Face revision.
+# Profiles without an entry here have no models yet.
+
+mac:
+  # Names are the model IDs in configs/llama-swap.yaml
+  backend: openai_server
+  models:
+    main: qwen3.5-9b
+    helper: qwen3.5-2b
+    embedding: qwen3-vl-embedding-2b
+    reranker: qwen3-vl-reranker-2b
+
+demo:
+  # Loaded with Transformers inside the demo process
+  backend: transformers
+  models:
+    main:
+      name: Qwen/Qwen3.5-9B
+      revision: c202236235762e1c871ad0ccb60c8ee5ba337b9a
