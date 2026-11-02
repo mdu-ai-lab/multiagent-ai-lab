@@ -46,7 +46,7 @@ These are the owner's approved rules, copied word for word from WORK_PLAN.md sec
 | C11 | Do not create files (README, docs, images) unless asked. Planned docs in this plan count as asked when their step starts |
 | C12 | Verification loop. For every step the coding assistant gives the code, the exact commands and the expected output, including the verification number of each Python code file. You run the commands with uv and compare. Everything matches: the step is done and you send nothing. Anything differs: you send only the different output. The coding assistant finds the real cause and gives the fix with new expected output. When an output can't be predicted exactly (for example real training results or live data), the coding assistant says so and you send that output before committing |
 | C13 | Verification number: the first 12 characters of the SHA-256 of the file's Python syntax tree, `ast.dump(ast.parse(...))`. Comments and formatting do not change it. You run one inline command that lists the files: `uv run python -c "import ast, hashlib ..."` |
-| C14 | No product comparisons such as "ChatGPT-style" or "NotebookLM-style" in any file in the repo (code, docs, README, commit messages). Describe what the feature does instead. The owner used such words in planning only to explain ideas |
+| C14 | Describe what each feature does in plain words in every file in the repo (code, docs, README, commit messages) |
 | C15 | Repo files and commit messages never name the coding assistant product or its files. Its rules file and settings stay local (D29) |
 | C16 | Code comments, config comments and commit messages never use the words "step" or "phase" and never use plan numbers. Describe the change itself. The docs keep the plan numbering |
 
