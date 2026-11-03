@@ -30,7 +30,7 @@ WORK_PLAN.md section 6.3 (storage layout) and section 6.4 (backup layers) do not
 
 ## Migration strategy
 
-Alembic with SQLAlchemy, decided in step 0.1 (WORK_PLAN.md D25). Settings are in pyproject.toml ([tool.alembic]) and the migration files in migrations/. The database URL comes from src/mrag/config.py. No tables or migrations exist yet. The SQLite file is data/app.db (ignored by Git). Its backup layer is decided in step 0.6.
+Alembic with SQLAlchemy, decided in step 0.1 (WORK_PLAN.md D25). Settings are in pyproject.toml ([tool.alembic]) and the migration files in migrations/. The database URL comes from src/mrag/config.py. No tables or migrations exist yet. The SQLite file is data/app.db (ignored by Git). make backup copies it as a clean SQLite copy (D35).
 
 ## Not created as separate documents
 

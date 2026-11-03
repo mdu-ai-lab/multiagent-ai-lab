@@ -7,6 +7,9 @@ Versions are tagged at the end of each phase (WORK_PLAN.md rule G).
 
 ### Added
 
+- Step 0.6: `Makefile` (make backup, make restore-test, make pull-inbox), `ops/backup.py` (both
+  project folders on the SSD to Google Drive with rclone, dated history, Qdrant snapshot, SQLite
+  copy, restore test), 15 tests in `tests/unit/test_backup.py`.
 - Step 0.5: `src/mrag/llm_client.py` (one client for all model calls, backends openai_server
   and transformers), `configs/models.yaml`, 24 tests. Dependencies: openai, pyyaml, pytest (dev),
   transformers, torch, torchvision, pillow (demo group).
@@ -23,6 +26,8 @@ Versions are tagged at the end of each phase (WORK_PLAN.md rule G).
 
 ### Changed
 
+- WORK_PLAN.md: decisions D12, D13, D35 and D36, Q2, sections 6.3 and 6.4, step 0.6 text and
+  status. The same backup rules in 14 other docs.
 - WORK_PLAN.md: decision D34 (model client) and step 0.5 status.
 - WORK_PLAN.md: step 0.7 status (its test passes). HANDOVER.md: wording fix (rule C14).
 - WORK_PLAN.md: decision D33 (Mac model settings), rule C2, repo structure and step 0.4 status.

@@ -16,7 +16,7 @@
 | Hugging Face ZeroGPU Space | Live demo | Public samples only | Health check 1.9 | Free, daily visitor quota |
 | GitHub (organization) | Code, CI/CD, Pages, container images | Code and public results | CI gates | Free for public repos |
 | Web search (smolagents WebSearchTool) | Opt-in online answers | Rewritten question only | Retry and message (8.1) | Free, rate-limited (to confirm in 8.1) |
-| Google Drive (rclone) | Backup and Colab inbox | Non-Git project files, no private documents | Restore test | Owner's existing 2 TB plan, no new cost |
+| Google Drive (rclone) | Backup and Colab inbox | The whole project on the SSD (D35) | Restore test | Owner's existing 2 TB plan, no new cost |
 | Google Colab, Kaggle | Free GPU jobs | Public data only | Checkpoints, resumable jobs | Free, limits change |
 
 Limits checked on 28 Oct 2026. Details: WORK_PLAN.md section 7.

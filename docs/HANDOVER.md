@@ -2,6 +2,45 @@
 
 Report of the last work session. Read this after docs/WORK_PLAN.md at the start of every session.
 
+## Session 2 to 3 November 2026: step 0.6
+
+Step: 0.6 Backup and sync. Status: done.
+
+### What was done
+
+- Makefile and ops/backup.py: make backup, make restore-test (FULL=1 also downloads
+  multiagent-ai-lab-local) and make pull-inbox. Target: My Drive/Project/MDU Offline Project.
+- tests/unit/test_backup.py: 15 tests.
+- Docs: WORK_PLAN.md D12, D13, D35, D36, Q2, sections 6.3 and 6.4. The same rules in 14 other docs.
+- Verification numbers: ops/backup.py 13b6feaaa541, tests/unit/test_backup.py 0dda5947695d.
+  All other files unchanged.
+
+### Test results
+
+| Run | Result |
+|---|---|
+| uv run pytest | 29 passed, 8 skipped |
+| ruff 0.17.3 and mypy on ops | No issues |
+| make backup | OK. 5,269 and 21,916 files, about 35.0 GB on Drive |
+| make restore-test FULL=1 | All downloaded files match the SSD |
+| make restore-test | OK, all 7 checks |
+
+### Problems and fixes
+
+- The first upload took about 17 hours (about 27,000 small files). Later runs upload only
+  changed files (about 7 minutes).
+- Run make restore-test right after make backup. Files created on the SSD after the backup
+  count as differences.
+
+### Deviations from the plan
+
+None.
+
+### Exact next step
+
+1. Phase 0 check: done/not-done table, then the version tag. Ask the owner first.
+2. Second backup copy to an MDU OneDrive folder. Needs a plan decision and owner approval first.
+
 ## Session 1 November 2026: step 0.5
 
 Step: 0.5 Model client. Status: done.

@@ -9,8 +9,8 @@ This file is the single source of truth for the project. It is stored in the rep
 | Item | Value |
 |---|---|
 | Plan status | Phase 0 in progress |
-| Last completed step | Step 0.5 done. Details in docs/HANDOVER.md |
-| Current phase | Phase 0. Next: step 0.6 |
+| Last completed step | Step 0.6 done. Details in docs/HANDOVER.md |
+| Current phase | Phase 0. All steps done. Next: Phase 0 check, then the version tag |
 | Repo | github.com/mdu-ai-lab/multiagent-ai-lab (public, owned by the GitHub organization mdu-ai-lab). Created 31 October 2026 |
 | Live dashboard URL | Not created yet |
 | Live demo URL | Not created yet |
@@ -45,7 +45,7 @@ This file is the single source of truth for the project. It is stored in the rep
 | R10 | Real public datasets. No synthetic data unless you agree | 2.1, 9.3 | Planned |
 | R11 | Every technology has a real purpose | Section 9 (why column) | Planned |
 | R12 | Project on the external 2 TB SSD | Section 6.3 | Planned |
-| R13 | Backup in Google Drive, continue from Drive or Colab when the SSD is missing, sync back without conflicts | Section 6.4, step 0.6 | Planned |
+| R13 | Full backup of the project on the SSD to Google Drive, restorable to another laptop or SSD | Section 6.4, step 0.6 | Planned |
 | R14 | Use both MacBook Air M2 (16 GB) and Google Colab, chosen per task | Section 6.2 | Planned |
 | R15 | Do not limit the design because of the MacBook. Use free cloud GPU when needed | Sections 6.1 and 6.2 | Planned |
 | R16 | Push to GitHub after every step | Rule G | Planned |
@@ -84,8 +84,8 @@ This file is the single source of truth for the project. It is stored in the rep
 | D09 | Live dashboard on GitHub Pages. Live demo on a free Hugging Face ZeroGPU Space (Gradio) | Both free. Pages never sleeps. ZeroGPU gives a free GPU for the demo | Streamlit (not needed). Free CPU Space (no longer free) |
 | D10 | Cloud GPU: Google Colab free is the main cloud GPU. Kaggle free is the backup and the place for jobs needing 2 x T4 (32 GB) | You asked to use Colab. Colab free GPU is not guaranteed, so Kaggle covers gaps | Kaggle as main (last table). Colab premium (rejected: costs money) |
 | D11 | GPU profile model: Qwen3.5-9B at higher precision on a Colab T4. Qwen3.8-27B tested on Kaggle 2 x T4 and used only if it runs well | A single free T4 (16 GB) is too small for the 27B model | 27B on paid Colab |
-| D12 | Code and docs live in Git (GitHub = source of truth). Google Drive holds a one-way, versioned backup of non-Git files plus a Colab inbox. No two-way folder sync | File-sync tools can break .git folders and databases and create conflicts | — |
-| D13 | Models, public datasets, venvs and indexes are not backed up. They are re-created from pinned versions | They can always be downloaded again, so a backup only costs time. The owner's Google Drive has 2 TB, so space is not the reason | — |
+| D12 | Code and docs live in Git (GitHub = source of truth). Google Drive holds a one-way backup of the whole project on the SSD (D35) plus a Colab inbox. No two-way folder sync | File-sync tools can break .git folders and databases and create conflicts | Backup of non-Git files only |
+| D13 | Models, public datasets, venvs and indexes are backed up with the whole project (D35). They can also be re-created from pinned versions | A full copy restores faster than downloading and converting again | Not backed up |
 | D14 | Helper model Qwen3.5-2B, speech-to-text (late phase), MCP and an injection classifier are included. Classifier and helper stay only if tests show they help | Speed, audio files, interoperability, safety | — |
 | D15 | No fine-tuning in v1 | Needs labelled or synthetic data. Few-shot beat small-data fine-tuning [Billah, Abstract, p. i] | — |
 | D16 | Repo lives in a free GitHub organization. The Hugging Face demo Space stays on the personal Hugging Face account | Shared ownership for the group. Free ZeroGPU Spaces are for personal accounts; organizations need a paid plan | Repo under the personal GitHub account |
@@ -107,13 +107,15 @@ This file is the single source of truth for the project. It is stored in the rep
 | D32 | Mac model server: llama.cpp b11960 (the v0.8.0 release) and llama-swap v268 from their GitHub releases, checked by SHA-256. Qwen3.5-9B Q4_K_M and Qwen3.5-2B Q8_0 from unsloth GGUF files at pinned revisions. Qwen3-VL-Embedding-2B and Qwen3-VL-Reranker-2B converted locally from the official Qwen weights with the llama.cpp converter of the same build (Q8_0, image part F16) | No official GGUF files exist. The community reranker GGUF lacks the rank pooling and the classifier tensor, so it cannot rerank. Homebrew would install to the internal disk and change versions on upgrade | Homebrew, community GGUF files for all models |
 | D33 | Mac model settings chosen by measurement (results/p0_resources.csv): main Qwen3.5-9B Q4_K_M, context 8192. Embedding Q4_K_M, image part Q8_0, context 2048, image limit 1280 tokens. Reranker Q4_K_M text only, context 4096. Main, embedding and reranker stay loaded together. The helper swaps with them | The 8-bit set ran out of GPU memory. This set peaks at 10.7 to 11.0 GB of the 12.1 GB GPU limit | One model at a time |
 | D34 | Model client: the openai library for OpenAI-style servers (llama-swap on the Mac, vLLM on GPU) and transformers for the demo. Roles per profile in configs/models.yaml. Thinking is off unless a caller turns it on | Standard client with streaming, JSON schema output and retries for both servers. One file decides which model serves each role | — |
+| D35 | make backup copies both project folders on the SSD (multiagent-ai-lab and multiagent-ai-lab-local) one way to Google Drive, into My Drive/Project/MDU Offline Project/: an exact copy of each folder plus multiagent-ai-lab-backup/ with every changed or deleted file in a dated history/ folder, a log of every run, a full Qdrant snapshot and a clean SQLite copy. Not copied: the uv cache and Docker Desktop's disk image (shared with other projects) and login token files (section 6.4 rule 9) | Answers Q2. A lost or broken SSD can be restored to another laptop or SSD | Backup of non-Git files only (D12, D13) |
+| D36 | rclone from Homebrew (v1.73.1 on 2 November 2026), kept up to date. Each backup records its rclone version | Google changes the Drive interface over time and new rclone versions follow it. Works without the SSD | Pinned rclone release on the SSD |
 
 ### 4.2 Open questions (answer before or during the named phase)
 
 | ID | Question | Needed by |
 |---|---|---|
 | Q1 | Code licence for the repo. Proposal: Apache-2.0. Confirm with the group | Answered 31 October 2026: Apache-2.0 (D23) |
-| Q2 | Should private documents ever be backed up to Drive? Default: no. Option: encrypted with rclone crypt, only if you decide | Step 0.6 |
+| Q2 | Should private documents ever be backed up to Drive? Default: no. Option: encrypted with rclone crypt, only if you decide | Answered 2 November 2026: the whole project is backed up (D35) |
 | Q3 | Is your Hugging Face account older than 30 days with a verified email? (needed for the free ZeroGPU Space) | Step 1.8 |
 | Q4 | SPACE dataset licence (not yet verified). Replace if it blocks use | Step 2.1 |
 | Q5 | SPACE key points: written by hand (default) or LLM-assisted (counts as synthetic, needs your approval) | Step 9.3 |
@@ -135,7 +137,7 @@ This file is the single source of truth for the project. It is stored in the rep
 | G | Commit and push after every step. Merge to main at phase end with a version tag. Update CHANGELOG.md and this file every step |
 | L | Every push to main that passes CI rebuilds the dashboard and the demo automatically |
 | A | Each feature phase adds its API endpoint and its demo feature together with the feature |
-| V | Private documents never go to Colab, Kaggle, GitHub, Google Drive, the dashboard or the demo |
+| V | Private documents never go to Colab, Kaggle, GitHub, the dashboard or the demo |
 | E | Evaluations run in the Mac profile and, where useful, the GPU profile. Logged in MLflow and exported to the repo |
 | H | Never guess. If unsure, say so and check. When something fails, find the real cause |
 | T | Every technology must have a real purpose |
@@ -198,32 +200,32 @@ Rule of thumb: private data → Mac. Needs a GPU and the data is public → Cola
 
 | Path | Content | In Git | Backed up to Drive |
 |---|---|---|---|
-| /Volumes/MacbookAPFS/Project/multiagent-ai-lab/ | The Git repo (code, configs, docs, tests, notebooks, exported results) | Yes | Through GitHub |
-| .../multiagent-ai-lab/data/private/ | Private documents | No | No (rule V, see Q2) |
-| .../multiagent-ai-lab/data/public/ | Public datasets | No | No (re-downloaded from pinned versions) |
+| /Volumes/MacbookAPFS/Project/multiagent-ai-lab/ | The Git repo (code, configs, docs, tests, notebooks, exported results) | Yes | Yes (whole folder, D35) |
+| .../multiagent-ai-lab/data/private/ | Private documents | No | Yes |
+| .../multiagent-ai-lab/data/public/ | Public datasets | No | Yes |
 | .../multiagent-ai-lab/data/annotations/ | Hand-made labels, golden insights, human judge checks | Yes (small text) | Yes |
 | .../multiagent-ai-lab/mlflow/ | MLflow database and artifacts | No | Yes |
-| Docker volume multiagent-ai-lab_qdrant_data (inside Docker Desktop's disk image on the SSD, see D30) | Search index | No | No (rebuilt from data) |
-| .../multiagent-ai-lab/results/ | Exported result summaries for the dashboard | Yes | Through GitHub |
-| /Volumes/MacbookAPFS/Project/multiagent-ai-lab-local/hf-cache/ | Downloaded model files (HF_HOME) | No | No (re-downloaded from pinned revisions) |
-| .../multiagent-ai-lab-local/models/ | Embedding and reranker GGUF files converted locally (D32) | No | No (converted again, commands in docs/HANDOVER.md) |
-| .../multiagent-ai-lab-local/tools/ | llama.cpp b11960, llama-swap v268, the llama.cpp converter source and its Python environment (D32) | No | No (downloaded again from pinned releases) |
+| Docker volume multiagent-ai-lab_qdrant_data (inside Docker Desktop's disk image on the SSD, see D30) | Search index | No | Yes (full Qdrant snapshot) |
+| .../multiagent-ai-lab/results/ | Exported result summaries for the dashboard | Yes | Yes |
+| /Volumes/MacbookAPFS/Project/multiagent-ai-lab-local/hf-cache/ | Downloaded model files (HF_HOME) | No | Yes |
+| .../multiagent-ai-lab-local/models/ | Embedding and reranker GGUF files converted locally (D32) | No | Yes |
+| .../multiagent-ai-lab-local/tools/ | llama.cpp b11960, llama-swap v268, the llama.cpp converter source and its Python environment (D32) | No | Yes |
 | /Volumes/MacbookAPFS/Project/.uv-cache/ | uv cache (set by UV_CACHE_DIR in ~/.zshrc, see D27) | No | No |
-| /Volumes/MacbookAPFS/Project/docker-data/ | Docker Desktop disk image (already on the SSD) | No | No |
+| /Volumes/MacbookAPFS/Project/docker-data/ | Docker Desktop disk image (already on the SSD) | No | No (Qdrant goes as a snapshot) |
 
 Docker Desktop auto-start is off. Connect the SSD before starting Docker.
 
 ### 6.4 Backup and working without the SSD (safest practical approach)
 
-Why not an exact full copy in Google Drive: the owner's Google Drive has 2 TB, so space is not the problem. The problem is safety: it is unsafe to run a Git repo, SQLite or Qdrant files inside a two-way synced folder: sync tools can corrupt them or create conflict copies.
+make backup copies the whole project on the SSD to Google Drive (D35). It is a backup, not a working folder: a Git repo, SQLite or Qdrant files must never run inside a synced folder, because sync tools can corrupt them or create conflict copies.
 
 The approach has 3 layers:
 
 | Layer | What | Where | How it is restored |
 |---|---|---|---|
 | 1. Git | Code, configs, docs, notebooks, tests, small annotations, exported results, this plan | GitHub (public repo) | git clone |
-| 2. Drive backup | MLflow folder, annotations, results not yet committed, handover files | Google Drive: multiagent-ai-lab-backup/backup/ (one-way copy with dated version folders) | rclone copy back to the SSD |
-| 3. Re-creatable | Models, public datasets, venv, uv cache, Docker images, Qdrant index | Not backed up | make setup and make index from pinned versions |
+| 2. Drive backup | Both project folders on the SSD, a Qdrant snapshot and a clean SQLite copy | Google Drive: My Drive/Project/MDU Offline Project/ (exact copy of each folder plus multiagent-ai-lab-backup/ with dated history/ folders) | rclone copy back to the SSD or another disk |
+| 3. Re-creatable | uv cache, Docker images | Not backed up | uv sync and docker compose pull |
 
 Rules that prevent lost files and conflicts:
 
@@ -233,13 +235,13 @@ Rules that prevent lost files and conflicts:
 | 2 | One active machine at a time. Before switching: commit and push. On the other machine: pull first |
 | 3 | Work done in Colab goes to a branch named remote/YYYY-MM-DD. Merge it on the Mac through a pull request so CI checks it |
 | 4 | Result files are written once with unique names (run ID + date). They are never edited in two places |
-| 5 | Drive backup is one-way (rclone copy with a dated backup folder). Nothing on Drive is deleted automatically. No two-way sync |
+| 5 | Drive backup is one-way (rclone sync to the copy of each folder. Every changed or deleted file moves to a dated history/ folder). Nothing on Drive is deleted. No two-way sync |
 | 6 | Colab results go to Drive multiagent-ai-lab-backup/inbox/. On the Mac, make pull-inbox copies new files only (never overwrites) and imports them into MLflow |
 | 7 | Check Drive usage monthly. The owner's Drive has 2 TB |
-| 8 | Monthly restore test: restore the Drive backup into a temporary folder and check MLflow opens |
+| 8 | Monthly restore test (make restore-test): checksum of every file, restore into a temporary folder, Qdrant snapshot and SQLite checks. From step 1.2 also check that MLflow opens |
 | 9 | Secrets (GitHub token, Hugging Face token) live in GitHub Secrets, Colab Secrets and your password manager. Never in Git or Drive |
 
-What you can do when the SSD is unavailable: write and test code, run public-data experiments on Colab and update docs. Private-document work waits until the SSD is back.
+When the SSD is lost or broken, restore the backup to another SSD or laptop (docs/10-deployment-and-operations/backup-and-recovery.md). What you can do when the SSD is unavailable: write and test code, run public-data experiments on Colab and update docs. Private-document work waits until the SSD is back.
 
 Tools: Git (free), rclone (free, open source) on the Mac, the built-in Google Drive mount in Colab. Google Drive for Desktop is not needed.
 
@@ -397,7 +399,7 @@ weekly: health.yml checks both URLs and opens a GitHub issue if one is down
 | 0.3 Mac model server | Install llama.cpp with Metal support and llama-swap. Download from Hugging Face, with fixed versions, to the SSD: Qwen3.5-9B (main), Qwen3.5-2B (helper), Qwen3-VL-Embedding-2B and Qwen3-VL-Reranker-2B. Write the llama-swap config: how each model starts and when it unloads after idle time. | One local address serves all models. Only models in use take RAM. | 5 test calls succeed: text chat, chat with an image, embedding, reranking and JSON output. | Done |
 | 0.4 Measure the Mac | A script loads the models alone and together. It records peak RAM, words per second and time to first word, and saves them to results/p0_resources.csv. Then we choose context size and quantisation. | 16 GB RAM is the Mac limit. We decide with numbers. | Peak RAM < 13 GB with main + embedding + reranker loaded. Settings saved in config. | Done |
 | 0.5 Model client | Write llm_client.py, one wrapper for all model calls. It supports an OpenAI-style server (llama.cpp on the Mac, vLLM on GPU) and a Transformers backend for the demo. The profile decides which one is used. | Moving between Mac, Colab, Kaggle, demo and company server needs no code change. | The same test call works through the wrapper with the Mac profile. | Done |
-| 0.6 Backup and sync | Install rclone and connect it to Google Drive. Create multiagent-ai-lab-backup with backup/ and inbox/ folders. Add make backup (one-way copy with a dated version folder, nothing deleted), make pull-inbox (copies only new files from inbox to the SSD) and make restore-test. Write the rules of section 6.4 into docs. Decide Q2. | Protects work that is not in Git. Allows work to continue from Colab without conflicts. | Backup runs. A file restored into a temp folder matches the original. Drive usage recorded. | Not done |
+| 0.6 Backup and sync | Install rclone and connect it to Google Drive. Use My Drive/Project/MDU Offline Project/ with multiagent-ai-lab-backup/ (history/, logs/, snapshots/ and inbox/). Add make backup (whole project on the SSD to Drive: exact copy of each folder, changed and deleted files kept in dated history/ folders, nothing deleted), make pull-inbox (copies only new files from inbox to the SSD) and make restore-test. Write the rules of section 6.4 into docs. Decide Q2. | Protects work that is not in Git. Allows work to continue from Colab without conflicts. | Backup runs. A file restored into a temp folder matches the original. Drive usage recorded. | Done |
 | 0.7 Plan in the repo | Put this file into docs/WORK_PLAN.md. Update its Current State and step status at the end of every step. | Every new chat and every group member reads the same, current plan. | docs/WORK_PLAN.md is on GitHub and shows Phase 0 progress. | Done |
 
 ### Phase 1: MLOps, API and live delivery base
@@ -595,7 +597,7 @@ weekly: health.yml checks both URLs and opens a GitHub issue if one is down
 | Colab has no free GPU when needed | Delays | Kaggle backup. Jobs are resumable |
 | 16 GB RAM pressure on the Mac | Slow or crashes | llama-swap unloading, one large model at a time, measured in 0.4 |
 | Fanless M2 throttling during long jobs | Slow ingestion | Resumable jobs, overnight runs, Colab for public data |
-| SSD unavailable or damaged | Lost local work | Git + Drive backup + restore test (6.4). Models and datasets re-created from pinned versions |
+| SSD unavailable or damaged | Lost local work | Git + full Drive backup + restore test (6.4, D35). Models and datasets can also be re-created from pinned versions |
 | Google Drive fills up (2 TB) | Backup and email stop | Monthly usage check |
 | Sync conflicts between SSD, Drive and Colab | Lost or duplicated files | Git as source of truth, one-way backup, unique result names, remote branches (6.4) |
 | 9B model weaker than large APIs | Lower accuracy | Strong retrieval, constrained output, claim check, refusal. Honest reporting |

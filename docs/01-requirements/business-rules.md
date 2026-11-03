@@ -12,7 +12,7 @@
 
 | ID | Rule | Source |
 |---|---|---|
-| BR-PRIV-001 | Private documents never go to Colab, Kaggle, GitHub, Google Drive, the dashboard or the demo | Rule V |
+| BR-PRIV-001 | Private documents never go to Colab, Kaggle, GitHub, the dashboard or the demo | Rule V |
 | BR-PRIV-002 | Web search sends only the rewritten question, never file text | 8.1 |
 | BR-COST-001 | Public repo, standard GitHub runners, no new payment methods or paid plans for this project, no paid tiers or trials | Rule Z |
 | BR-DATA-001 | Real public datasets only. Synthetic data only with owner approval | R10, Q5 |

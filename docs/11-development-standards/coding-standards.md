@@ -22,7 +22,7 @@ These are the owner's approved rules, copied word for word from WORK_PLAN.md sec
 | G | Commit and push after every step. Merge to main at phase end with a version tag. Update CHANGELOG.md and this file every step |
 | L | Every push to main that passes CI rebuilds the dashboard and the demo automatically |
 | A | Each feature phase adds its API endpoint and its demo feature together with the feature |
-| V | Private documents never go to Colab, Kaggle, GitHub, Google Drive, the dashboard or the demo |
+| V | Private documents never go to Colab, Kaggle, GitHub, the dashboard or the demo |
 | E | Evaluations run in the Mac profile and, where useful, the GPU profile. Logged in MLflow and exported to the repo |
 | H | Never guess. If unsure, say so and check. When something fails, find the real cause |
 | T | Every technology must have a real purpose |

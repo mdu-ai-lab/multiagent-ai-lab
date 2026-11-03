@@ -18,5 +18,5 @@ PROPOSED runbook for a prototype run by one owner.
 | Free tier changed or blocked | Stop deploys to that service | Re-check limits, record a decision, update the plan |
 | Secret exposed | Revoke the token at once | Create a new one in Secrets, check history |
 | Private file pushed or uploaded by mistake | Remove it from the Space or repo and revoke links | Remove it from Git history, record what happened |
-| SSD lost or damaged | Clone from GitHub | Restore Drive backup, re-create models and indexes |
+| SSD lost or damaged | Clone from GitHub | Restore the full Drive backup (backup-and-recovery.md) |
 | CI broken after dependency update | Revert the update | Fix, then update again through CI |

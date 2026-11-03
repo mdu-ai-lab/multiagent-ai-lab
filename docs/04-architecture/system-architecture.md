@@ -85,7 +85,7 @@ flowchart LR
 
 | Boundary | Inside | Outside |
 |---|---|---|
-| Privacy | Mac: private files, index, MLflow | Colab, Kaggle, GitHub, Drive, demo, dashboard |
+| Privacy | Mac: private files, index, MLflow | Colab, Kaggle, GitHub, demo, dashboard |
 | Trust | Code, configs | File text, web pages, user input (treated as data) |
 | Failure | Each route has a fallback (7.4) | — |
 

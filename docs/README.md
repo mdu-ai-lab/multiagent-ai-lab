@@ -125,7 +125,7 @@ Full list: [threat model](07-security/threat-model.md).
 | ID | Question | Needed by |
 |---|---|---|
 | Q1 | Code licence for the repo. Proposal: Apache-2.0. Confirm with the group | Answered 31 October 2026: Apache-2.0 (D23) |
-| Q2 | Should private documents ever be backed up to Drive? Default: no. Option: encrypted with rclone crypt, only if you decide | Step 0.6 |
+| Q2 | Should private documents ever be backed up to Drive? Default: no. Option: encrypted with rclone crypt, only if you decide | Answered 2 November 2026: the whole project is backed up (D35) |
 | Q3 | Is your Hugging Face account older than 30 days with a verified email? (needed for the free ZeroGPU Space) | Step 1.8 |
 | Q4 | SPACE dataset licence (not yet verified). Replace if it blocks use | Step 2.1 |
 | Q5 | SPACE key points: written by hand (default) or LLM-assisted (counts as synthetic, needs your approval) | Step 9.3 |

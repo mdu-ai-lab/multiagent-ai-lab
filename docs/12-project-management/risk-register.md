@@ -18,7 +18,7 @@ Risks RISK-001 to RISK-020 are copied from WORK_PLAN.md section 14. Security fin
 | RISK-002  Colab has no free GPU when needed | Delays | Kaggle backup. Jobs are resumable |
 | RISK-003  16 GB RAM pressure on the Mac | Slow or crashes | llama-swap unloading, one large model at a time, measured in 0.4 |
 | RISK-004  Fanless M2 throttling during long jobs | Slow ingestion | Resumable jobs, overnight runs, Colab for public data |
-| RISK-005  SSD unavailable or damaged | Lost local work | Git + Drive backup + restore test (6.4). Models and datasets re-created from pinned versions |
+| RISK-005  SSD unavailable or damaged | Lost local work | Git + full Drive backup + restore test (6.4, D35). Models and datasets can also be re-created from pinned versions |
 | RISK-006  Google Drive fills up (2 TB) | Backup and email stop | Monthly usage check |
 | RISK-007  Sync conflicts between SSD, Drive and Colab | Lost or duplicated files | Git as source of truth, one-way backup, unique result names, remote branches (6.4) |
 | RISK-008  9B model weaker than large APIs | Lower accuracy | Strong retrieval, constrained output, claim check, refusal. Honest reporting |

@@ -25,8 +25,8 @@ ADRs are copied from WORK_PLAN.md section 4.1 without changes in meaning. New de
 | [ADR-009](ADR-009.md) | Live dashboard on GitHub Pages. Live demo on a free Hugging Face ZeroGPU Space (Gradio) |
 | [ADR-010](ADR-010.md) | Cloud GPU: Google Colab free is the main cloud GPU. Kaggle free is the backup and the place for jobs needing 2 x T4 (32 GB) |
 | [ADR-011](ADR-011.md) | GPU profile model: Qwen3.5-9B at higher precision on a Colab T4. Qwen3.8-27B tested on Kaggle 2 x T4 and used only if it runs well |
-| [ADR-012](ADR-012.md) | Code and docs live in Git (GitHub = source of truth). Google Drive holds a one-way, versioned backup of non-Git files plus a Colab inbox. No two-way folder sync |
-| [ADR-013](ADR-013.md) | Models, public datasets, venvs and indexes are not backed up. They are re-created from pinned versions |
+| [ADR-012](ADR-012.md) | Code and docs live in Git (GitHub = source of truth). Google Drive holds a one-way backup of the whole project on the SSD (D35) plus a Colab inbox. No two-way folder sync |
+| [ADR-013](ADR-013.md) | Models, public datasets, venvs and indexes are backed up with the whole project (D35). They can also be re-created from pinned versions |
 | [ADR-014](ADR-014.md) | Helper model Qwen3.5-2B, speech-to-text (late phase), MCP and an injection classifier are included. Classifier and helper stay only if tests show they help |
 | [ADR-015](ADR-015.md) | No fine-tuning in v1 |
 | [ADR-016](ADR-016.md) | Repo lives in a free GitHub organization. The Hugging Face demo Space stays on the personal Hugging Face account |
