@@ -8,7 +8,7 @@
 | Source of truth | [WORK_PLAN.md](../WORK_PLAN.md) v1.9 |
 | Related documents | [API standards](../06-api/api-standards.md), [Modules](../03-functional-modules/README.md) |
 
-> Implementation status: Phase 0 in progress. Only the step 0.1 project setup exists as code (settings, database layer, Alembic). This document describes the planned system. Nothing here is verified behaviour.
+> Implementation status: Phase 0 done (project setup, search database, Mac model server, model client and backup). Later features are planned and not built yet. Test results are in docs/HANDOVER.md.
 
 No route exists yet. Only the 4 endpoints in step 1.6 are named in the plan. Paths are proposals.
 

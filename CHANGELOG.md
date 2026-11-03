@@ -3,7 +3,7 @@
 All notable changes to this project are listed here, newest first.
 Versions are tagged at the end of each phase (WORK_PLAN.md rule G).
 
-## [Unreleased]
+## [0.0.0] - 2026-11-03
 
 ### Added
 
@@ -26,6 +26,7 @@ Versions are tagged at the end of each phase (WORK_PLAN.md rule G).
 
 ### Changed
 
+- Status line at the top of 99 docs: Phase 0 done.
 - WORK_PLAN.md: decisions D12, D13, D35 and D36, Q2, sections 6.3 and 6.4, step 0.6 text and
   status. The same backup rules in 14 other docs.
 - WORK_PLAN.md: decision D34 (model client) and step 0.5 status.

@@ -8,7 +8,7 @@
 | Source of truth | [WORK_PLAN.md](../WORK_PLAN.md) v1.9 |
 | Related documents | [Role permission matrix](../02-users-and-permissions/role-permission-matrix.md), [Stakeholders](../00-project-overview/stakeholders.md) |
 
-> Implementation status: Phase 0 in progress. Only the step 0.1 project setup exists as code (settings, database layer, Alembic). This document describes the planned system. Nothing here is verified behaviour.
+> Implementation status: Phase 0 done (project setup, search database, Mac model server, model client and backup). Later features are planned and not built yet. Test results are in docs/HANDOVER.md.
 
 Role names below are proposals. The plan states that users and collections live in the database and each user sees only their collections (step 12.4). Exact roles beyond that: REQUIRES CONFIRMATION.
 

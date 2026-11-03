@@ -8,7 +8,7 @@
 | Source of truth | [WORK_PLAN.md](../WORK_PLAN.md) v1.9 |
 | Related documents | [ER diagram](../05-database/er-diagram.md), [Relationships and constraints](../05-database/relationships-and-constraints.md) |
 
-> Implementation status: Phase 0 in progress. Only the step 0.1 project setup exists as code (settings, database layer, Alembic). This document describes the planned system. Nothing here is verified behaviour.
+> Implementation status: Phase 0 done (project setup, search database, Mac model server, model client and backup). Later features are planned and not built yet. Test results are in docs/HANDOVER.md.
 
 PROPOSED. Only fields named or clearly implied in WORK_PLAN.md are listed. Types, timestamps and audit fields: REQUIRES CONFIRMATION.
 

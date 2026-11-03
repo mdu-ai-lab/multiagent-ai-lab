@@ -38,8 +38,7 @@ None.
 
 ### Exact next step
 
-1. Phase 0 check: done/not-done table, then the version tag. Ask the owner first.
-2. Second backup copy to an MDU OneDrive folder. Needs a plan decision and owner approval first.
+1. Phase 1, only after the owner says "start Phase 1".
 
 ## Session 1 November 2026: step 0.5
 

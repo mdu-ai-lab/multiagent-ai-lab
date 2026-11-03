@@ -8,13 +8,13 @@ This file is the single source of truth for the project. It is stored in the rep
 
 | Item | Value |
 |---|---|
-| Plan status | Phase 0 in progress |
+| Plan status | Phase 0 done |
 | Last completed step | Step 0.6 done. Details in docs/HANDOVER.md |
-| Current phase | Phase 0. All steps done. Next: Phase 0 check, then the version tag |
+| Current phase | Phase 0 done (tag v0.0.0). Next: Phase 1, only after the owner says "start Phase 1" |
 | Repo | github.com/mdu-ai-lab/multiagent-ai-lab (public, owned by the GitHub organization mdu-ai-lab). Created 31 October 2026 |
 | Live dashboard URL | Not created yet |
 | Live demo URL | Not created yet |
-| Latest version tag | None |
+| Latest version tag | v0.0.0 |
 | Open issues | See section 4.2 (open questions) |
 
 ## 2. Project summary

@@ -8,7 +8,7 @@
 | Source of truth | [WORK_PLAN.md](../WORK_PLAN.md) v1.9 |
 | Related documents | [ER diagram](../05-database/er-diagram.md), [Data dictionary](../05-database/data-dictionary.md), [ADR-005](../04-architecture/architecture-decision-records/ADR-005.md) |
 
-> Implementation status: Phase 0 in progress. Only the step 0.1 project setup exists as code (settings, database layer, Alembic). This document describes the planned system. Nothing here is verified behaviour.
+> Implementation status: Phase 0 done (project setup, search database, Mac model server, model client and backup). Later features are planned and not built yet. Test results are in docs/HANDOVER.md.
 
 No database, model or migration exists yet. This is the planned design.
 

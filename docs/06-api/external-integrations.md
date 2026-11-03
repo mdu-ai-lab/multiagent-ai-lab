@@ -8,7 +8,7 @@
 | Source of truth | [WORK_PLAN.md](../WORK_PLAN.md) v1.9 |
 | Related documents | [Integration architecture](../04-architecture/integration-architecture.md), [Secrets management](../07-security/secrets-management.md) |
 
-> Implementation status: Phase 0 in progress. Only the step 0.1 project setup exists as code (settings, database layer, Alembic). This document describes the planned system. Nothing here is verified behaviour.
+> Implementation status: Phase 0 done (project setup, search database, Mac model server, model client and backup). Later features are planned and not built yet. Test results are in docs/HANDOVER.md.
 
 | Service | Use | Data sent | Failure handling | Cost |
 |---|---|---|---|---|

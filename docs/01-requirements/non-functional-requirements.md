@@ -8,7 +8,7 @@
 | Source of truth | [WORK_PLAN.md](../WORK_PLAN.md) v1.9 |
 | Related documents | [SRS](../01-requirements/srs.md), [Security requirements](../07-security/security-requirements.md), [Performance testing](../09-testing/performance-testing.md) |
 
-> Implementation status: Phase 0 in progress. Only the step 0.1 project setup exists as code (settings, database layer, Alembic). This document describes the planned system. Nothing here is verified behaviour.
+> Implementation status: Phase 0 done (project setup, search database, Mac model server, model client and backup). Later features are planned and not built yet. Test results are in docs/HANDOVER.md.
 
 Numbers come from the done-when tests in WORK_PLAN.md v1.7. They are starting targets and may be calibrated against measured baselines in Phase 2, with the change recorded.
 

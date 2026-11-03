@@ -8,7 +8,7 @@
 | Source of truth | [WORK_PLAN.md](../WORK_PLAN.md) v1.9 |
 | Related documents | [Acceptance test cases](../09-testing/acceptance-test-cases.md), [Definition of done](../11-development-standards/definition-of-done.md) |
 
-> Implementation status: Phase 0 in progress. Only the step 0.1 project setup exists as code (settings, database layer, Alembic). This document describes the planned system. Nothing here is verified behaviour.
+> Implementation status: Phase 0 done (project setup, search database, Mac model server, model client and backup). Later features are planned and not built yet. Test results are in docs/HANDOVER.md.
 
 A step is accepted when its done-when test in WORK_PLAN.md section 12 passes and the result is recorded. A phase is accepted when all its steps are accepted, CI is green, the plan is updated and the owner gives permission to continue (rule P).
 
