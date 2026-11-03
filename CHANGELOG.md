@@ -3,6 +3,13 @@
 All notable changes to this project are listed here, newest first.
 Versions are tagged at the end of each phase (WORK_PLAN.md rule G).
 
+## [Unreleased]
+
+### Fixed
+
+- docs/README.md: status line now lists what exists as code.
+- WORK_PLAN.md: download folder path in the project setup text (D31).
+
 ## [0.0.0] - 2026-11-03
 
 ### Added
