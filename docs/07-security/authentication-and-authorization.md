@@ -32,4 +32,4 @@ sequenceDiagram
 | Passwords | Stored hashed (1.10) | Hash method chosen in 1.10 (OWASP Password Storage Cheat Sheet) |
 | Tokens | Session cookie from 1.10. Tokens for other apps (13.1) | Type, lifetime and revocation set in 1.10 and 13.1 |
 | Authorization | Collection filter in retrieve.py (5.3, 12.4) | Admin rights REQUIRES CONFIRMATION |
-| Before Phase 13 | No login | Recommendation SF-01: listen only on the Mac itself |
+| Before step 1.10 | No login | Recommendation SF-01: listen only on the Mac itself |

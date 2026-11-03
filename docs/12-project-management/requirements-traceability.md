@@ -59,7 +59,7 @@ Components, entities and APIs per requirement are listed in each module document
 | FR-AUD-001 | [audio](../03-functional-modules/audio.md) | AT-14.2 | Not implemented |
 | FR-API-001 | [api-ui-mcp](../03-functional-modules/api-ui-mcp.md) | AT-1.6 | Not implemented |
 | FR-API-002 | [api-ui-mcp](../03-functional-modules/api-ui-mcp.md) | AT-13.1 | Not implemented |
-| FR-UI-001 | [api-ui-mcp](../03-functional-modules/api-ui-mcp.md) | AT-13.2 | Not implemented |
+| FR-UI-001 | [api-ui-mcp](../03-functional-modules/api-ui-mcp.md) | AT-1.10, AT-13.2 | Not implemented |
 | FR-UI-002 | [api-ui-mcp](../03-functional-modules/api-ui-mcp.md) | AT-1.10 | Not implemented |
 | FR-MCP-001 | [api-ui-mcp](../03-functional-modules/api-ui-mcp.md) | AT-13.3 | Not implemented |
 | FR-FBK-001 | [api-ui-mcp](../03-functional-modules/api-ui-mcp.md) | AT-13.4 | Not implemented |

@@ -87,7 +87,7 @@ Everything except the Phase 0 foundations.
 
 | ID | Concern |
 |---|---|
-| SF-01 | API without login before Phase 13. Recommendation: listen only on the Mac itself |
+| SF-01 | API without login before step 1.10. Recommendation: listen only on the Mac itself |
 | SF-02 | Hidden instructions in files and web pages until Phase 12 |
 | SF-05 | Private file uploaded to the public demo by mistake |
 | SF-09 | Traces not masked before Phase 12 |

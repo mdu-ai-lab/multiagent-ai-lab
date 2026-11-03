@@ -12,6 +12,7 @@ Versions are tagged at the end of each phase (WORK_PLAN.md rule G).
 ### Fixed
 
 - docs/README.md and srs.md: requirement status lines now match the requirement documents.
+- Login before step 1.10 in the docs index, access policy, authentication, endpoint catalog, risk register and traceability.
 
 - docs/README.md: status line now lists what exists as code.
 - WORK_PLAN.md: download folder path in the project setup text (D31).
