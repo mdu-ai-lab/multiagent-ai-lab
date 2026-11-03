@@ -4,7 +4,7 @@
 |---|---|
 | Purpose | Short description of what the platform is, who it is for and where it stands |
 | Status | Proposed |
-| Last updated | 2026-10-31 |
+| Last updated | 2026-11-03 |
 | Source of truth | [WORK_PLAN.md](../WORK_PLAN.md) v1.9 |
 | Related documents | [Project scope](../00-project-overview/project-scope.md), [SRS](../01-requirements/srs.md), [System architecture](../04-architecture/system-architecture.md) |
 
@@ -34,10 +34,10 @@ The design reuses selected ideas from four MDU research works (Billah thesis, Bi
 
 | Item | Value | Evidence |
 |---|---|---|
-| Code | None written | WORK_PLAN.md section 1 |
-| Repository | Not created (planned in a GitHub organization) | WORK_PLAN.md section 1, D16 |
+| Code | Phase 0 foundations: settings, database layer, search database setup, Mac model server config, model client and backup | WORK_PLAN.md section 1 |
+| Repository | github.com/mdu-ai-lab/multiagent-ai-lab (public, owned by the organization mdu-ai-lab) | WORK_PLAN.md section 1, D16 |
 | Live dashboard and demo | Not created | WORK_PLAN.md section 1 |
-| Next action | Owner says "start Phase 0" | WORK_PLAN.md section 1 |
+| Next action | Owner says "start Phase 1" | WORK_PLAN.md section 1 |
 
 ## Key constraints
 

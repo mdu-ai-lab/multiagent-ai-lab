@@ -4,7 +4,7 @@ Work in Progress
 
 ## Status
 
-Phase 0 (foundations) is in progress. No feature works yet. The full plan and the current
+Phase 0 (foundations) is done (tag v0.0.0). No feature works yet. The full plan and the current
 state are in [docs/WORK_PLAN.md](docs/WORK_PLAN.md).
 
 ## Quick start (Mac)

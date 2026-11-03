@@ -4,7 +4,7 @@
 |---|---|
 | Purpose | Planned data stores and how they are used |
 | Status | Proposed |
-| Last updated | 2026-10-31 |
+| Last updated | 2026-11-03 |
 | Source of truth | [WORK_PLAN.md](../WORK_PLAN.md) v1.9 |
 | Related documents | [ER diagram](../05-database/er-diagram.md), [Data dictionary](../05-database/data-dictionary.md), [ADR-005](../04-architecture/architecture-decision-records/ADR-005.md) |
 
@@ -34,4 +34,4 @@ Alembic with SQLAlchemy, decided in step 0.1 (WORK_PLAN.md D25). Settings are in
 
 ## Not created as separate documents
 
-indexes-and-performance.md and migration-strategy.md are not created. No tables or queries exist, so index advice would be guesswork. The migration tool is open (above).
+indexes-and-performance.md and migration-strategy.md are not created. No tables or queries exist, so index advice would be guesswork.

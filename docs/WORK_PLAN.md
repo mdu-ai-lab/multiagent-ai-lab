@@ -44,8 +44,8 @@ This file is the single source of truth for the project. It is stored in the rep
 | R9 | Private documents never leave the Mac | Sections 5 and 6, steps 8.4, 12.x | Planned |
 | R10 | Real public datasets. No synthetic data unless you agree | 2.1, 9.3 | Planned |
 | R11 | Every technology has a real purpose | Section 9 (why column) | Planned |
-| R12 | Project on the external 2 TB SSD | Section 6.3 | Planned |
-| R13 | Full backup of the project on the SSD to Google Drive, restorable to another laptop or SSD | Section 6.4, step 0.6 | Planned |
+| R12 | Project on the external 2 TB SSD | Section 6.3 | Done |
+| R13 | Full backup of the project on the SSD to Google Drive, restorable to another laptop or SSD | Section 6.4, step 0.6 | Done |
 | R14 | Use both MacBook Air M2 (16 GB) and Google Colab, chosen per task | Section 6.2 | Planned |
 | R15 | Do not limit the design because of the MacBook. Use free cloud GPU when needed | Sections 6.1 and 6.2 | Planned |
 | R16 | Push to GitHub after every step | Rule G | Planned |
@@ -60,12 +60,12 @@ This file is the single source of truth for the project. It is stored in the rep
 | R25 | Coding rules (flat modules, file creation by the coding assistant after approval, hashes, full commands, Git one per line, expected output, human style, no comma before and/or/but) | Section 5.2 | Planned |
 | R26 | One phase at a time with checks and permission. Done/not-done table after each phase. What to do next after each step | Rule P | Planned |
 | R27 | Copy-pasteable plan and a .docx copy | This file and WORK_PLAN.docx | Done (this file) |
-| R28 | Repo owned by a GitHub organization from the start | Step 0.1, step 1.1 | Planned |
+| R28 | Repo owned by a GitHub organization from the start | Step 0.1, step 1.1 | Partly done (organization repo created. Workflow in step 1.1) |
 | R29 | GraphRAG: answers that follow relationships between entities across documents | Phase 9A | Planned |
 | R30 | Ontology: a defined, versioned set of entity and relation types | Step 9A.1 | Planned |
 | R31 | Knowledge base: collections, knowledge graph and saved notes together (interpretation, see Q11) | Phases 9A, 9B | Planned |
 | R32 | Notebooks (workspaces on one topic): sources, chat, notes, study guide, FAQ, briefing, flashcards, quiz, mind map | Phase 9B | Planned |
-| R33 | Verification loop: code, commands and expected output with a 12-character verification number per Python code file, checked locally with uv | Rules C12, C13, step 0.1 | Planned |
+| R33 | Verification loop: code, commands and expected output with a 12-character verification number per Python code file, checked locally with uv | Rules C12, C13, step 0.1 | Done (in use since step 0.1) |
 
 ## 4. Decision log and open questions
 
@@ -305,6 +305,7 @@ multiagent-ai-lab/
 ├── results/         exported result summaries (in Git)
 ├── tests/           unit/ integration/ e2e/ fixtures/
 ├── benchmarks/      measuring tools, for example measure_mac.py
+├── ops/             operations tools, for example backup.py (make backup)
 ├── docs/            WORK_PLAN.md, HANDOVER.md, guides, data cards, system card
 ├── .github/workflows/  ci.yml pages.yml demo.yml health.yml release.yml
 ├── compose.yaml  Makefile  pyproject.toml  uv.lock  .env.example  LICENSE  README.md  CHANGELOG.md

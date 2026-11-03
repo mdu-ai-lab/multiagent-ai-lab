@@ -9,6 +9,9 @@ Versions are tagged at the end of each phase (WORK_PLAN.md rule G).
 
 - docs/README.md: status line now lists what exists as code.
 - WORK_PLAN.md: download folder path in the project setup text (D31).
+- Phase 0 status corrected in README.md, the docs index, project overview, roadmap, milestones, acceptance test cases, testing status and database design.
+- Requirement status: FR-OPS-004, NFR-PERF-001, NFR-PORT-001, NFR-SEC-005, R12, R13, R28 and R33.
+- WORK_PLAN.md and project-structure.md: ops/ folder in the repo structure.
 
 ## [0.0.0] - 2026-11-03
 

@@ -4,7 +4,7 @@
 |---|---|
 | Purpose | Links from each requirement to module, test and status |
 | Status | Proposed |
-| Last updated | 2026-10-31 |
+| Last updated | 2026-11-03 |
 | Source of truth | [WORK_PLAN.md](../WORK_PLAN.md) v1.9 |
 | Related documents | [Functional requirements](../01-requirements/functional-requirements.md), [Acceptance test cases](../09-testing/acceptance-test-cases.md) |
 
@@ -65,7 +65,7 @@ Components, entities and APIs per requirement are listed in each module document
 | FR-OPS-001 | [delivery-and-operations](../03-functional-modules/delivery-and-operations.md) | AT-1.7 | Not implemented |
 | FR-OPS-002 | [delivery-and-operations](../03-functional-modules/delivery-and-operations.md) | AT-1.8 | Not implemented |
 | FR-OPS-003 | [delivery-and-operations](../03-functional-modules/delivery-and-operations.md) | AT-1.9 | Not implemented |
-| FR-OPS-004 | [delivery-and-operations](../03-functional-modules/delivery-and-operations.md) | AT-0.6 | Not implemented |
+| FR-OPS-004 | [delivery-and-operations](../03-functional-modules/delivery-and-operations.md) | AT-0.6 | Implemented verification incomplete (make pull-inbox not tested yet) |
 | FR-OPS-005 | [delivery-and-operations](../03-functional-modules/delivery-and-operations.md) | AT-13.4 | Not implemented |
 | FR-EVAL-001 | [evaluation](../03-functional-modules/evaluation.md) | AT-2.3 | Not implemented |
 | FR-EVAL-002 | [evaluation](../03-functional-modules/evaluation.md) | AT-2.4 | Not implemented |
@@ -87,8 +87,8 @@ Components, entities and APIs per requirement are listed in each module document
 | R9 | Private documents never leave the Mac | Sections 5 and 6, steps 8.4, 12.x | Planned |
 | R10 | Real public datasets. No synthetic data unless you agree | 2.1, 9.3 | Planned |
 | R11 | Every technology has a real purpose | Section 9 (why column) | Planned |
-| R12 | Project on the external 2 TB SSD | Section 6.3 | Planned |
-| R13 | Full backup of the project on the SSD to Google Drive, restorable to another laptop or SSD | Section 6.4, step 0.6 | Planned |
+| R12 | Project on the external 2 TB SSD | Section 6.3 | Done |
+| R13 | Full backup of the project on the SSD to Google Drive, restorable to another laptop or SSD | Section 6.4, step 0.6 | Done |
 | R14 | Use both MacBook Air M2 (16 GB) and Google Colab, chosen per task | Section 6.2 | Planned |
 | R15 | Do not limit the design because of the MacBook. Use free cloud GPU when needed | Sections 6.1 and 6.2 | Planned |
 | R16 | Push to GitHub after every step | Rule G | Planned |
@@ -103,9 +103,9 @@ Components, entities and APIs per requirement are listed in each module document
 | R25 | Coding rules (flat modules, file creation by the coding assistant after approval, hashes, full commands, Git one per line, expected output, human style, no comma before and/or/but) | Section 5.2 | Planned |
 | R26 | One phase at a time with checks and permission. Done/not-done table after each phase. What to do next after each step | Rule P | Planned |
 | R27 | Copy-pasteable plan and a .docx copy | This file and WORK_PLAN.docx | Done (this file) |
-| R28 | Repo owned by a GitHub organization from the start | Step 0.1, step 1.1 | Planned |
+| R28 | Repo owned by a GitHub organization from the start | Step 0.1, step 1.1 | Partly done (organization repo created. Workflow in step 1.1) |
 | R29 | GraphRAG: answers that follow relationships between entities across documents | Phase 9A | Planned |
 | R30 | Ontology: a defined, versioned set of entity and relation types | Step 9A.1 | Planned |
 | R31 | Knowledge base: collections, knowledge graph and saved notes together (interpretation, see Q11) | Phases 9A, 9B | Planned |
 | R32 | Notebooks (workspaces on one topic): sources, chat, notes, study guide, FAQ, briefing, flashcards, quiz, mind map | Phase 9B | Planned |
-| R33 | Verification loop: code, commands and expected output with a 12-character verification number per Python code file, checked locally with uv | Rules C12, C13, step 0.1 | Planned |
+| R33 | Verification loop: code, commands and expected output with a 12-character verification number per Python code file, checked locally with uv | Rules C12, C13, step 0.1 | Done (in use since step 0.1) |

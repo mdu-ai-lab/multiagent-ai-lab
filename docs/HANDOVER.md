@@ -2,6 +2,21 @@
 
 Report of the last work session. Read this after docs/WORK_PLAN.md at the start of every session.
 
+## Session 3 November 2026: check after Phase 0
+
+Start-of-session checks passed (Qdrant had to be started again with docker compose up -d).
+The full check of all files found 13 docs places that still showed Phase 0 in progress,
+old test counts or old requirement status. They were missed at the end of Phase 0. All fixed,
+see CHANGELOG.md [Unreleased].
+
+Notes for later steps:
+- Step 1.4: mypy reports transformers as missing when the demo group is not installed.
+- Step 1.5: make pull-inbox has no test and was never run. Test it with the first Colab result.
+
+### Exact next step
+
+1. Phase 1, only after the owner says "start Phase 1".
+
 ## Session 2 to 3 November 2026: step 0.6
 
 Step: 0.6 Backup and sync. Status: done.

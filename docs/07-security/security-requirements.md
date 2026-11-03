@@ -4,7 +4,7 @@
 |---|---|
 | Purpose | Planned security controls |
 | Status | Proposed |
-| Last updated | 2026-10-31 |
+| Last updated | 2026-11-03 |
 | Source of truth | [WORK_PLAN.md](../WORK_PLAN.md) v1.9 |
 | Related documents | [Threat model](../07-security/threat-model.md), [Non-functional requirements](../01-requirements/non-functional-requirements.md) |
 
@@ -17,7 +17,7 @@
 | Code sandbox | NFR-SEC-002 | 11.2 | Not implemented |
 | Access per collection (including graph route and notebooks) | NFR-SEC-003, BR-ACC-001 | 5.3, 12.4, 9A.4, 9B.1 | Not implemented |
 | Input limits and rate limits | NFR-SEC-004 | 12.4, 13.1 | Not implemented |
-| Secrets handling | NFR-SEC-005 | 0.1, 1.5 | Not implemented |
+| Secrets handling | NFR-SEC-005 | 0.1, 1.5 | Partially implemented (.env ignored by Git, login token files left out of the backup. Notebook secrets in step 1.5) |
 | Personal data masking | NFR-SEC-006 | 12.3 | Not implemented |
 | Dependency and secret scanning | NFR-SEC-007 | 1.4 | Not implemented |
 | Login and tokens | FR-API-002 | 13.1 | Not implemented |

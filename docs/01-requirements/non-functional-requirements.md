@@ -4,7 +4,7 @@
 |---|---|
 | Purpose | Quality, security, cost and portability requirements with unique IDs |
 | Status | Proposed |
-| Last updated | 2026-10-31 |
+| Last updated | 2026-11-03 |
 | Source of truth | [WORK_PLAN.md](../WORK_PLAN.md) v1.9 |
 | Related documents | [SRS](../01-requirements/srs.md), [Security requirements](../07-security/security-requirements.md), [Performance testing](../09-testing/performance-testing.md) |
 
@@ -16,7 +16,7 @@ Numbers come from the done-when tests in WORK_PLAN.md v1.7. They are starting ta
 |---|---|---|---|
 | NFR-COST-001 | Zero cost for development, hosting, deployment and API use. No new payment methods or paid plans for this project. The owner's existing 2 TB Google Drive is used as it is | Rule Z, section 7 | Not implemented |
 | NFR-PRIV-001 | Private documents never leave the Mac | Rule V | Not implemented |
-| NFR-PERF-001 | Peak RAM below 13 GB with main, embedding and reranker models loaded on the Mac | 0.4 | Not implemented |
+| NFR-PERF-001 | Peak RAM below 13 GB with main, embedding and reranker models loaded on the Mac | 0.4 | Implemented and verified (11,839 MB peak GPU memory increase, step 0.4) |
 | NFR-PERF-002 | Search p50 at or below 2 s on the Mac | 5.5 | Not implemented |
 | NFR-PERF-003 | Answer latency and load behaviour are measured and reported. Target values: REQUIRES CONFIRMATION | 13.4, 15.4 | Not implemented |
 | NFR-QUAL-001 | 100% valid citations. Unsupported claims at or below 10% | 6.3 | Not implemented |
@@ -33,13 +33,13 @@ Numbers come from the done-when tests in WORK_PLAN.md v1.7. They are starting ta
 | NFR-SEC-002 | Code runs only in a sandbox without network and with resource limits | 11.2 | Not implemented |
 | NFR-SEC-003 | Zero cross-user access leaks | 12.4 | Not implemented |
 | NFR-SEC-004 | Input limits: 50 MB per file, 1,000 pages, type checked by content, question length, request rate | 12.4 | Not implemented |
-| NFR-SEC-005 | Secrets never in Git or Google Drive | Section 6.4 | Not implemented |
+| NFR-SEC-005 | Secrets never in Git or Google Drive | Section 6.4 | Partially implemented (.env ignored by Git, login token files left out of the backup. Notebook secrets in step 1.5) |
 | NFR-SEC-006 | Personal data masked in traces, logs, MLflow and exports | 12.3 | Not implemented |
 | NFR-SEC-007 | Dependency and secret scanning on every push | 1.4 | Not implemented |
 | NFR-REPRO-001 | Models, datasets and packages pinned by version or hash | 1.3 | Not implemented |
 | NFR-REPRO-002 | Running the same evaluation twice gives identical numbers | 2.3 | Not implemented |
 | NFR-REPRO-003 | Every result traces to its code, prompt, model and data versions | 1.3 | Not implemented |
-| NFR-PORT-001 | Same code runs in Mac, GPU, demo, CI and company profiles by config | 0.1, 0.5 | Not implemented |
+| NFR-PORT-001 | Same code runs in Mac, GPU, demo, CI and company profiles by config | 0.1, 0.5 | Partially implemented (mac and demo profiles only) |
 | NFR-PORT-002 | Database switches from SQLite to PostgreSQL by config | 15.3 | Not implemented |
 | NFR-OBS-001 | Every agent step and model call is traced with time and tokens | 1.2 | Not implemented |
 | NFR-MAINT-001 | Flat modules, CI checks and an updated plan after every step | Rules C2, G | Not implemented |

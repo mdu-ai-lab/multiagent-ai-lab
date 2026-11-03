@@ -4,7 +4,7 @@
 |---|---|
 | Purpose | One milestone per phase |
 | Status | Proposed |
-| Last updated | 2026-10-31 |
+| Last updated | 2026-11-03 |
 | Source of truth | [WORK_PLAN.md](../WORK_PLAN.md) v1.9 |
 | Related documents | [Roadmap](../12-project-management/roadmap.md) |
 
@@ -12,7 +12,7 @@
 
 | Milestone | Phase | Marker | Status |
 |---|---|---|---|
-| M-0 | Phase 0: Foundations on the Mac | Version tag at phase end (1.1) | In progress |
+| M-0 | Phase 0: Foundations on the Mac | Version tag at phase end (1.1) | Done (v0.0.0) |
 | M-1 | Phase 1: MLOps, API and live delivery base | Version tag at phase end (1.1) | Not started |
 | M-2 | Phase 2: Evaluation base | Version tag at phase end (1.1) | Not started |
 | M-3 | Phase 3: Ingestion | Version tag at phase end (1.1) | Not started |

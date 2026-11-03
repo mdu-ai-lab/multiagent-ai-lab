@@ -4,7 +4,7 @@
 |---|---|
 | Purpose | Planned repository layout |
 | Status | Proposed |
-| Last updated | 2026-10-31 |
+| Last updated | 2026-11-03 |
 | Source of truth | [WORK_PLAN.md](../WORK_PLAN.md) v1.9 |
 | Related documents | [Backend architecture](../04-architecture/backend-architecture.md) |
 
@@ -29,6 +29,7 @@ multiagent-ai-lab/
 ├── results/         exported result summaries (in Git)
 ├── tests/           unit/ integration/ e2e/ fixtures/
 ├── benchmarks/      measuring tools, for example measure_mac.py
+├── ops/             operations tools, for example backup.py (make backup)
 ├── docs/            WORK_PLAN.md, HANDOVER.md, guides, data cards, system card
 ├── .github/workflows/  ci.yml pages.yml demo.yml health.yml release.yml
 ├── compose.yaml  Makefile  pyproject.toml  uv.lock  .env.example  LICENSE  README.md  CHANGELOG.md

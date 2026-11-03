@@ -81,7 +81,7 @@ Ingestion, visual content, retrieval, grounded answers, agents and memory, web s
 
 ## 8. Known implementation gaps
 
-Everything except the step 0.1 project setup. Phase 0 is in progress.
+Everything except the Phase 0 foundations.
 
 ## 9. Security concerns requiring attention
 

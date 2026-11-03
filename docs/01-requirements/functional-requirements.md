@@ -4,7 +4,7 @@
 |---|---|
 | Purpose | Every planned functional requirement with a unique ID |
 | Status | Proposed |
-| Last updated | 2026-10-31 |
+| Last updated | 2026-11-03 |
 | Source of truth | [WORK_PLAN.md](../WORK_PLAN.md) v1.9 |
 | Related documents | [SRS](../01-requirements/srs.md), [Traceability](../12-project-management/requirements-traceability.md), [Modules](../03-functional-modules/README.md) |
 
@@ -65,7 +65,7 @@ All requirements come from WORK_PLAN.md v1.7. They are proposed until the group 
 | FR-OPS-001 | Live dashboard on GitHub Pages rebuilt after CI passes on main | 1.7 | Not implemented |
 | FR-OPS-002 | Live demo on a ZeroGPU Space redeployed after CI passes on main | 1.8 | Not implemented |
 | FR-OPS-003 | Weekly health check that opens a GitHub issue on failure | 1.9 | Not implemented |
-| FR-OPS-004 | One-way backup to Google Drive, inbox import and restore test | 0.6 | Not implemented |
+| FR-OPS-004 | One-way backup to Google Drive, inbox import and restore test | 0.6 | Implemented verification incomplete (make pull-inbox not tested yet) |
 | FR-OPS-005 | Local monitoring view of latency, errors, fallbacks and low-rated answers | 13.4 | Not implemented |
 | FR-EVAL-001 | Evaluation harness with metrics per route, logged to MLflow | 2.3 | Not implemented |
 | FR-EVAL-002 | Closed-book baselines per profile | 2.4 | Not implemented |
