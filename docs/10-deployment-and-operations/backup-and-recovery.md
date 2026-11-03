@@ -4,7 +4,7 @@
 |---|---|
 | Purpose | How work is protected and restored |
 | Status | Proposed |
-| Last updated | 2026-11-02 |
+| Last updated | 2026-11-04 |
 | Source of truth | [WORK_PLAN.md](../WORK_PLAN.md) v1.9 |
 | Related documents | [Data privacy](../07-security/data-privacy.md) |
 
@@ -28,6 +28,7 @@ Plan gap: the knowledge graph store (Phase 9A) and notebook data (Phase 9B) are 
 | /Volumes/MacbookAPFS/Project/multiagent-ai-lab-local/hf-cache/ | Downloaded model files (HF_HOME) | No | Yes |
 | .../multiagent-ai-lab-local/models/ | Embedding and reranker GGUF files converted locally (D32) | No | Yes |
 | .../multiagent-ai-lab-local/tools/ | llama.cpp b11960, llama-swap v268, the llama.cpp converter source and its Python environment (D32) | No | Yes |
+| .../multiagent-ai-lab-local/chat-preview/ | Chat page preview (FastAPI, Jinja2, HTML, CSS and JavaScript), the source for step 1.10. Its own database and uploads stay here | No | Yes |
 | /Volumes/MacbookAPFS/Project/.uv-cache/ | uv cache (set by UV_CACHE_DIR in ~/.zshrc, see D27) | No | No |
 | /Volumes/MacbookAPFS/Project/docker-data/ | Docker Desktop disk image (already on the SSD) | No | No (Qdrant goes as a snapshot) |
 

@@ -4,7 +4,7 @@
 |---|---|
 | Purpose | Planned repository layout |
 | Status | Proposed |
-| Last updated | 2026-11-03 |
+| Last updated | 2026-11-04 |
 | Source of truth | [WORK_PLAN.md](../WORK_PLAN.md) v1.9 |
 | Related documents | [Backend architecture](../04-architecture/backend-architecture.md) |
 
@@ -21,6 +21,7 @@ multiagent-ai-lab/
 │                    grounding.py memory.py web.py summary.py extract.py calc.py security.py
 │                    audio.py tracing.py eval_data.py eval_metrics.py eval_run.py judge.py
 │                    export_results.py site_build.py
+│                    admin.py translations.py templates/ static/ (pages of ui.py)
 ├── demo/            app.py and requirements for the ZeroGPU Space
 ├── notebooks/       colab_gpu.ipynb kaggle_gpu.ipynb (every cell labelled)
 ├── configs/         settings, models.yaml, schemas/, ontology/, eval/

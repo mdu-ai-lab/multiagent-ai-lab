@@ -4,7 +4,7 @@
 |---|---|
 | Purpose | One test case per plan step |
 | Status | Proposed |
-| Last updated | 2026-11-03 |
+| Last updated | 2026-11-04 |
 | Source of truth | [WORK_PLAN.md](../WORK_PLAN.md) v1.9 |
 | Related documents | [Test plan](../09-testing/test-plan.md), [Traceability](../12-project-management/requirements-traceability.md) |
 
@@ -30,6 +30,7 @@ Copied from the done-when column of WORK_PLAN.md section 12. The plan stays the 
 | AT-1.7 | Live dashboard (CD) | The site URL works. A pushed change appears on it within minutes. Site size stays far below 1 GB. | Not run |
 | AT-1.8 | Live demo (CD) | The Space URL works. A pushed change appears after the Space rebuilds. | Not run |
 | AT-1.9 | Health checks | A deliberately wrong URL creates an issue. | Not run |
+| AT-1.10 | Chat web page | pytest tests for pages, sign-up, login, roles, chat and admin pass in CI. A streamed answer from the main model appears in the browser. A member cannot open another user's chat or the admin panel. | Not run |
 | AT-2.1 | Datasets | All datasets on the SSD. Every data card complete. | Not run |
 | AT-2.2 | Test sets | A manifest lists counts and file hashes. | Not run |
 | AT-2.3 | Evaluation script | Running the same test twice gives identical numbers. | Not run |

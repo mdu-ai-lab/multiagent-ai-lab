@@ -4,7 +4,7 @@
 |---|---|
 | Purpose | Proposed fields and their meaning |
 | Status | Proposed |
-| Last updated | 2026-10-31 |
+| Last updated | 2026-11-04 |
 | Source of truth | [WORK_PLAN.md](../WORK_PLAN.md) v1.9 |
 | Related documents | [ER diagram](../05-database/er-diagram.md), [Relationships and constraints](../05-database/relationships-and-constraints.md) |
 
@@ -14,8 +14,8 @@ PROPOSED. Only fields named or clearly implied in WORK_PLAN.md are listed. Types
 
 | Entity | Field | Meaning | Source |
 |---|---|---|---|
-| user | id, name | A person who logs in | 12.4, 13.1 |
-| user | password hash | Hashed password. Hash method REQUIRES CONFIRMATION | 13.1 |
+| user | id, name | A person who logs in | 1.10, 12.4 |
+| user | password hash | Hashed password. Hash method chosen in 1.10 (OWASP Password Storage Cheat Sheet) | 1.10 |
 | collection | id, name | A group of documents with shared access | 12.4 |
 | collection_access | user_id, collection_id | Which user may see which collection | 12.4 |
 | document | id, collection_id, file name | One uploaded file across its versions | 3.5 |

@@ -4,7 +4,7 @@
 |---|---|
 | Purpose | In-scope and out-of-scope features for version 1 |
 | Status | Proposed |
-| Last updated | 2026-10-31 |
+| Last updated | 2026-11-04 |
 | Source of truth | [WORK_PLAN.md](../WORK_PLAN.md) v1.9 |
 | Related documents | [Project overview](../00-project-overview/project-overview.md), [Functional requirements](../01-requirements/functional-requirements.md) |
 
@@ -27,7 +27,7 @@
 | Extraction | Schema-locked JSON with verify and refine | 10 |
 | Calculations | Sandboxed pandas code and plots | 11 |
 | Security | Injection defences, personal data masking, access per collection, limits | 12 |
-| API, UI, MCP | Versioned API from Phase 1, hardened in Phase 13. Gradio UI. MCP tools | 1, 13 |
+| API, UI, MCP | Versioned API and chat web page with login from Phase 1, hardened in Phase 13. MCP tools | 1, 13 |
 | Audio | Speech-to-text with time-range citations | 14 |
 | Company package | Docker images, GPU server profile, Postgres option, deployment guide | 15 |
 | Delivery | CI, live dashboard, live demo, health checks, backup | 0, 1 |

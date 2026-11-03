@@ -4,7 +4,7 @@
 |---|---|
 | Purpose | Planned main flows through the UI |
 | Status | Proposed |
-| Last updated | 2026-10-31 |
+| Last updated | 2026-11-04 |
 | Source of truth | [WORK_PLAN.md](../WORK_PLAN.md) v1.9 |
 | Related documents | [Use cases](../02-users-and-permissions/use-cases.md), [Screen specifications](../08-ui-ux/screen-specifications.md) |
 
@@ -25,4 +25,4 @@ flowchart LR
   O --> R[Open mind map or graph view]
 ```
 
-PROPOSED, based on step 13.2. The flows are refined when Phase 13 starts.
+PROPOSED, based on steps 1.10 and 13.2. The flows are refined in 1.10 and when Phase 13 starts.

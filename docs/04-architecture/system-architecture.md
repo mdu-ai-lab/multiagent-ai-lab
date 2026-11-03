@@ -4,7 +4,7 @@
 |---|---|
 | Purpose | Components, data flow and boundaries of the planned system |
 | Status | Proposed |
-| Last updated | 2026-10-31 |
+| Last updated | 2026-11-04 |
 | Source of truth | [WORK_PLAN.md](../WORK_PLAN.md) v1.9 |
 | Related documents | [Backend architecture](../04-architecture/backend-architecture.md), [Integration architecture](../04-architecture/integration-architecture.md), [Threat model](../07-security/threat-model.md) |
 
@@ -17,7 +17,7 @@ All diagrams show the PROPOSED design from WORK_PLAN.md section 8.1. No componen
 ```mermaid
 flowchart TB
   subgraph Clients
-    UI[Gradio UI]
+    UI[Chat web page]
     MCP[MCP clients]
     DEMO[Demo Space]
   end

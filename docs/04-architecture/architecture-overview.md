@@ -4,7 +4,7 @@
 |---|---|
 | Purpose | One-page view of the planned architecture |
 | Status | Proposed |
-| Last updated | 2026-10-31 |
+| Last updated | 2026-11-04 |
 | Source of truth | [WORK_PLAN.md](../WORK_PLAN.md) v1.9 |
 | Related documents | [System architecture](../04-architecture/system-architecture.md), [ADRs](../04-architecture/architecture-decision-records/README.md) |
 
@@ -14,7 +14,7 @@ The planned system has 4 layers:
 
 | Layer | Parts | Detail |
 |---|---|---|
-| Clients | Gradio UI, live demo, MCP clients | [Frontend architecture](frontend-architecture.md) |
+| Clients | Chat web page, live demo, MCP clients | [Frontend architecture](frontend-architecture.md) |
 | Service | FastAPI (api.py) over service.py | [Backend architecture](backend-architecture.md) |
 | Intelligence | LangGraph supervisor and routes, grounding, retrieval, model client | [System architecture](system-architecture.md) |
 | Data and models | Qdrant, SQLite (Postgres later), MLflow, llama.cpp / vLLM / Transformers | [Deployment architecture](deployment-architecture.md) |
@@ -22,7 +22,7 @@ The planned system has 4 layers:
 The plan's own architecture diagram, copied word for word from WORK_PLAN.md section 8.1:
 
 ```
-Browser (Gradio UI)  ·  Live demo (ZeroGPU Space)  ·  MCP clients
+Browser (chat page)  ·  Live demo (ZeroGPU Space)  ·  MCP clients
             │ HTTP /v1 (local)            │ in-process
             ▼                             ▼
         FastAPI (api.py) ───────► service.py (core functions)

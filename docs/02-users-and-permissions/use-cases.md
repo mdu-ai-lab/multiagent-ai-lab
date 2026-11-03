@@ -4,7 +4,7 @@
 |---|---|
 | Purpose | Main planned user journeys |
 | Status | Proposed |
-| Last updated | 2026-10-31 |
+| Last updated | 2026-11-04 |
 | Source of truth | [WORK_PLAN.md](../WORK_PLAN.md) v1.9 |
 | Related documents | [User flows](../08-ui-ux/user-flows.md), [Functional requirements](../01-requirements/functional-requirements.md) |
 
@@ -26,7 +26,7 @@
 | UC-12 | Rate an answer | Member | FR-FBK-001 |
 | UC-13 | Try the public demo | Demo visitor | FR-OPS-002 |
 | UC-14 | Follow project progress | Anyone | FR-OPS-001 |
-| UC-15 | Manage users and collections | Platform admin | FR-ADM-001 (REQUIRES CONFIRMATION) |
+| UC-15 | Manage users and collections | Platform admin | FR-ADM-001 (collections: REQUIRES CONFIRMATION), FR-ADM-002 |
 | UC-16 | Ask how people, places or concepts relate across documents | Member | FR-KG-004 |
 | UC-17 | Work on a topic in a notebook and save notes | Member | FR-NB-001 |
 | UC-18 | Generate a study guide, FAQ, briefing, flashcards or quiz | Member | FR-NB-002 |

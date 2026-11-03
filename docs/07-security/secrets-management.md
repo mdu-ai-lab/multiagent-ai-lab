@@ -4,7 +4,7 @@
 |---|---|
 | Purpose | Where tokens live and where they must not |
 | Status | Proposed |
-| Last updated | 2026-10-31 |
+| Last updated | 2026-11-04 |
 | Source of truth | [WORK_PLAN.md](../WORK_PLAN.md) v1.9 |
 | Related documents | [Environment configuration](../10-deployment-and-operations/environment-configuration.md) |
 
@@ -15,6 +15,6 @@
 | GitHub token for Colab and Kaggle pushes | Notebooks | Colab Secrets, Kaggle Secrets | Git, Drive, notebooks |
 | Hugging Face token for demo deploys | demo.yml | GitHub Secrets | Git, logs |
 | rclone Google Drive token | make backup | rclone config on the Mac | Git, Drive |
-| User passwords (Phase 13) | auth.py | Hashed in the database | Logs, traces |
+| User passwords (from 1.10) | auth.py | Hashed in the database | Logs, traces |
 
 .env holds local settings and is ignored by Git. .env.example lists names without values (0.1). The secret scan in CI checks every push (1.4).

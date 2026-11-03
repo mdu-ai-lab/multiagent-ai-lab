@@ -4,7 +4,7 @@
 |---|---|
 | Purpose | Single entry point to the planned system requirements |
 | Status | Proposed |
-| Last updated | 2026-10-31 |
+| Last updated | 2026-11-04 |
 | Source of truth | [WORK_PLAN.md](../WORK_PLAN.md) v1.9 |
 | Related documents | [Functional requirements](../01-requirements/functional-requirements.md), [Non-functional requirements](../01-requirements/non-functional-requirements.md), [Business rules](../01-requirements/business-rules.md) |
 
@@ -53,4 +53,4 @@ See [acceptance criteria](acceptance-criteria.md).
 
 ## 8. Status
 
-All requirements are proposed and not implemented. Supervisor approval: REQUIRES CONFIRMATION.
+All requirements are proposed. Their implementation status is in the requirement documents. Supervisor approval: REQUIRES CONFIRMATION.

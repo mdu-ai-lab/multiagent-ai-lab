@@ -4,7 +4,7 @@
 |---|---|
 | Purpose | Central entry point for all project documentation |
 | Status | Proposed |
-| Last updated | 2026-11-03 |
+| Last updated | 2026-11-04 |
 | Source of truth | [WORK_PLAN.md](WORK_PLAN.md) v1.9 |
 | Related documents | [WORK_PLAN.md](WORK_PLAN.md) |
 
@@ -14,7 +14,7 @@
 
 A planned local platform where agents and RAG answer questions over files with page citations, search the web on request, summarise, extract JSON, calculate and transcribe audio. Built for the MDU university group. See [project overview](00-project-overview/project-overview.md).
 
-**Important:** only the Phase 0 foundations exist as code (settings, database layer, Alembic, search database, Mac model server config, model client and backup). Every document describes the plan. All requirements are "Not implemented".
+**Important:** only the Phase 0 foundations exist as code (settings, database layer, Alembic, search database, Mac model server config, model client and backup). Every document describes the plan. Requirement status is in the requirement documents.
 
 ## 2. Directory map
 
@@ -75,8 +75,8 @@ Ingestion, visual content, retrieval, grounded answers, agents and memory, web s
 
 | Type | Count | Implemented |
 |---|---|---|
-| Functional | 57 | 0 |
-| Non-functional | 32 | 0 |
+| Functional | 59 | 1 (FR-OPS-004, verification incomplete) |
+| Non-functional | 32 | 1 (NFR-PERF-001). Partly: NFR-PORT-001, NFR-SEC-005 |
 | Business rules | 16 | 0 |
 
 ## 8. Known implementation gaps
@@ -114,7 +114,7 @@ Full list: [threat model](07-security/threat-model.md).
 | Document | Reason |
 |---|---|
 | Payment processing, mobile apps, multi-tenant isolation beyond collection access | Not part of this project |
-| CSRF and CORS documentation | REQUIRES CONFIRMATION until the web UI exists (Phase 13) |
+| CSRF and CORS documentation | REQUIRES CONFIRMATION until the chat web page exists (step 1.10) |
 | 05-database/indexes-and-performance.md | No tables or queries exist |
 | 05-database/migration-strategy.md | Alembic is chosen (D25) but no tables exist yet. Covered in database design |
 | 06-api/pagination-filtering-sorting.md | No list endpoints exist. Covered in API standards |

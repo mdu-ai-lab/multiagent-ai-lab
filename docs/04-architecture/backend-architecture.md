@@ -4,7 +4,7 @@
 |---|---|
 | Purpose | Planned backend layers and modules |
 | Status | Proposed |
-| Last updated | 2026-10-31 |
+| Last updated | 2026-11-04 |
 | Source of truth | [WORK_PLAN.md](../WORK_PLAN.md) v1.9 |
 | Related documents | [System architecture](../04-architecture/system-architecture.md), [Project structure](../11-development-standards/project-structure.md) |
 
@@ -12,7 +12,7 @@
 
 | Layer | Planned files | Responsibility |
 |---|---|---|
-| API | api.py, auth.py | HTTP under /v1, login (Phase 13), streaming |
+| API | api.py, auth.py, ui.py | HTTP under /v1, pages, login (1.10, hardened in Phase 13), streaming |
 | Service | service.py | Core functions shared by API, demo, tests and MCP (ADR-008) |
 | Orchestration | graph.py, router.py, planner.py, memory.py | Routes, loop limits, chat memory |
 | Routes | qa.py, web.py, summary.py, extract.py, calc.py, audio.py, graphrag.py | One task each |

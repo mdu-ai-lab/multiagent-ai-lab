@@ -4,7 +4,7 @@
 |---|---|
 | Purpose | Assets, entry points, threats and planned mitigations |
 | Status | Proposed |
-| Last updated | 2026-10-31 |
+| Last updated | 2026-11-04 |
 | Source of truth | [WORK_PLAN.md](../WORK_PLAN.md) v1.9 |
 | Related documents | [Security requirements](../07-security/security-requirements.md), [Risk register](../12-project-management/risk-register.md) |
 
@@ -24,7 +24,7 @@ API, UI, MCP, uploaded files, fetched web pages, the demo, GitHub Actions, noteb
 
 | ID | Threat | Severity | Evidence in plan | Planned mitigation | Gap |
 |---|---|---|---|---|---|
-| SF-01 | API has no login before Phase 13. Anyone on the same network could call it | Medium | 1.6, 13.1 | Login in 13.1 | Recommend binding to the Mac only until 13.1. Not yet in plan |
+| SF-01 | API has no login before step 1.10. Anyone on the same network could call it | Medium | 1.6, 1.10 | Login in 1.10 | Recommend binding to the Mac only until 1.10. Not yet in plan |
 | SF-02 | Hidden instructions inside files or web pages | High | 12.1 | Rules in 12.1, classifier in 12.2 | None until Phase 12 |
 | SF-03 | Model-written code escapes the sandbox | High | 11.2 | Docker, no network, limits | Escape tests in 11.2 |
 | SF-04 | File text leaks through web search | High | 8.1 | Question only, leak test 8.4 | — |
@@ -37,3 +37,4 @@ API, UI, MCP, uploaded files, fetched web pages, the demo, GitHub Actions, noteb
 | SF-11 | rclone or Drive token on the Mac misused | Low | 0.6 | Password manager, no secrets in Drive | — |
 | SF-12 | Entity merging links facts from collections a user cannot see | Medium | 9A.2, 9A.4 | Graph built per collection, same filter as retrieve.py | Merge rules across collections REQUIRES CONFIRMATION |
 | SF-13 | A poisoned document adds false relations to the graph | Medium | 9A.2 | Source page for every fact, claim check, ontology-constrained output | — |
+| SF-14 | Stolen session cookie or forged requests from another site | Medium | 1.10 | HttpOnly and SameSite cookies, check against forged requests | Checked in 1.10 and Phase 12 |

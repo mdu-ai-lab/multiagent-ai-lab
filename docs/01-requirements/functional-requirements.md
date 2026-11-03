@@ -4,7 +4,7 @@
 |---|---|
 | Purpose | Every planned functional requirement with a unique ID |
 | Status | Proposed |
-| Last updated | 2026-11-03 |
+| Last updated | 2026-11-04 |
 | Source of truth | [WORK_PLAN.md](../WORK_PLAN.md) v1.9 |
 | Related documents | [SRS](../01-requirements/srs.md), [Traceability](../12-project-management/requirements-traceability.md), [Modules](../03-functional-modules/README.md) |
 
@@ -58,8 +58,9 @@ All requirements come from WORK_PLAN.md v1.7. They are proposed until the group 
 | FR-CALC-003 | Show plots in the chat with code and source table cited | 11.3 | Not implemented |
 | FR-AUD-001 | Transcribe audio with timestamps. Citations point to time ranges | 14.2 | Not implemented |
 | FR-API-001 | Versioned API under /v1, experimental until Phase 13 | 1.6 | Not implemented |
-| FR-API-002 | Login, rate limits, clear errors and a frozen /v1 contract | 13.1 | Not implemented |
-| FR-UI-001 | Web UI with chat list, streaming chat, file upload, web toggle, source panel with highlight, extraction view, export, notebook view and mind map and graph view | 13.2 | Not implemented |
+| FR-API-002 | Hardened login with tokens for other apps, rate limits, clear errors and a frozen /v1 contract | 13.1 | Not implemented |
+| FR-UI-001 | Web UI with chat list, streaming chat, file upload, web toggle, source panel with highlight, extraction view, export, notebook view and mind map and graph view | 1.10, 13.2 | Not implemented |
+| FR-UI-002 | Chat web page from Phase 1: chat list, saved chats per user, streamed answers, settings, English and Swedish, themes | 1.10 | Not implemented |
 | FR-MCP-001 | Offer search, ask and extract as MCP tools behind a login token | 13.3 | Not implemented |
 | FR-FBK-001 | Thumbs up or down with optional comment on every answer, saved to its trace | 13.4 | Not implemented |
 | FR-OPS-001 | Live dashboard on GitHub Pages rebuilt after CI passes on main | 1.7 | Not implemented |
@@ -71,3 +72,4 @@ All requirements come from WORK_PLAN.md v1.7. They are proposed until the group 
 | FR-EVAL-002 | Closed-book baselines per profile | 2.4 | Not implemented |
 | FR-EVAL-003 | Judge model with a frozen scoring guide and a human check | 2.5 | Not implemented |
 | FR-ADM-001 | Users and collections stored in the database. Each user sees only their collections. How collections are created and shared: REQUIRES CONFIRMATION | 12.4 | Not implemented |
+| FR-ADM-002 | Sign-up, login, sessions, the roles member and admin and an admin panel to manage users | 1.10 | Not implemented |

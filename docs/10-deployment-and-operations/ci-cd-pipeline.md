@@ -4,7 +4,7 @@
 |---|---|
 | Purpose | Planned GitHub Actions workflows |
 | Status | Proposed |
-| Last updated | 2026-10-31 |
+| Last updated | 2026-11-04 |
 | Source of truth | [WORK_PLAN.md](../WORK_PLAN.md) v1.9 |
 | Related documents | [Testing strategy](../09-testing/testing-strategy.md), [Git workflow](../11-development-standards/git-workflow.md) |
 
@@ -34,7 +34,7 @@ Cost guard: public repo, standard runners only, small artifacts with short reten
 | Part | What it is | Before the full API (Phases 1 to 12) | After Phase 13 |
 |---|---|---|---|
 | Live dashboard | Static site on GitHub Pages: progress (done / not done per step), scores over versions, architecture, changelog, example cited answers on public documents | Built from results/ files that Mac, Colab or Kaggle runs exported and committed | Same, plus the final report |
-| Live demo | Gradio app on a ZeroGPU Space with public sample documents | Calls service.py directly inside the Space. Gradio also exposes a free public API for the demo functions | Same UI as the full platform |
+| Live demo | Gradio app on a ZeroGPU Space with public sample documents | Calls service.py directly inside the Space. Gradio also exposes a free public API for the demo functions | Same features as the full platform, in a Gradio app |
 | Full API | FastAPI on the Mac (and later on company servers) | Grows every phase under /v1 (experimental) | Login, rate limits, frozen /v1, MCP |
 
 Update flow on every push:

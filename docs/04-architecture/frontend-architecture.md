@@ -4,7 +4,7 @@
 |---|---|
 | Purpose | Planned user interfaces |
 | Status | Proposed |
-| Last updated | 2026-10-31 |
+| Last updated | 2026-11-04 |
 | Source of truth | [WORK_PLAN.md](../WORK_PLAN.md) v1.9 |
 | Related documents | [Screen specifications](../08-ui-ux/screen-specifications.md) |
 
@@ -12,10 +12,10 @@
 
 | Client | Technology | Talks to | Phase |
 |---|---|---|---|
-| Local web UI | Gradio 6 (ui.py), including notebook view and mind map and graph view | API only | 13.2 |
+| Local web UI | Own chat web page: HTML, CSS and JavaScript with Jinja2 (ui.py, D37). Notebook view and mind map and graph view added later | API only | 1.10, 13.2 |
 | Demo mind map view | Simple view in the demo | service.py in-process | 9B.3 |
 | Live demo | Gradio on ZeroGPU Space | service.py in-process | 1.8, grows each phase |
 | Live dashboard | Static site from site_build.py | results/ files at build time | 1.7 |
-| MCP | Gradio MCP mode | API with login token | 13.3 |
+| MCP | Chosen in Q12 | API with login token | 13.3 |
 
 The local UI calls only the API so it can be replaced later without backend changes.

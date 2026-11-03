@@ -2,6 +2,26 @@
 
 Report of the last work session. Read this after docs/WORK_PLAN.md at the start of every session.
 
+## Session 4 November 2026: chat page plan
+
+The chat page preview (FastAPI, Jinja2, HTML, CSS and JavaScript, built outside this repo) was analysed.
+Owner's decisions: rebuild it as platform code in the new step 1.10 with login (D37, R34). It was moved
+from the repo folder to /Volumes/MacbookAPFS/Project/multiagent-ai-lab-local/chat-preview (outside Git,
+included in make backup). WORK_PLAN.md and the docs were updated to match. New open question Q12.
+
+Notes:
+- The preview's .venv still points to its older copy on the Desktop. Run uv sync --reinstall in
+  chat-preview before using it there. The Desktop copy still exists.
+- Step 1.10: hash passwords as the OWASP Password Storage Cheat Sheet recommends (the preview uses scrypt
+  with n=2**14, below that advice). Add a check against forged requests, delete expired sessions, fix the
+  feedback not-found message (it uses the user message), remove the 700 ms wait in the page script and
+  write the real tables into the data dictionary and the ER diagram.
+- The preview has no saved tests. Step 1.10 adds them under tests/.
+
+### Exact next step
+
+1. Phase 1, only after the owner says "start Phase 1".
+
 ## Session 3 November 2026: check after Phase 0
 
 Start-of-session checks passed (Qdrant had to be started again with docker compose up -d).

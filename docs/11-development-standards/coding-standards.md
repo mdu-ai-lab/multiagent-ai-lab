@@ -4,7 +4,7 @@
 |---|---|
 | Purpose | How code is written in this project |
 | Status | Proposed |
-| Last updated | 2026-10-31 |
+| Last updated | 2026-11-04 |
 | Source of truth | [WORK_PLAN.md](../WORK_PLAN.md) v1.9 |
 | Related documents | [Project structure](../11-development-standards/project-structure.md), [Code review](../11-development-standards/code-review.md) |
 
@@ -21,7 +21,7 @@ These are the owner's approved rules, copied word for word from WORK_PLAN.md sec
 | S | End every step with what to do next |
 | G | Commit and push after every step. Merge to main at phase end with a version tag. Update CHANGELOG.md and this file every step |
 | L | Every push to main that passes CI rebuilds the dashboard and the demo automatically |
-| A | Each feature phase adds its API endpoint and its demo feature together with the feature |
+| A | Each feature phase adds its API endpoint, its chat web page feature and its demo feature together with the feature |
 | V | Private documents never go to Colab, Kaggle, GitHub, the dashboard or the demo |
 | E | Evaluations run in the Mac profile and, where useful, the GPU profile. Logged in MLflow and exported to the repo |
 | H | Never guess. If unsure, say so and check. When something fails, find the real cause |

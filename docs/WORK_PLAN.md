@@ -66,6 +66,7 @@ This file is the single source of truth for the project. It is stored in the rep
 | R31 | Knowledge base: collections, knowledge graph and saved notes together (interpretation, see Q11) | Phases 9A, 9B | Planned |
 | R32 | Notebooks (workspaces on one topic): sources, chat, notes, study guide, FAQ, briefing, flashcards, quiz, mind map | Phase 9B | Planned |
 | R33 | Verification loop: code, commands and expected output with a 12-character verification number per Python code file, checked locally with uv | Rules C12, C13, step 0.1 | Done (in use since step 0.1) |
+| R34 | Own chat web page with accounts, login and an admin panel from Phase 1, rebuilt from the chat page preview | Step 1.10, D37 | Planned |
 
 ## 4. Decision log and open questions
 
@@ -109,6 +110,7 @@ This file is the single source of truth for the project. It is stored in the rep
 | D34 | Model client: the openai library for OpenAI-style servers (llama-swap on the Mac, vLLM on GPU) and transformers for the demo. Roles per profile in configs/models.yaml. Thinking is off unless a caller turns it on | Standard client with streaming, JSON schema output and retries for both servers. One file decides which model serves each role | — |
 | D35 | make backup copies both project folders on the SSD (multiagent-ai-lab and multiagent-ai-lab-local) one way to Google Drive, into My Drive/Project/MDU Offline Project/: an exact copy of each folder plus multiagent-ai-lab-backup/ with every changed or deleted file in a dated history/ folder, a log of every run, a full Qdrant snapshot and a clean SQLite copy. Not copied: the uv cache and Docker Desktop's disk image (shared with other projects) and login token files (section 6.4 rule 9) | Answers Q2. A lost or broken SSD can be restored to another laptop or SSD | Backup of non-Git files only (D12, D13) |
 | D36 | rclone from Homebrew (v1.73.1 on 2 November 2026), kept up to date. Each backup records its rclone version | Google changes the Drive interface over time and new rclone versions follow it. Works without the SSD | Pinned rclone release on the SSD |
+| D37 | Local web UI: an own chat web page in HTML, CSS and JavaScript served by FastAPI with Jinja2 (ui.py, templates and static files in src/mrag/). Accounts, login and the roles member and admin from step 1.10 (auth.py). It is rebuilt in step 1.10 from the chat page preview in multiagent-ai-lab-local/chat-preview. The preview's database and uploads are not copied. The live demo stays a Gradio app (D09) | Full control over layout and behaviour with no build step and no files from the internet. Saved chats per user from the start avoid rework in 12.4 and 13.1. Free ZeroGPU Spaces run Gradio apps | Gradio 6 for the local UI in 13.2. Login first in 13.1 |
 
 ### 4.2 Open questions (answer before or during the named phase)
 
@@ -124,6 +126,7 @@ This file is the single source of truth for the project. It is stored in the rep
 | Q9 | Which domain ontology to build first (for example research papers or industrial documents) | Step 9A.1 |
 | Q10 | Add audio overviews (spoken summaries of sources)? This needs a text-to-speech model and changes a non-goal | Before Phase 9B |
 | Q11 | Does "Knowledge" mean the knowledge base described in R31 or something else? | Before Phase 9A |
+| Q12 | Which tool offers the MCP tools of 13.3 now that the local UI is not Gradio (D37): Gradio's MCP mode in a small separate app or an MCP library inside the API? | Step 13.3 |
 
 ## 5. Working rules
 
@@ -136,7 +139,7 @@ This file is the single source of truth for the project. It is stored in the rep
 | S | End every step with what to do next |
 | G | Commit and push after every step. Merge to main at phase end with a version tag. Update CHANGELOG.md and this file every step |
 | L | Every push to main that passes CI rebuilds the dashboard and the demo automatically |
-| A | Each feature phase adds its API endpoint and its demo feature together with the feature |
+| A | Each feature phase adds its API endpoint, its chat web page feature and its demo feature together with the feature |
 | V | Private documents never go to Colab, Kaggle, GitHub, the dashboard or the demo |
 | E | Evaluations run in the Mac profile and, where useful, the GPU profile. Logged in MLflow and exported to the repo |
 | H | Never guess. If unsure, say so and check. When something fails, find the real cause |
@@ -210,6 +213,7 @@ Rule of thumb: private data → Mac. Needs a GPU and the data is public → Cola
 | /Volumes/MacbookAPFS/Project/multiagent-ai-lab-local/hf-cache/ | Downloaded model files (HF_HOME) | No | Yes |
 | .../multiagent-ai-lab-local/models/ | Embedding and reranker GGUF files converted locally (D32) | No | Yes |
 | .../multiagent-ai-lab-local/tools/ | llama.cpp b11960, llama-swap v268, the llama.cpp converter source and its Python environment (D32) | No | Yes |
+| .../multiagent-ai-lab-local/chat-preview/ | Chat page preview (FastAPI, Jinja2, HTML, CSS and JavaScript), the source for step 1.10. Its own database and uploads stay here | No | Yes |
 | /Volumes/MacbookAPFS/Project/.uv-cache/ | uv cache (set by UV_CACHE_DIR in ~/.zshrc, see D27) | No | No |
 | /Volumes/MacbookAPFS/Project/docker-data/ | Docker Desktop disk image (already on the SSD) | No | No (Qdrant goes as a snapshot) |
 
@@ -267,7 +271,7 @@ Sources checked: docs.github.com (Pages limits, Packages billing), resources.git
 ### 8.1 Architecture
 
 ```
-Browser (Gradio UI)  ·  Live demo (ZeroGPU Space)  ·  MCP clients
+Browser (chat page)  ·  Live demo (ZeroGPU Space)  ·  MCP clients
             │ HTTP /v1 (local)            │ in-process
             ▼                             ▼
         FastAPI (api.py) ───────► service.py (core functions)
@@ -297,6 +301,7 @@ multiagent-ai-lab/
 │                    grounding.py memory.py web.py summary.py extract.py calc.py security.py
 │                    audio.py tracing.py eval_data.py eval_metrics.py eval_run.py judge.py
 │                    export_results.py site_build.py
+│                    admin.py translations.py templates/ static/ (pages of ui.py)
 ├── demo/            app.py and requirements for the ZeroGPU Space
 ├── notebooks/       colab_gpu.ipynb kaggle_gpu.ipynb (every cell labelled)
 ├── configs/         settings, models.yaml, schemas/, ontology/, eval/
@@ -332,7 +337,7 @@ multiagent-ai-lab/
 | Tool | LangGraph, smolagents | Orchestration, code agent, web search | 7, 8, 11 |
 | Tool | LightRAG or own graph (chosen in 9A.3), NetworkX | Knowledge graph and GraphRAG | 9A |
 | Tool | LinkML | Ontology, generating Pydantic models and OWL | 9A |
-| Tool | FastAPI, Gradio 6 (UI and MCP mode) | API, UI, MCP | 1, 13 |
+| Tool | FastAPI with Jinja2 (API and chat web page), Gradio 6 (live demo, MCP tool choice in Q12) | API, UI, demo, MCP | 1, 13 |
 | Tool | SQLite (Postgres later) through SQLAlchemy | App data, memory | 0, 15 |
 | Tool | MLflow | Experiments, versions, traces, feedback | 1 |
 | Tool | GitHub Actions, GitHub Pages, GHCR, Dependabot | CI/CD, dashboard, images, dependency updates | 1, 15 |
@@ -376,7 +381,7 @@ Foundations, delivery and measurement come first so every later feature is teste
 | Part | What it is | Before the full API (Phases 1 to 12) | After Phase 13 |
 |---|---|---|---|
 | Live dashboard | Static site on GitHub Pages: progress (done / not done per step), scores over versions, architecture, changelog, example cited answers on public documents | Built from results/ files that Mac, Colab or Kaggle runs exported and committed | Same, plus the final report |
-| Live demo | Gradio app on a ZeroGPU Space with public sample documents | Calls service.py directly inside the Space. Gradio also exposes a free public API for the demo functions | Same UI as the full platform |
+| Live demo | Gradio app on a ZeroGPU Space with public sample documents | Calls service.py directly inside the Space. Gradio also exposes a free public API for the demo functions | Same features as the full platform, in a Gradio app |
 | Full API | FastAPI on the Mac (and later on company servers) | Grows every phase under /v1 (experimental) | Login, rate limits, frozen /v1, MCP |
 
 Update flow on every push:
@@ -416,6 +421,7 @@ weekly: health.yml checks both URLs and opens a GitHub issue if one is down
 | 1.7 Live dashboard (CD) | site_build.py builds a static website from the repo and results/: progress table (done / not done per step from this file), latest scores per route with trend over versions, architecture diagram, changelog and example answers on public documents. pages.yml publishes it to GitHub Pages after CI passes on main. Re-check GitHub limits first. | Anyone in the group sees live progress for free. | The site URL works. A pushed change appears on it within minutes. Site size stays far below 1 GB. | Not done |
 | 1.8 Live demo (CD) | After Q3 is confirmed, create a Gradio Space on ZeroGPU with public sample documents. It starts as a simple chat with the main model through Transformers and calls service.py directly. demo.yml uploads demo/ and src/mrag/ to the Space after CI passes on main. A note tells visitors about the daily GPU quota. Re-check Hugging Face limits first. | A working live demo during the whole project, at no cost. | The Space URL works. A pushed change appears after the Space rebuilds. | Not done |
 | 1.9 Health checks | health.yml runs weekly on GitHub Actions. It checks that the dashboard and demo URLs respond and that links work. A failure opens a GitHub issue. | You learn about a broken live site without checking by hand. | A deliberately wrong URL creates an issue. | Not done |
+| 1.10 Chat web page | Rebuild the chat page preview (multiagent-ai-lab-local/chat-preview) as platform code, as D37 says. ui.py serves the pages with Jinja2 from src/mrag/templates and src/mrag/static: chat list, saved chats, streamed answers from the main model through the /v1 chat endpoint of 1.6, Markdown answers shown safely, settings, English and Swedish, dark, light and system themes. auth.py adds sign-up, login, sessions and the roles member and admin, with passwords hashed as the OWASP Password Storage Cheat Sheet recommends and a check against forged requests from other sites. admin.py and an admin panel manage users. All tables are SQLAlchemy models with an Alembic migration. File upload stays hidden until 3.1. | The group uses one chat page from Phase 1 on. Every later feature appears in it. Saved chats per user from the start avoid rework later. | pytest tests for pages, sign-up, login, roles, chat and admin pass in CI. A streamed answer from the main model appears in the browser. A member cannot open another user's chat or the admin panel. | Not done |
 
 ### Phase 2: Evaluation base
 
@@ -536,15 +542,15 @@ weekly: health.yml checks both URLs and opens a GitHub issue if one is down
 | 12.1 Rule defences | security.py. File and web text are wrapped as data, and the model is told never to follow instructions inside them. Each route has an allowed-tools list. Document text can never trigger a tool. The UI shows text safely, with no HTML or scripts. | Documents and web pages can hide attack instructions. | Rule test suite passes. | Not done |
 | 12.2 Injection classifier | Pick a small open classifier on Hugging Face (licence checked). Scan chunks at upload and web pages at fetch. Flagged parts are marked or excluded. Test on a public injection set and normal documents. | An extra layer on top of the rules. | Kept only if attack success drops and false alarms ≤ 2%. | Not done |
 | 12.3 Personal data | pii.py uses Presidio to find names, emails, phone numbers and ID numbers. They are masked in traces, logs, MLflow and exports. Users with access still see the original answers. | Logs must not leak personal data. | 0 personal data in sampled traces. | Not done |
-| 12.4 Access and limits | Users and collections in the database. Each user sees only their collections, enforced by the filter in retrieve.py. Limits: 50 MB per file, 1,000 pages, file type checked by content, question length and requests per minute. | Members' files stay separate. Abuse is blocked. | 0 leaks in a cross-user test. All limits tested. | Not done |
+| 12.4 Access and limits | Collections in the database (users and login exist since 1.10). Each user sees only their collections, enforced by the filter in retrieve.py. Limits: 50 MB per file, 1,000 pages, file type checked by content, question length and requests per minute. | Members' files stay separate. Abuse is blocked. | 0 leaks in a cross-user test. All limits tested. | Not done |
 
 ### Phase 13: API hardening, UI and MCP
 
 | Step | What we will do | Why | Done-when test | Status |
 |---|---|---|---|---|
-| 13.1 API hardening | The API built since Phase 1 gets login (auth.py with tokens and hashed passwords), rate limits, clear error messages and a frozen /v1 contract (no longer experimental). | Safe for many users and for other apps to build on. | All API tests pass, including login and limit tests. | Not done |
-| 13.2 Full web UI | ui.py with Gradio 6. Left: chat list. Centre: streaming chat, drag-drop files, web toggle. Right: sources with page preview and highlighted box. Also an extraction table view, export buttons, upload progress, a notebook view (9B) and a mind map and graph view (9A, 9B). The UI talks only to the API. The demo Space gets the same UI with public documents. | One chat interface for the group with chat list, streaming answers, files and sources. | A full chat works in the browser locally and in the demo. | Not done |
-| 13.3 MCP | Offer search, ask and extract as MCP tools through Gradio's MCP mode, protected by login token. | Other AI tools can use the platform. | An MCP client calls the tools successfully. | Not done |
+| 13.1 API hardening | The API built since Phase 1 gets hardened login (the auth.py of 1.10 plus tokens for other apps), rate limits, clear error messages and a frozen /v1 contract (no longer experimental). | Safe for many users and for other apps to build on. | All API tests pass, including login and limit tests. | Not done |
+| 13.2 Full web UI | Finish the chat web page of 1.10 (ui.py). Left: chat list. Centre: streaming chat, drag-drop files, web toggle. Right: sources with page preview and highlighted box. Also an extraction table view, export buttons, upload progress, a notebook view (9B) and a mind map and graph view (9A, 9B). The UI talks only to the API. The demo Space gets the same features in its Gradio app with public documents. | One chat interface for the group with chat list, streaming answers, files and sources. | A full chat works in the browser locally and in the demo. | Not done |
+| 13.3 MCP | Offer search, ask and extract as MCP tools with the tool chosen in Q12, protected by login token. | Other AI tools can use the platform. | An MCP client calls the tools successfully. | Not done |
 | 13.4 User feedback and monitoring | Thumbs up and down plus an optional comment on every answer, saved to its MLflow trace. A local monitoring view shows latency, errors, fallbacks and low-rated answers from the traces. | Shows where the system fails in real use. | Feedback appears on the right trace. The monitoring view shows the last 7 days. | Not done |
 | 13.5 End-to-end test | pytest runs the full flow automatically, also inside CI. | Proves all parts work together. | Upload → ask → streamed cited answer with highlight. | Not done |
 

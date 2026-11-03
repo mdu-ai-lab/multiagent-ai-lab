@@ -4,7 +4,7 @@
 |---|---|
 | Purpose | Planned endpoints by phase |
 | Status | Proposed |
-| Last updated | 2026-10-31 |
+| Last updated | 2026-11-04 |
 | Source of truth | [WORK_PLAN.md](../WORK_PLAN.md) v1.9 |
 | Related documents | [API standards](../06-api/api-standards.md), [Modules](../03-functional-modules/README.md) |
 
@@ -30,7 +30,7 @@ No route exists yet. Only the 4 endpoints in step 1.6 are named in the plan. Pat
 | Build or rebuild a collection's graph | 9A.2 | REQUIRES CONFIRMATION |
 | Notebooks, notes and study outputs | 9B | REQUIRES CONFIRMATION |
 | Extraction and export | 10 | REQUIRES CONFIRMATION |
-| Login | 13.1 | REQUIRES CONFIRMATION |
+| Login, sign-up, account and admin | 1.10 | Paths set in 1.10 |
 | Feedback | 13.4 | REQUIRES CONFIRMATION |
 
 Rule A: each feature phase adds its endpoint when the feature is built. This catalog is updated then.

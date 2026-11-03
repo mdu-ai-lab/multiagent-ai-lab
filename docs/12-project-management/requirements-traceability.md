@@ -4,7 +4,7 @@
 |---|---|
 | Purpose | Links from each requirement to module, test and status |
 | Status | Proposed |
-| Last updated | 2026-11-03 |
+| Last updated | 2026-11-04 |
 | Source of truth | [WORK_PLAN.md](../WORK_PLAN.md) v1.9 |
 | Related documents | [Functional requirements](../01-requirements/functional-requirements.md), [Acceptance test cases](../09-testing/acceptance-test-cases.md) |
 
@@ -60,6 +60,7 @@ Components, entities and APIs per requirement are listed in each module document
 | FR-API-001 | [api-ui-mcp](../03-functional-modules/api-ui-mcp.md) | AT-1.6 | Not implemented |
 | FR-API-002 | [api-ui-mcp](../03-functional-modules/api-ui-mcp.md) | AT-13.1 | Not implemented |
 | FR-UI-001 | [api-ui-mcp](../03-functional-modules/api-ui-mcp.md) | AT-13.2 | Not implemented |
+| FR-UI-002 | [api-ui-mcp](../03-functional-modules/api-ui-mcp.md) | AT-1.10 | Not implemented |
 | FR-MCP-001 | [api-ui-mcp](../03-functional-modules/api-ui-mcp.md) | AT-13.3 | Not implemented |
 | FR-FBK-001 | [api-ui-mcp](../03-functional-modules/api-ui-mcp.md) | AT-13.4 | Not implemented |
 | FR-OPS-001 | [delivery-and-operations](../03-functional-modules/delivery-and-operations.md) | AT-1.7 | Not implemented |
@@ -71,6 +72,7 @@ Components, entities and APIs per requirement are listed in each module document
 | FR-EVAL-002 | [evaluation](../03-functional-modules/evaluation.md) | AT-2.4 | Not implemented |
 | FR-EVAL-003 | [evaluation](../03-functional-modules/evaluation.md) | AT-2.5 | Not implemented |
 | FR-ADM-001 | [api-ui-mcp](../03-functional-modules/api-ui-mcp.md) | AT-12.4 | Not implemented |
+| FR-ADM-002 | [api-ui-mcp](../03-functional-modules/api-ui-mcp.md) | AT-1.10 | Not implemented |
 
 ## Owner requirements R1 to R33 (WORK_PLAN.md section 3, word for word)
 
@@ -109,3 +111,4 @@ Components, entities and APIs per requirement are listed in each module document
 | R31 | Knowledge base: collections, knowledge graph and saved notes together (interpretation, see Q11) | Phases 9A, 9B | Planned |
 | R32 | Notebooks (workspaces on one topic): sources, chat, notes, study guide, FAQ, briefing, flashcards, quiz, mind map | Phase 9B | Planned |
 | R33 | Verification loop: code, commands and expected output with a 12-character verification number per Python code file, checked locally with uv | Rules C12, C13, step 0.1 | Done (in use since step 0.1) |
+| R34 | Own chat web page with accounts, login and an admin panel from Phase 1, rebuilt from the chat page preview | Step 1.10, D37 | Planned |

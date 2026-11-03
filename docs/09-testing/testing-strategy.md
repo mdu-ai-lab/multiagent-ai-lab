@@ -4,7 +4,7 @@
 |---|---|
 | Purpose | How the platform will be tested |
 | Status | Proposed |
-| Last updated | 2026-10-31 |
+| Last updated | 2026-11-04 |
 | Source of truth | [WORK_PLAN.md](../WORK_PLAN.md) v1.9 |
 | Related documents | [Test plan](../09-testing/test-plan.md), [CI/CD pipeline](../10-deployment-and-operations/ci-cd-pipeline.md) |
 
@@ -14,7 +14,7 @@
 |---|---|---|---|---|
 | Unit | Single functions | pytest | CI | 1.4 onward |
 | Integration | Model calls with a tiny model (Qwen3.5-0.8B on CPU) | pytest | CI | 1.4 |
-| API | Endpoint contracts | pytest | CI | 1.6, 13.1 |
+| API | Endpoint contracts and pages | pytest | CI | 1.6, 1.10, 13.1 |
 | Quality evaluation | Route metrics on frozen test sets | eval_run.py | Mac, Colab, Kaggle | 2 onward |
 | Evaluation gate | Fails CI if committed scores drop | CI | CI | 1.4 |
 | Security | Injection, sandbox escape, access leak, web leak | pytest | Mac and CI | 8.4, 11.2, 12 |

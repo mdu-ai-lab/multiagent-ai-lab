@@ -5,7 +5,13 @@ Versions are tagged at the end of each phase (WORK_PLAN.md rule G).
 
 ## [Unreleased]
 
+### Changed
+
+- Plan: own chat web page with accounts and login in the new step 1.10 (D37, R34). Rule A, sections 6.3, 8.1, 8.2 and 9 and steps 12.4 to 13.3 match it. New open question Q12 (MCP tool). The docs follow the plan.
+
 ### Fixed
+
+- docs/README.md and srs.md: requirement status lines now match the requirement documents.
 
 - docs/README.md: status line now lists what exists as code.
 - WORK_PLAN.md: download folder path in the project setup text (D31).
