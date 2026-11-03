@@ -12,7 +12,7 @@
 
 ## 1. Project summary
 
-A planned local, zero-cost platform where agents and RAG answer questions over files with page citations, search the web on request, summarise, extract JSON, calculate and transcribe audio. Built for the MDU university group. See [project overview](00-project-overview/project-overview.md).
+A planned local platform where agents and RAG answer questions over files with page citations, search the web on request, summarise, extract JSON, calculate and transcribe audio. Built for the MDU university group. See [project overview](00-project-overview/project-overview.md).
 
 **Important:** only the Phase 0 foundations exist as code (settings, database layer, Alembic, search database, Mac model server config, model client and backup). Every document describes the plan. All requirements are "Not implemented".
 
