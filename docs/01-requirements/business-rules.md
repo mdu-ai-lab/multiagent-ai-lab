@@ -4,7 +4,7 @@
 |---|---|
 | Purpose | Rules the system and the project must always follow |
 | Status | Proposed |
-| Last updated | 2026-10-31 |
+| Last updated | 2026-11-03 |
 | Source of truth | [WORK_PLAN.md](../WORK_PLAN.md) v1.9 |
 | Related documents | [Functional requirements](../01-requirements/functional-requirements.md), [Access control policy](../02-users-and-permissions/access-control-policy.md) |
 

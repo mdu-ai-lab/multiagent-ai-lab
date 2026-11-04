@@ -134,6 +134,7 @@ Full list: [threat model](07-security/threat-model.md).
 | Q9 | Which domain ontology to build first (for example research papers or industrial documents) | Step 9A.1 |
 | Q10 | Add audio overviews (spoken summaries of sources)? This needs a text-to-speech model and changes a non-goal | Before Phase 9B |
 | Q11 | Does "Knowledge" mean the knowledge base described in R31 or something else? | Before Phase 9A |
+| Q12 | Which tool offers the MCP tools of 13.3 now that the local UI is not Gradio (D37): Gradio's MCP mode in a small separate app or an MCP library inside the API? | Step 13.3 |
 
 ## 12. Maintenance
 

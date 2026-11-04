@@ -4,7 +4,7 @@
 |---|---|
 | Purpose | Where each part runs in each profile |
 | Status | Proposed |
-| Last updated | 2026-10-31 |
+| Last updated | 2026-11-03 |
 | Source of truth | [WORK_PLAN.md](../WORK_PLAN.md) v1.9 |
 | Related documents | [Deployment guide](../10-deployment-and-operations/deployment-guide.md), [Environment configuration](../10-deployment-and-operations/environment-configuration.md) |
 

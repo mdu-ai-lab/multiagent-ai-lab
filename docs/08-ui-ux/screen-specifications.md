@@ -20,7 +20,7 @@
 | Mind map and graph view | Mind map and knowledge graph, each node linked to its source page | 9A, 9B.3, 13.2 |
 | Every answer | Thumbs up or down with optional comment | 13.4 |
 | Account and settings | Sign-up, login, settings, English and Swedish, themes | 1.10 |
-| Admin panel | Users, feedback, settings and the activity log | 1.10 |
+| Admin panel | Users | 1.10 |
 | Demo | Gradio app with the same features on public documents and a note about the daily GPU quota | 1.8, 13.2 |
 
 design-system.md is not created. The design of the chat page preview (colours, fonts, components) is written down in step 1.10.

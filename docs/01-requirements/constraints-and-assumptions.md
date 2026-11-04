@@ -4,7 +4,7 @@
 |---|---|
 | Purpose | Fixed limits and open assumptions that shape the design |
 | Status | Proposed |
-| Last updated | 2026-10-31 |
+| Last updated | 2026-11-03 |
 | Source of truth | [WORK_PLAN.md](../WORK_PLAN.md) v1.9 |
 | Related documents | [SRS](../01-requirements/srs.md), [Risk register](../12-project-management/risk-register.md) |
 

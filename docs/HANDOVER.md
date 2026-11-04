@@ -2,6 +2,34 @@
 
 Report of the last work session. Read this after docs/WORK_PLAN.md at the start of every session.
 
+## Session 4 November 2026: check and fixes
+
+Full check of the repo, GitHub and the docs after the chat page plan.
+
+- Mac tools upgraded for security fixes: uv 0.12.19 to 0.13.7 (advisory GHSA-hq85-5cpj-mr62)
+  and rclone 1.73.1 to 1.75.2. uv sync, uv run pytest (29 passed, 8 skipped) and the
+  verification numbers are unchanged.
+- make backup 2026-11-04_010820: OK at commit 696d6d6. chat-preview is now on Drive. The run
+  started before the rclone upgrade, so its log shows rclone v1.73.1.
+- make restore-test 2026-11-04_015210: OK, all 7 checks, 4715 s.
+- New backup rule (WORK_PLAN 15.1 item 5 and 6.4 rule 8): make backup and make restore-test
+  at the end of the project or when the owner asks.
+- Docs fixed: Q12 in the docs index, R1 to R34 in the traceability heading, first tag v0.0.0
+  in the Git workflow, admin panel row in the screen specifications, database status line and
+  the Last updated date of 62 docs.
+
+Notes for later steps:
+- Before the next backup: create an own Google Drive client_id for rclone. rclone says the
+  shared client_id "will stop working during 2026" (rclone.org/drive, making your own client_id).
+- pyproject.toml has uv_build>=0.12.19,<0.13.0. uv 0.13.7 still builds the project but warns.
+- ops/backup.py: a backup stopped with Ctrl+C may still write result OK in its manifest
+  (seen in the code, not tested).
+- Step 1.10: admin panel features beyond user management are decided when 1.10 starts.
+
+### Exact next step
+
+1. Phase 1, only after the owner says "start Phase 1".
+
 ## Session 4 November 2026: chat page plan
 
 The chat page preview (FastAPI, Jinja2, HTML, CSS and JavaScript, built outside this repo) was analysed.

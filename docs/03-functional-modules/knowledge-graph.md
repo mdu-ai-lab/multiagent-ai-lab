@@ -4,7 +4,7 @@
 |---|---|
 | Purpose | Specification of the knowledge graph and graphrag module |
 | Status | Proposed |
-| Last updated | 2026-10-31 |
+| Last updated | 2026-11-03 |
 | Source of truth | [WORK_PLAN.md](../WORK_PLAN.md) v1.9 |
 | Related documents | [Modules index](../03-functional-modules/README.md), [Traceability](../12-project-management/requirements-traceability.md) |
 

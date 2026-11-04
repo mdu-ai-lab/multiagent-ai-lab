@@ -8,6 +8,7 @@ Versions are tagged at the end of each phase (WORK_PLAN.md rule G).
 ### Changed
 
 - Plan: own chat web page with accounts and login in the new step 1.10 (D37, R34). Rule A, sections 6.3, 8.1, 8.2 and 9 and steps 12.4 to 13.3 match it. New open question Q12 (MCP tool). The docs follow the plan.
+- WORK_PLAN.md 15.1 and 6.4: make backup and make restore-test at the end of the project or when the owner asks.
 
 ### Fixed
 
@@ -19,6 +20,9 @@ Versions are tagged at the end of each phase (WORK_PLAN.md rule G).
 - Phase 0 status corrected in README.md, the docs index, project overview, roadmap, milestones, acceptance test cases, testing status and database design.
 - Requirement status: FR-OPS-004, NFR-PERF-001, NFR-PORT-001, NFR-SEC-005, R12, R13, R28 and R33.
 - WORK_PLAN.md and project-structure.md: ops/ folder in the repo structure.
+- docs/README.md: open questions now include Q12.
+- Requirement range in the traceability heading, first tag in the Git workflow, admin panel row in the screen specifications and the database status line.
+- Last updated date in 62 docs.
 
 ## [0.0.0] - 2026-11-03
 

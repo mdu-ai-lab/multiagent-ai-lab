@@ -74,7 +74,7 @@ Components, entities and APIs per requirement are listed in each module document
 | FR-ADM-001 | [api-ui-mcp](../03-functional-modules/api-ui-mcp.md) | AT-12.4 | Not implemented |
 | FR-ADM-002 | [api-ui-mcp](../03-functional-modules/api-ui-mcp.md) | AT-1.10 | Not implemented |
 
-## Owner requirements R1 to R33 (WORK_PLAN.md section 3, word for word)
+## Owner requirements R1 to R34 (WORK_PLAN.md section 3, word for word)
 
 | # | Requirement | Where it is covered | Status |
 |---|---|---|---|

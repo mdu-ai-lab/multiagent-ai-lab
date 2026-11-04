@@ -4,7 +4,7 @@
 |---|---|
 | Purpose | When a step and a phase count as done |
 | Status | Proposed |
-| Last updated | 2026-10-31 |
+| Last updated | 2026-11-03 |
 | Source of truth | [WORK_PLAN.md](../WORK_PLAN.md) v1.9 |
 | Related documents | [Acceptance criteria](../01-requirements/acceptance-criteria.md) |
 

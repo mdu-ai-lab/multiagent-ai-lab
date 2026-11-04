@@ -57,7 +57,7 @@ Rules that prevent lost files and conflicts:
 | 5 | Drive backup is one-way (rclone sync to the copy of each folder. Every changed or deleted file moves to a dated history/ folder). Nothing on Drive is deleted. No two-way sync |
 | 6 | Colab results go to Drive multiagent-ai-lab-backup/inbox/. On the Mac, make pull-inbox copies new files only (never overwrites) and imports them into MLflow |
 | 7 | Check Drive usage monthly. The owner's Drive has 2 TB |
-| 8 | Monthly restore test (make restore-test): checksum of every file, restore into a temporary folder, Qdrant snapshot and SQLite checks. From step 1.2 also check that MLflow opens |
+| 8 | Restore test (make restore-test) right after each make backup: checksum of every file, restore into a temporary folder, Qdrant snapshot and SQLite checks. From step 1.2 also check that MLflow opens |
 | 9 | Secrets (GitHub token, Hugging Face token) live in GitHub Secrets, Colab Secrets and your password manager. Never in Git or Drive |
 
 When the SSD is lost or broken, restore the backup to another SSD or laptop (docs/10-deployment-and-operations/backup-and-recovery.md). What you can do when the SSD is unavailable: write and test code, run public-data experiments on Colab and update docs. Private-document work waits until the SSD is back.

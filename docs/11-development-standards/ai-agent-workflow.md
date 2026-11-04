@@ -4,7 +4,7 @@
 |---|---|
 | Purpose | Instructions for AI assistants working on this project |
 | Status | Proposed |
-| Last updated | 2026-10-31 |
+| Last updated | 2026-11-04 |
 | Source of truth | [WORK_PLAN.md](../WORK_PLAN.md) v1.9 |
 | Related documents | [WORK_PLAN handover](../WORK_PLAN.md), [Definition of done](../11-development-standards/definition-of-done.md) |
 
@@ -31,7 +31,7 @@ Follow the checklist in [WORK_PLAN.md](../WORK_PLAN.md), section 15.1.
 2a. Update docs/HANDOVER.md: files changed, test results, problems and fixes, deviations from the plan and the exact next step.
 3. Commit and push (git add, git commit -m "...", git push). Merge and tag if a phase ended.
 4. Check that CI is green and the dashboard shows the new status.
-5. Run make backup.
+5. Run make backup, then make restore-test, at the end of the project (Phase 16) or when the owner asks.
 6. Download docs/WORK_PLAN.md from GitHub for the next chat.
 
 ## Change requests (PROPOSED, not yet in WORK_PLAN.md)

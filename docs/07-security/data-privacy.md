@@ -4,7 +4,7 @@
 |---|---|
 | Purpose | How private and personal data is handled |
 | Status | Proposed |
-| Last updated | 2026-10-31 |
+| Last updated | 2026-11-03 |
 | Source of truth | [WORK_PLAN.md](../WORK_PLAN.md) v1.9 |
 | Related documents | [Business rules](../01-requirements/business-rules.md), [Backup and recovery](../10-deployment-and-operations/backup-and-recovery.md) |
 
