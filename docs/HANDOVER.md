@@ -2,6 +2,24 @@
 
 Report of the last work session. Read this after docs/WORK_PLAN.md at the start of every session.
 
+## Session 5 November 2026: GitHub workflow (step 1.1)
+
+- gh 2.103.3 from Homebrew, logged in as Hossain007Bhuiyan.
+- Repo settings: merge commits only. Branches are not deleted after a merge.
+- Ruleset protect-main (id 26650257) on the default branch: pull request required with 0
+  approvals, no deletion, no force push, merge method merge, no bypass. GitHub also set
+  require_extra_approval_for_unattributed_changes to true by default. Its effect is not
+  documented and not checked.
+- Branch phase-1. Commit 46b3d12 records version 0.0.1 in CHANGELOG.md.
+- AT-1.1 passed: a direct push of phase-1 to main was refused (GH013, "Changes must be made
+  through a pull request"). Pull request #1 merged with merge commit 62c367c, tag v0.0.1.
+- No code changed. Tests were not re-run.
+
+### Exact next step
+
+1. Step 1.2 (MLflow), shown to the owner for approval first.
+2. These status changes reach main with the next pull request.
+
 ## Session 5 November 2026: agent harness plan
 
 The agent parts of the plan were checked against current published sources on agent harnesses.

@@ -13,7 +13,7 @@
 | Milestone | Phase | Marker | Status |
 |---|---|---|---|
 | M-0 | Phase 0: Foundations on the Mac | Version tag at phase end (1.1) | Done (v0.0.0) |
-| M-1 | Phase 1: MLOps, API and live delivery base | Version tag at phase end (1.1) | Not started |
+| M-1 | Phase 1: MLOps, API and live delivery base | Version tag at phase end (1.1) | In progress |
 | M-2 | Phase 2: Evaluation base | Version tag at phase end (1.1) | Not started |
 | M-3 | Phase 3: Ingestion | Version tag at phase end (1.1) | Not started |
 | M-4 | Phase 4: Charts and figures | Version tag at phase end (1.1) | Not started |

@@ -8,13 +8,13 @@ This file is the single source of truth for the project. It is stored in the rep
 
 | Item | Value |
 |---|---|
-| Plan status | Phase 0 done |
-| Last completed step | Step 0.7 done. Details in docs/HANDOVER.md |
-| Current phase | Phase 0 done (tag v0.0.0). Next: Phase 1, only after the owner says "start Phase 1" |
+| Plan status | Phase 1 in progress |
+| Last completed step | Step 1.1 done. Details in docs/HANDOVER.md |
+| Current phase | Phase 1 (branch phase-1). Next: step 1.2 |
 | Repo | github.com/mdu-ai-lab/multiagent-ai-lab (public, owned by the GitHub organization mdu-ai-lab). Created 31 October 2026 |
 | Live dashboard URL | Not created yet |
 | Live demo URL | Not created yet |
-| Latest version tag | v0.0.0 |
+| Latest version tag | v0.0.1 |
 | Open issues | See section 4.2 (open questions) |
 
 ## 2. Project summary
@@ -60,7 +60,7 @@ This file is the single source of truth for the project. It is stored in the rep
 | R25 | Coding rules (flat modules, file creation by the coding assistant after approval, hashes, full commands, Git one per line, expected output, human style, no comma before and/or/but) | Section 5.2 | Planned |
 | R26 | One phase at a time with checks and permission. Done/not-done table after each phase. What to do next after each step | Rule P | Planned |
 | R27 | Copy-pasteable plan | This file | Done |
-| R28 | Repo owned by a GitHub organization from the start | Step 0.1, step 1.1 | Partly done (organization repo created. Workflow in step 1.1) |
+| R28 | Repo owned by a GitHub organization from the start | Step 0.1, step 1.1 | Done (organization repo, protected main branch and pull request workflow) |
 | R29 | GraphRAG: answers that follow relationships between entities across documents | Phase 9A | Planned |
 | R30 | Ontology: a defined, versioned set of entity and relation types | Step 9A.1 | Planned |
 | R31 | Knowledge base: collections, knowledge graph and saved notes together (interpretation, see Q11) | Phases 9A, 9B | Planned |
@@ -415,7 +415,7 @@ weekly: health.yml checks both URLs and opens a GitHub issue if one is down
 
 | Step | What we will do | Why | Done-when test | Status |
 |---|---|---|---|---|
-| 1.1 GitHub workflow | Install the gh command-line tool with Homebrew. Protect the main branch with the ruleset protect-main (D39): pull request required with 0 approvals, no bypass, no deletion and no force push. Merge commits only. Use one branch per phase, named phase-1, phase-2 and so on (plus remote/YYYY-MM-DD branches for Colab work). Commit and push to the phase branch after every step. The first pull request is tagged v0.0.1. The phase branch stays and is merged to main again at phase end with its tag (v0.1.0, v0.2.0 and so on). Keep CHANGELOG.md updated every step. Members work through pull requests on branches. The ruleset applies to everyone. | The group can follow every change. Any version can be restored. | First pull request merged with tag v0.0.1. A direct push to main is refused. | Not done |
+| 1.1 GitHub workflow | Install the gh command-line tool with Homebrew. Protect the main branch with the ruleset protect-main (D39): pull request required with 0 approvals, no bypass, no deletion and no force push. Merge commits only. Use one branch per phase, named phase-1, phase-2 and so on (plus remote/YYYY-MM-DD branches for Colab work). Commit and push to the phase branch after every step. The first pull request is tagged v0.0.1. The phase branch stays and is merged to main again at phase end with its tag (v0.1.0, v0.2.0 and so on). Keep CHANGELOG.md updated every step. Members work through pull requests on branches. The ruleset applies to everyone. | The group can follow every change. Any version can be restored. | First pull request merged with tag v0.0.1. A direct push to main is refused. | Done |
 | 1.2 MLflow | Add an MLflow server to compose.yaml, running locally with its data on the SSD. Create one experiment per route. Every run logs the git commit, config, model versions, dataset versions, metrics and result files. Turn on automatic tracing for LangGraph steps and model calls. Each request trace also records its totals: tokens in and out, model calls, tool calls, time and the fallback used. export_results.py writes result summaries as JSON into results/ for the dashboard. | One place for all experiments and agent traces, at no cost. | A test run shows all fields. A trace shows each model call with time and tokens and the request totals. The export creates JSON files. | Not done |
 | 1.3 Versioning rules | Prompts go in the MLflow prompt registry. Each full pipeline setup is logged as a version. Datasets are pinned by Hugging Face revision and file hash. Models are pinned in models.yaml with their revision. Docker images are tagged with the release version. | Any result can be traced to the exact code, prompt, model and data. Companies need this audit trail. | Pick one old result and trace it to its exact versions. | Not done |
 | 1.4 CI pipeline | GitHub Actions on every push and pull request, using standard runners only: ruff (style), mypy (types), pytest unit tests, an integration test with a tiny model (Qwen3.5-0.8B on CPU), pip-audit (package security), a secret scan and an evaluation gate that fails if committed scores drop below their limits. Dependabot proposes security updates. Artifacts kept small with short retention. | Every update is checked automatically, at no cost. | CI is green. A deliberately broken commit fails CI. | Not done |
