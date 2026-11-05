@@ -23,6 +23,8 @@ from mlflow.tracking import MlflowClient
 from mrag.config import PROJECT_ROOT, Settings, get_settings
 
 TRACED_PROFILES = {"mac"}
+# Runs with this tag set to "true" are exported to results/ and shown on the dashboard
+PUBLISH_TAG = "mrag.publish"
 CONFIG_DIR = PROJECT_ROOT / "configs"
 # Span types for the calls llm_client makes
 CHAT = SpanType.CHAT_MODEL
@@ -223,13 +225,16 @@ def config_params(profile: str) -> dict[str, str]:
 
 
 @contextmanager
-def run(route: str, run_name: str | None = None,
-        datasets: dict[str, str] | None = None) -> Iterator[str]:
-    # One experiment run, for example an evaluation. Yields the run ID
+def run(route: str, run_name: str | None = None, datasets: dict[str, str] | None = None,
+        publish: bool = False) -> Iterator[str]:
+    # One experiment run, for example an evaluation. Yields the run ID. publish=True only
+    # for runs on public test sets: their metrics go to GitHub and the dashboard. The run
+    # name is published too, so it must not contain private information
     if not _enabled:
         raise TracingError("MLflow runs are only logged in the mac profile")
+    tags = git_tags() | {PUBLISH_TAG: "true" if publish else "false"}
     with mlflow.start_run(experiment_id=experiment_id(route), run_name=run_name,
-                          tags=git_tags()) as active:
+                          tags=tags) as active:
         params = config_params(_profile)
         params.update({f"dataset.{name}": version for name, version in (datasets or {}).items()})
         mlflow.log_params(params)

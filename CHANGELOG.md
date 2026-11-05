@@ -11,6 +11,7 @@ Versions are tagged at the end of each phase (WORK_PLAN.md rule G).
 - make mlflow starts the local MLflow server on the address in MRAG_MLFLOW_TRACKING_URI, with its data in mlflow/ and usage statistics turned off. It only accepts an address on this Mac.
 - tracing.py: one MLflow trace per request with its totals (tokens in and out, model calls, tool calls, time and the fallback used), one span per model call and experiment runs with the git commit, config fingerprints, model and dataset versions, metrics and result files. On in the mac profile only.
 - llm_client.py records every chat, streamed chat, embedding and rerank call inside a request with its model, inputs, answer, time and tokens. Streamed answers now report their token counts.
+- export_results.py writes a JSON summary of every published MLflow run into results/<route>/<date>_<run id>.json for the dashboard: metrics, versions and git commit only, each run once. Runs are published only when marked for public test sets.
 
 ### Changed
 
