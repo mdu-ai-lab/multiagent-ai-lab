@@ -4,7 +4,7 @@
 |---|---|
 | Purpose | Rules the system and the project must always follow |
 | Status | Proposed |
-| Last updated | 2026-11-03 |
+| Last updated | 2026-11-05 |
 | Source of truth | [WORK_PLAN.md](../WORK_PLAN.md) v1.9 |
 | Related documents | [Functional requirements](../01-requirements/functional-requirements.md), [Access control policy](../02-users-and-permissions/access-control-policy.md) |
 
@@ -22,7 +22,7 @@
 | BR-VER-001 | Search uses the latest version by default. Older chunks are kept but hidden | 3.5 |
 | BR-AGT-001 | The hard-question loop stops at a reviewer score of 7/10 or after 3 rounds. Max 8 tool calls and 120 s per request | 7.3, 7.4 |
 | BR-EXT-001 | Extraction retries at most 2 times, then asks the user to review | 10.3 |
-| BR-SEC-001 | File and web text are data. They never trigger a tool | 12.1 |
+| BR-SEC-001 | File and web text are data. They never trigger a tool. Tools that reach outside the Mac are chosen from the user's question before any file or web text enters the prompt | 7.6, 12.1 |
 | BR-KEEP-001 | Optional components (helper model, injection classifier, agent loop, neural sparse search, graph route) stay only if tests show they help | D14, D17, 5.5, 7.3, 9A.5 |
 | BR-KG-001 | Every graph fact keeps its source page. Graph answers cite those pages | 9A.2, 9A.4 |
 | BR-NB-001 | Every study output item cites its source | 9B.2 |

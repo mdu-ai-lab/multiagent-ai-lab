@@ -4,7 +4,7 @@
 |---|---|
 | Purpose | Components, data flow and boundaries of the planned system |
 | Status | Proposed |
-| Last updated | 2026-11-04 |
+| Last updated | 2026-11-05 |
 | Source of truth | [WORK_PLAN.md](../WORK_PLAN.md) v1.9 |
 | Related documents | [Backend architecture](../04-architecture/backend-architecture.md), [Integration architecture](../04-architecture/integration-architecture.md), [Threat model](../07-security/threat-model.md) |
 
@@ -26,6 +26,7 @@ flowchart TB
   MCP --> API
   DEMO -->|in-process| SVC
   SVC --> G[LangGraph agent graph graph.py]
+  G --> H[harness.py prompt budget, tool list, limits]
   G --> R[router.py]
   R --> CHAT[chat]
   R --> QA[document Q&A qa.py]

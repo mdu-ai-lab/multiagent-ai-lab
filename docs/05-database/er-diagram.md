@@ -4,7 +4,7 @@
 |---|---|
 | Purpose | Proposed relational entities |
 | Status | Proposed |
-| Last updated | 2026-11-03 |
+| Last updated | 2026-11-05 |
 | Source of truth | [WORK_PLAN.md](../WORK_PLAN.md) v1.9 |
 | Related documents | [Data dictionary](../05-database/data-dictionary.md) |
 
@@ -73,4 +73,4 @@ erDiagram
   }
 ```
 
-Chat threads (LangGraph), vectors (Qdrant), the knowledge graph (graph store) and traces (MLflow) live in their own stores and are not drawn here. NOTEBOOK and NOTE come from step 9B.1. Their storage is not decided: REQUIRES CONFIRMATION.
+The state of running requests (LangGraph checkpointer), vectors (Qdrant), the knowledge graph (graph store) and traces (MLflow) live in their own stores and are not drawn here. NOTEBOOK and NOTE come from step 9B.1. Their storage is not decided: REQUIRES CONFIRMATION.

@@ -4,7 +4,7 @@
 |---|---|
 | Purpose | Quality, security, cost and portability requirements with unique IDs |
 | Status | Proposed |
-| Last updated | 2026-11-03 |
+| Last updated | 2026-11-05 |
 | Source of truth | [WORK_PLAN.md](../WORK_PLAN.md) v1.9 |
 | Related documents | [SRS](../01-requirements/srs.md), [Security requirements](../07-security/security-requirements.md), [Performance testing](../09-testing/performance-testing.md) |
 
@@ -29,7 +29,7 @@ Numbers come from the done-when tests in WORK_PLAN.md v1.7. They are starting ta
 | NFR-PERF-004 | Graph extraction time and model calls per document are recorded | 9A.2, 9A.5 | Not implemented |
 | NFR-REL-001 | Jobs survive crashes and notebook disconnects | 3.1, 1.5 | Not implemented |
 | NFR-REL-002 | No runaway agent loops. Every fallback logged | 7.4 | Not implemented |
-| NFR-SEC-001 | File and web text never act as instructions or trigger tools | 12.1 | Not implemented |
+| NFR-SEC-001 | File and web text never act as instructions or trigger tools | 7.6, 12.1 | Not implemented |
 | NFR-SEC-002 | Code runs only in a sandbox without network and with resource limits | 11.2 | Not implemented |
 | NFR-SEC-003 | Zero cross-user access leaks | 12.4 | Not implemented |
 | NFR-SEC-004 | Input limits: 50 MB per file, 1,000 pages, type checked by content, question length, request rate | 12.4 | Not implemented |
@@ -41,7 +41,7 @@ Numbers come from the done-when tests in WORK_PLAN.md v1.7. They are starting ta
 | NFR-REPRO-003 | Every result traces to its code, prompt, model and data versions | 1.3 | Not implemented |
 | NFR-PORT-001 | Same code runs in Mac, GPU, demo, CI and company profiles by config | 0.1, 0.5 | Partially implemented (mac and demo profiles only) |
 | NFR-PORT-002 | Database switches from SQLite to PostgreSQL by config | 15.3 | Not implemented |
-| NFR-OBS-001 | Every agent step and model call is traced with time and tokens | 1.2 | Not implemented |
+| NFR-OBS-001 | Every agent step and model call is traced with time and tokens. Each request also records its totals: tokens in and out, model calls, tool calls, time and the fallback used | 1.2 | Not implemented |
 | NFR-MAINT-001 | Flat modules, CI checks and an updated plan after every step | Rules C2, G | Not implemented |
 | NFR-MAINT-002 | Local output and verification numbers match the expected output for every step | Rules C12, C13 | Not implemented |
 | NFR-LEGAL-001 | Licences of models, datasets and tools checked before use | 2.1, 5.2, 5.4 | Not implemented |

@@ -4,7 +4,7 @@
 |---|---|
 | Purpose | Assets, entry points, threats and planned mitigations |
 | Status | Proposed |
-| Last updated | 2026-11-04 |
+| Last updated | 2026-11-05 |
 | Source of truth | [WORK_PLAN.md](../WORK_PLAN.md) v1.9 |
 | Related documents | [Security requirements](../07-security/security-requirements.md), [Risk register](../12-project-management/risk-register.md) |
 
@@ -25,7 +25,7 @@ API, UI, MCP, uploaded files, fetched web pages, the demo, GitHub Actions, noteb
 | ID | Threat | Severity | Evidence in plan | Planned mitigation | Gap |
 |---|---|---|---|---|---|
 | SF-01 | API has no login before step 1.10. Anyone on the same network could call it | Medium | 1.6, 1.10 | Login in 1.10 | Recommend binding to the Mac only until 1.10. Not yet in plan |
-| SF-02 | Hidden instructions inside files or web pages | High | 12.1 | Rules in 12.1, classifier in 12.2 | None until Phase 12 |
+| SF-02 | Hidden instructions inside files or web pages | High | 7.6, 12.1 | Basic rules in 7.6 before the first tool, full rule tests in 12.1, classifier in 12.2 | Full attack tests only in Phase 12 |
 | SF-03 | Model-written code escapes the sandbox | High | 11.2 | Docker, no network, limits | Escape tests in 11.2 |
 | SF-04 | File text leaks through web search | High | 8.1 | Question only, leak test 8.4 | — |
 | SF-05 | Private file uploaded to the demo by mistake | High | 1.8 | Public samples only (BR-PRIV-001) | Manual process. A check in CI: REQUIRES CONFIRMATION |

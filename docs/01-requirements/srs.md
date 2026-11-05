@@ -4,7 +4,7 @@
 |---|---|
 | Purpose | Single entry point to the planned system requirements |
 | Status | Proposed |
-| Last updated | 2026-11-04 |
+| Last updated | 2026-11-05 |
 | Source of truth | [WORK_PLAN.md](../WORK_PLAN.md) v1.9 |
 | Related documents | [Functional requirements](../01-requirements/functional-requirements.md), [Non-functional requirements](../01-requirements/non-functional-requirements.md), [Business rules](../01-requirements/business-rules.md) |
 

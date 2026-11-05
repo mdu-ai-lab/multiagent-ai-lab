@@ -4,7 +4,7 @@
 |---|---|
 | Purpose | Central entry point for all project documentation |
 | Status | Proposed |
-| Last updated | 2026-11-04 |
+| Last updated | 2026-11-05 |
 | Source of truth | [WORK_PLAN.md](WORK_PLAN.md) v1.9 |
 | Related documents | [WORK_PLAN.md](WORK_PLAN.md) |
 
@@ -88,7 +88,7 @@ Everything except the Phase 0 foundations.
 | ID | Concern |
 |---|---|
 | SF-01 | API without login before step 1.10. Recommendation: listen only on the Mac itself |
-| SF-02 | Hidden instructions in files and web pages until Phase 12 |
+| SF-02 | Hidden instructions in files and web pages. Basic rules from 7.6. Full attack tests only in Phase 12 |
 | SF-05 | Private file uploaded to the public demo by mistake |
 | SF-09 | Traces not masked before Phase 12 |
 | SF-12 | Entity merging could link facts across collections |

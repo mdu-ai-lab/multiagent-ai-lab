@@ -4,7 +4,7 @@
 |---|---|
 | Purpose | One-page view of the planned architecture |
 | Status | Proposed |
-| Last updated | 2026-11-04 |
+| Last updated | 2026-11-05 |
 | Source of truth | [WORK_PLAN.md](../WORK_PLAN.md) v1.9 |
 | Related documents | [System architecture](../04-architecture/system-architecture.md), [ADRs](../04-architecture/architecture-decision-records/README.md) |
 
@@ -27,7 +27,7 @@ Browser (chat page)  ·  Live demo (ZeroGPU Space)  ·  MCP clients
             ▼                             ▼
         FastAPI (api.py) ───────► service.py (core functions)
                                           │
-                     LangGraph agent graph (graph.py)
+                     LangGraph agent graph (graph.py) ◄── harness.py (prompt budget, tool list, limits, trace totals)
    Router → chat · document Q&A · compare · web · summary · extract · calc
                      │ Planner–Navigator–Reviewer (max 3, gated)
                      │ grounding.py (citations, claim check, refusal)

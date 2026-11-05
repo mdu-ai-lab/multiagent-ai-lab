@@ -4,13 +4,13 @@
 |---|---|
 | Purpose | Project, technical and security risks |
 | Status | Proposed |
-| Last updated | 2026-11-04 |
+| Last updated | 2026-11-05 |
 | Source of truth | [WORK_PLAN.md](../WORK_PLAN.md) v1.9 |
 | Related documents | [Threat model](../07-security/threat-model.md) |
 
 > Implementation status: Phase 0 done (project setup, search database, Mac model server, model client and backup). Later features are planned and not built yet. Test results are in docs/HANDOVER.md.
 
-Risks RISK-001 to RISK-020 are copied from WORK_PLAN.md section 14. Security findings SF-01 to SF-14 are in the [threat model](../07-security/threat-model.md).
+Risks RISK-001 to RISK-022 are copied from WORK_PLAN.md section 14. Security findings SF-01 to SF-14 are in the [threat model](../07-security/threat-model.md).
 
 | ID / Risk | Impact | Mitigation |
 |---|---|---|
@@ -25,7 +25,7 @@ Risks RISK-001 to RISK-020 are copied from WORK_PLAN.md section 14. Security fin
 | RISK-009  Agent loop hurts faithfulness or speed | Worse answers | Gated loop and ablation (7.3) |
 | RISK-010  Local judge bias | Misleading scores | Other-family judge, human check, deterministic metrics first (2.5) |
 | RISK-011  Dataset licence or fit | Can't use a dataset | Checked in 2.1, replaced if needed |
-| RISK-012  Hidden instructions in documents or web pages | Data leak or misuse | Phase 12, sandbox, no tools from document text |
+| RISK-012  Hidden instructions in documents or web pages | Data leak or misuse | Basic rules from 7.6, before the first tool. Full rule tests in Phase 12. Sandbox. No tools from document text |
 | RISK-013  Model or package supply chain | Tampered files | Pinned revisions and hashes, uv.lock, pip-audit, Dependabot |
 | RISK-014  Fast-moving tools | Breaking upgrades | Pin everything. Upgrade only through the CI evaluation gate |
 | RISK-015  Scope creep | Never finish | Non-goals list, phase gates |
@@ -34,3 +34,5 @@ Risks RISK-001 to RISK-020 are copied from WORK_PLAN.md section 14. Security fin
 | RISK-018  GraphRAG does not beat hybrid RAG | Wasted effort | Kept only where tests show it helps (D17) |
 | RISK-019  Docker Desktop licence in companies | Unexpected cost for a company | Docker Engine on Linux servers (15.5) |
 | RISK-020  Context lost between chats | Wrong decisions repeated | This file, decision log, end-of-chat checklist |
+| RISK-021  Native tool calls are unreliable with the 4-bit main model | Wrong or missing tool calls | Mac test in 7.6. JSON schema output as the fallback |
+| RISK-022  Agent steps cost more tokens and time without better answers | Slower answers | Cost per answer in 2.3 and per route in 7.6. Agent loops kept only where they help (7.3) |

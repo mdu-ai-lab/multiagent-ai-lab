@@ -4,7 +4,7 @@
 |---|---|
 | Purpose | Specification of the agents and memory module |
 | Status | Proposed |
-| Last updated | 2026-11-03 |
+| Last updated | 2026-11-05 |
 | Source of truth | [WORK_PLAN.md](../WORK_PLAN.md) v1.9 |
 | Related documents | [Modules index](../03-functional-modules/README.md), [Traceability](../12-project-management/requirements-traceability.md) |
 
@@ -14,19 +14,19 @@
 |---|---|
 | Purpose | Send each request to the right route and remember the chat |
 | Actors | Member, MCP client |
-| Functional requirements | FR-AGT-001 to FR-AGT-003, FR-QA-006, FR-CHAT-001, FR-CHAT-003 |
-| Business rules | BR-AGT-001 |
-| Planned files | router.py, graph.py, planner.py, memory.py |
+| Functional requirements | FR-AGT-001 to FR-AGT-004, FR-QA-006, FR-CHAT-001, FR-CHAT-003 |
+| Business rules | BR-AGT-001, BR-SEC-001 |
+| Planned files | router.py, graph.py, planner.py, memory.py, harness.py, security.py |
 | Models and tools | LangGraph, Qwen3.5-2B helper |
-| Data entities | Chat thread (LangGraph checkpoints) |
+| Data entities | Chat tables of 1.10. State of a running request (LangGraph checkpoints) |
 | API endpoints | Chat endpoint |
 | Input validation | Message, chosen files, state |
 | Expected outputs | Route decision, answer |
 | Error conditions | Low confidence leads to the main model or a question. Limits stop loops |
 | Events and notifications | — |
-| Security considerations | Router manipulation by user text |
-| Testing requirements | Routing accuracy, loop limits, fallbacks |
-| Acceptance criteria | AT-7.1 to AT-7.5 |
+| Security considerations | Router manipulation by user text. Hidden instructions in file and web text |
+| Testing requirements | Routing accuracy, loop limits, fallbacks, tool access and tool-call reliability |
+| Acceptance criteria | AT-7.1 to AT-7.6 |
 | Plan and paper references | Phase 7 [Chakravorty, Abstract, p. iii; Sec 8.7, p. 47] |
 | Permissions | See [role permission matrix](../02-users-and-permissions/role-permission-matrix.md) |
 | Current implementation status | Not implemented |

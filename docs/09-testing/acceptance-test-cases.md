@@ -4,7 +4,7 @@
 |---|---|
 | Purpose | One test case per plan step |
 | Status | Proposed |
-| Last updated | 2026-11-04 |
+| Last updated | 2026-11-05 |
 | Source of truth | [WORK_PLAN.md](../WORK_PLAN.md) v1.9 |
 | Related documents | [Test plan](../09-testing/test-plan.md), [Traceability](../12-project-management/requirements-traceability.md) |
 
@@ -22,7 +22,7 @@ Copied from the done-when column of WORK_PLAN.md section 12. The plan stays the 
 | AT-0.6 | Backup and sync | Backup runs. A file restored into a temp folder matches the original. Drive usage recorded. | Passed |
 | AT-0.7 | Plan in the repo | docs/WORK_PLAN.md is on GitHub and shows Phase 0 progress. | Passed |
 | AT-1.1 | GitHub workflow | First pull request merged with tag v0.0.1. | Not run |
-| AT-1.2 | MLflow | A test run shows all fields. A trace shows each model call with time and tokens. The export creates JSON files. | Not run |
+| AT-1.2 | MLflow | A test run shows all fields. A trace shows each model call with time and tokens and the request totals. The export creates JSON files. | Not run |
 | AT-1.3 | Versioning rules | Pick one old result and trace it to its exact versions. | Not run |
 | AT-1.4 | CI pipeline | CI is green. A deliberately broken commit fails CI. | Not run |
 | AT-1.5 | Free GPU profile | The smoke test runs on Colab and on Kaggle. The chosen GPU models are recorded. The runs appear in the Mac's MLflow. | Not run |
@@ -49,7 +49,7 @@ Copied from the done-when column of WORK_PLAN.md section 12. The plan stays the 
 | AT-5.3 | Hybrid search | The filter test returns only allowed chunks. | Not run |
 | AT-5.4 | Reranking | Better than no reranking on dev. | Not run |
 | AT-5.5 | Ablation tests | Best setup beats dense-only on nDCG@10 with CI above 0. Search p50 ≤ 2 s on the Mac. | Not run |
-| AT-6.1 | Cited answers | Every test answer carries citations. | Not run |
+| AT-6.1 | Cited answers | Every test answer carries citations. A unit test shows that no prompt goes over the budget in any profile. | Not run |
 | AT-6.2 | Small-file mode | Size rule per profile chosen by test numbers. | Not run |
 | AT-6.3 | Citation and claim check | 100% valid citations. Unsupported claims ≤ 10%. | Not run |
 | AT-6.4 | Refusal | Refusal F1 ≥ 0.70 on test. | Not run |
@@ -59,6 +59,7 @@ Copied from the done-when column of WORK_PLAN.md section 12. The plan stays the 
 | AT-7.3 | Hard-question loop | Judge score up. Faithfulness drop ≤ 2 points. Otherwise it stays off. | Not run |
 | AT-7.4 | Limits and fallbacks | 0 runaway loops in 200 runs. Every fallback tested. | Not run |
 | AT-7.5 | Chat memory | Follow-up questions in test chats answered correctly. | Not run |
+| AT-7.6 | Tool access and basic safety | A route cannot call a tool outside its list. A test file that says "search the web" causes 0 web calls. Tool-call test results with time per call are in MLflow. For each route, accuracy, tokens, model calls and p50 time per answer are logged with and without the agent steps. | Not run |
 | AT-8.1 | Opt-in search | Toggle off → 0 web calls. No key or payment needed. | Not run |
 | AT-8.2 | Read pages | Clean text with source for the test pages. | Not run |
 | AT-8.3 | Web citations | Every web citation points to a fetched URL. | Not run |

@@ -4,7 +4,7 @@
 |---|---|
 | Purpose | Planned security controls |
 | Status | Proposed |
-| Last updated | 2026-11-04 |
+| Last updated | 2026-11-05 |
 | Source of truth | [WORK_PLAN.md](../WORK_PLAN.md) v1.9 |
 | Related documents | [Threat model](../07-security/threat-model.md), [Non-functional requirements](../01-requirements/non-functional-requirements.md) |
 
@@ -12,7 +12,8 @@
 
 | Control | Requirement IDs | Phase | Status |
 |---|---|---|---|
-| File and web text are data only | NFR-SEC-001, BR-SEC-001 | 12.1 | Not implemented |
+| File and web text are data only | NFR-SEC-001, BR-SEC-001 | 7.6, 12.1 | Not implemented |
+| Allowed tools per route. Outside tools chosen before file or web text enters the prompt | FR-AGT-004, BR-SEC-001 | 7.6 | Not implemented |
 | Optional injection classifier | NFR-SEC-001, BR-KEEP-001 | 12.2 | Not implemented |
 | Code sandbox | NFR-SEC-002 | 11.2 | Not implemented |
 | Access per collection (including graph route and notebooks) | NFR-SEC-003, BR-ACC-001 | 5.3, 12.4, 9A.4, 9B.1 | Not implemented |

@@ -4,7 +4,7 @@
 |---|---|
 | Purpose | How the platform will be watched |
 | Status | Proposed |
-| Last updated | 2026-11-03 |
+| Last updated | 2026-11-05 |
 | Source of truth | [WORK_PLAN.md](../WORK_PLAN.md) v1.9 |
 | Related documents | [Incident response](../10-deployment-and-operations/incident-response.md) |
 
@@ -13,6 +13,7 @@
 | What | Tool | Step |
 |---|---|---|
 | Every agent step and model call with time and tokens | MLflow tracing | 1.2 |
+| Request totals: tokens in and out, model calls, tool calls, time and the fallback used | MLflow tracing | 1.2 |
 | Fallbacks | Logged in the trace | 7.4 |
 | Latency, errors, fallbacks, low-rated answers | Local monitoring view | 13.4 |
 | User feedback | Saved to the trace | 13.4 |

@@ -4,7 +4,7 @@
 |---|---|
 | Purpose | Every planned functional requirement with a unique ID |
 | Status | Proposed |
-| Last updated | 2026-11-04 |
+| Last updated | 2026-11-05 |
 | Source of truth | [WORK_PLAN.md](../WORK_PLAN.md) v1.9 |
 | Related documents | [SRS](../01-requirements/srs.md), [Traceability](../12-project-management/requirements-traceability.md), [Modules](../03-functional-modules/README.md) |
 
@@ -37,6 +37,7 @@ All requirements come from WORK_PLAN.md v1.7. They are proposed until the group 
 | FR-AGT-001 | Route each request through rules, then the helper model, then the main model or a question to the user | 7.1 | Not implemented |
 | FR-AGT-002 | Run the Planner, Navigator and Reviewer loop only for hard questions, max 3 rounds | 7.3 | Not implemented |
 | FR-AGT-003 | Enforce request limits and fallback paths | 7.4 | Not implemented |
+| FR-AGT-004 | Give each route only the tools on its list, each with a timeout and a result size limit. Choose tools that reach outside the Mac from the user's question before any file or web text enters the prompt | 7.6 | Not implemented |
 | FR-WEB-001 | Web search only when the user turns it on. Send only the rewritten question | 8.1 | Not implemented |
 | FR-WEB-002 | Read and clean fetched pages. Do not store them in collections | 8.2 | Not implemented |
 | FR-WEB-003 | Cite web sources as [W#] with URL and apply the claim check | 8.3 | Not implemented |

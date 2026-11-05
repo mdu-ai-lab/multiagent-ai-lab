@@ -4,7 +4,7 @@
 |---|---|
 | Purpose | Plain definitions of terms used across the documentation |
 | Status | Proposed |
-| Last updated | 2026-11-03 |
+| Last updated | 2026-11-05 |
 | Source of truth | [WORK_PLAN.md](../WORK_PLAN.md) v1.9 |
 | Related documents | [Project overview](../00-project-overview/project-overview.md) |
 
@@ -15,6 +15,7 @@
 | RAG | Retrieval-augmented generation: the model answers using text found in your files |
 | Agent | A model-driven step that decides what to do next, such as which search to run |
 | Route | One task path in the agent graph (chat, document Q&A, web, summary, extraction, calculation, compare) |
+| Agent harness | The rules around the agents in one module (harness.py): prompt token budget, allowed tools per route, request limits, basic safety rules and trace totals |
 | Chunk | A small piece of a document stored for search |
 | Element | One parsed part of a document (heading, paragraph, table, figure) with page and position |
 | Hybrid search | Combining meaning search (vectors) with word search (BM25) |

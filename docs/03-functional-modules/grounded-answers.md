@@ -4,7 +4,7 @@
 |---|---|
 | Purpose | Specification of the grounded answers module |
 | Status | Proposed |
-| Last updated | 2026-11-03 |
+| Last updated | 2026-11-05 |
 | Source of truth | [WORK_PLAN.md](../WORK_PLAN.md) v1.9 |
 | Related documents | [Modules index](../03-functional-modules/README.md), [Traceability](../12-project-management/requirements-traceability.md) |
 
@@ -16,7 +16,7 @@
 | Actors | Member |
 | Functional requirements | FR-QA-001 to FR-QA-005, FR-CHAT-002 |
 | Business rules | BR-GND-001 |
-| Planned files | qa.py, grounding.py |
+| Planned files | qa.py, grounding.py, harness.py (prompt budget) |
 | Models and tools | Main model |
 | Data entities | — |
 | API endpoints | Chat endpoint |

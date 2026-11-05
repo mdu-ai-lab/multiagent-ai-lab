@@ -4,7 +4,7 @@
 |---|---|
 | Purpose | Tests per phase |
 | Status | Proposed |
-| Last updated | 2026-11-03 |
+| Last updated | 2026-11-05 |
 | Source of truth | [WORK_PLAN.md](../WORK_PLAN.md) v1.9 |
 | Related documents | [Acceptance test cases](../09-testing/acceptance-test-cases.md), [Testing status](../09-testing/testing-status.md) |
 
@@ -21,7 +21,7 @@ Each step in WORK_PLAN.md has a done-when test. These are the acceptance tests. 
 | 4 | Figure descriptions help retrieval | LongDocURL |
 | 5 | Ablation, filters, latency | LongDocURL, QASPER |
 | 6 | Citations, claim check, refusal | QASPER |
-| 7 | Routing, loops, fallbacks, memory | Mixed test set |
+| 7 | Routing, loops, fallbacks, memory, tool access and tool calls | Mixed test set, BFCL |
 | 8 | Toggle, leak test | — |
 | 9 | Coverage vs top-k RAG | GovReport, SPACE |
 | 9A | Ontology generation, extraction precision, engine comparison, filter, hybrid vs GraphRAG | 2WikiMultihopQA, MuSiQue |
@@ -49,3 +49,4 @@ Each step in WORK_PLAN.md has a done-when test. These are the acceptance tests. 
 | MuSiQue | GraphRAG | CC BY 4.0 per most sources. One paper says CC BY-SA 4.0. Confirm in 2.1 | Harder multi-hop questions |
 | Public speech set | Audio | Chosen and checked in 2.1 | Word error rate test |
 | Public injection set | Security | Chosen and checked in 12.2 | Attack tests |
+| Berkeley Function Calling Leaderboard (BFCL) | Tool calls | Apache 2.0 (Hugging Face card, confirm in 7.6) | Public test of whether the model picks the right tool with valid arguments |
