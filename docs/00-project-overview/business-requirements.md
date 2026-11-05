@@ -10,7 +10,7 @@
 
 > Implementation status: Phase 0 done (project setup, search database, Mac model server, model client and backup). Later features are planned and not built yet. Test results are in docs/HANDOVER.md.
 
-These are the owner's stated goals from the planning chat. They are recorded as stated, not as approved by the group supervisor.
+These are the owner's stated goals from the planning chat. They are recorded as stated, not as approved by the group.
 
 | ID | Business requirement | Source |
 |---|---|---|
@@ -31,4 +31,4 @@ These are the owner's stated goals from the planning chat. They are recorded as 
 | Every route has real evaluation numbers against baselines | Step 16.3 |
 | The live dashboard and demo stay online at no cost | Steps 1.7, 1.8, 1.9 |
 
-Supervisor confirmation of these requirements: REQUIRES CONFIRMATION.
+Group confirmation of these requirements: REQUIRES CONFIRMATION.

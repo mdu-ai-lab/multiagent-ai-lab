@@ -10,7 +10,7 @@
 
 > Implementation status: Phase 0 done (project setup, search database, Mac model server, model client and backup). Later features are planned and not built yet. Test results are in docs/HANDOVER.md.
 
-All requirements come from WORK_PLAN.md v1.7. They are proposed until the group supervisor confirms them. "Plan step" points to the step that builds and tests the requirement.
+All requirements come from WORK_PLAN.md v1.7. They are proposed until the group confirms them. "Plan step" points to the step that builds and tests the requirement.
 
 | ID | Requirement | Plan step | Status |
 |---|---|---|---|

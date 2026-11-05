@@ -53,4 +53,4 @@ See [acceptance criteria](acceptance-criteria.md).
 
 ## 8. Status
 
-All requirements are proposed. Their implementation status is in the requirement documents. Supervisor approval: REQUIRES CONFIRMATION.
+All requirements are proposed. Their implementation status is in the requirement documents. Group approval: REQUIRES CONFIRMATION.

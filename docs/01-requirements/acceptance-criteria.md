@@ -14,4 +14,4 @@ A step is accepted when its done-when test in WORK_PLAN.md section 12 passes and
 
 Each done-when test is written out as a numbered test case in [acceptance test cases](../09-testing/acceptance-test-cases.md). Requirement links are in the [traceability matrix](../12-project-management/requirements-traceability.md).
 
-Supervisor acceptance of the whole v1: REQUIRES CONFIRMATION.
+Group acceptance of the whole v1: REQUIRES CONFIRMATION.

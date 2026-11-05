@@ -101,7 +101,7 @@ Full list: [threat model](07-security/threat-model.md).
 |---|---|
 | Open questions from WORK_PLAN.md section 4.2 (listed below) | WORK_PLAN.md section 4.2 |
 | Storage and backup of the knowledge graph and notebooks | [Database design](05-database/database-design.md) |
-| Supervisor approval of requirements | [SRS](01-requirements/srs.md) |
+| Group approval of requirements | [SRS](01-requirements/srs.md) |
 | Admin role and collection sharing | [User types](02-users-and-permissions/user-types.md) |
 | API paths, error format, pagination | [Endpoint catalog](06-api/endpoint-catalog.md), [API standards](06-api/api-standards.md) |
 | Password hash and token details | [Authentication and authorization](07-security/authentication-and-authorization.md) |
@@ -138,4 +138,4 @@ Full list: [threat model](07-security/threat-model.md).
 
 ## 12. Maintenance
 
-Update WORK_PLAN.md first, then the affected documents, in the same commit. Change a document's status only when the change is real. Never mark a document Approved unless the group supervisor approved it.
+Update WORK_PLAN.md first, then the affected documents, in the same commit. Change a document's status only when the change is real. Never mark a document Approved unless the group approved it.

@@ -16,7 +16,7 @@ The planned system has 4 layers:
 |---|---|---|
 | Clients | Chat web page, live demo, MCP clients | [Frontend architecture](frontend-architecture.md) |
 | Service | FastAPI (api.py) over service.py | [Backend architecture](backend-architecture.md) |
-| Intelligence | LangGraph supervisor and routes, grounding, retrieval, model client | [System architecture](system-architecture.md) |
+| Intelligence | LangGraph agent graph and routes, grounding, retrieval, model client | [System architecture](system-architecture.md) |
 | Data and models | Qdrant, SQLite (Postgres later), MLflow, llama.cpp / vLLM / Transformers | [Deployment architecture](deployment-architecture.md) |
 
 The plan's own architecture diagram, copied word for word from WORK_PLAN.md section 8.1:
@@ -27,7 +27,7 @@ Browser (chat page)  ·  Live demo (ZeroGPU Space)  ·  MCP clients
             ▼                             ▼
         FastAPI (api.py) ───────► service.py (core functions)
                                           │
-                     LangGraph supervisor (graph.py)
+                     LangGraph agent graph (graph.py)
    Router → chat · document Q&A · compare · web · summary · extract · calc
                      │ Planner–Navigator–Reviewer (max 3, gated)
                      │ grounding.py (citations, claim check, refusal)

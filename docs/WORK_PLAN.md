@@ -276,7 +276,7 @@ Browser (chat page)  ·  Live demo (ZeroGPU Space)  ·  MCP clients
             ▼                             ▼
         FastAPI (api.py) ───────► service.py (core functions)
                                           │
-                     LangGraph supervisor (graph.py)
+                     LangGraph agent graph (graph.py)
    Router → chat · document Q&A · compare · web · summary · extract · calc
                      │ Planner–Navigator–Reviewer (max 3, gated)
                      │ grounding.py (citations, claim check, refusal)
@@ -476,7 +476,7 @@ weekly: health.yml checks both URLs and opens a GitHub issue if one is down
 | Step | What we will do | Why | Done-when test | Status |
 |---|---|---|---|---|
 | 7.1 Router | router.py decides in 3 stages. Rules first (for example "extract" with a file goes to extraction, web toggle on goes to web). Then the helper model sorts the rest into JSON: route, files, needs web. If confidence is low, the main model decides or the system asks you. | Each request reaches the right agent. The helper keeps it fast. | ≥ 90% correct. Helper kept only if within 2 points of the main model. | Not done |
-| 7.2 Agent graph | graph.py builds the LangGraph graph with chat, document Q&A and compare nodes. Compare searches each document separately, then answers side by side. All nodes share state: messages, chosen files, sources and limits. | One supervisor controls everything. New routes plug in easily. | Each node answers its test questions. | Not done |
+| 7.2 Agent graph | graph.py builds the LangGraph graph with chat, document Q&A and compare nodes. Compare searches each document separately, then answers side by side. All nodes share state: messages, chosen files, sources and limits. | One agent graph controls everything. New routes plug in easily. | Each node answers its test questions. | Not done |
 | 7.3 Hard-question loop | planner.py runs only for hard or multi-part questions. Planner lists what is missing → Navigator runs focused searches → Reviewer scores the evidence. Stop at ≥ 7/10 or after 3 rounds. | Finds missing evidence. Used only when needed, because it can lower faithfulness and double time [Chakravorty, Abstract, p. iii; Sec 8.7, p. 47]. | Judge score up. Faithfulness drop ≤ 2 points. Otherwise it stays off. | Not done |
 | 7.4 Limits and fallbacks | Per request: max 8 tool calls, 3 rounds, 120 s and a token cap. Backup path: agent loop → single answer → refusal. Vision fails → text only. Calculation fails → show the table. Every fallback is logged in the trace. | The system never hangs or loops. | 0 runaway loops in 200 runs. Every fallback tested. | Not done |
 | 7.5 Chat memory | memory.py stores each chat with the LangGraph checkpointer. The helper model rewrites follow-ups ("what about 2023?") into full questions. Long chats get a running summary. Each chat remembers its files. | Natural multi-turn conversation. | Follow-up questions in test chats answered correctly. | Not done |

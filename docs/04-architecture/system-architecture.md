@@ -25,7 +25,7 @@ flowchart TB
   UI --> API
   MCP --> API
   DEMO -->|in-process| SVC
-  SVC --> G[LangGraph supervisor graph.py]
+  SVC --> G[LangGraph agent graph graph.py]
   G --> R[router.py]
   R --> CHAT[chat]
   R --> QA[document Q&A qa.py]
