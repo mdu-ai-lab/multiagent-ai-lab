@@ -2,6 +2,35 @@
 
 Report of the last work session. Read this after docs/WORK_PLAN.md at the start of every session.
 
+## Session 5 November 2026: agent harness plan
+
+The agent parts of the plan were checked against current published sources on agent harnesses.
+
+- Commit 521fd02: review and approval lines in the docs use group review wording. The
+  architecture docs name the LangGraph agent graph.
+- Commit 1709aba: one agent harness module in the plan (D38, R35): harness.py and
+  configs/harness.yaml. Prompt token budget from 6.1, limits in 7.4, the new step 7.6 (tool
+  list, allowed tools per route, basic safety rules, tool-call test on the Mac), chat history
+  only in the chat tables of 1.10, request totals in traces (1.2) and cost per answer (2.3).
+  Step 12.1 keeps the full rule tests. New FR-AGT-004, AT-7.6, the BFCL dataset, RISK-021
+  and RISK-022. 20 docs follow the plan. Last updated date in 46 docs.
+- No code, config or test files changed. Tests were not re-run.
+
+Notes for later steps:
+- 7.6: tool calls of Qwen3.5-9B Q4_K_M on llama.cpp b11960 are not tested yet. The b11960
+  source contains the parser that reads Qwen3.5 tool calls during thinking
+  (common/parsers/qwen3-coder.cpp). The BFCL licence comes from its Hugging Face card and
+  must be confirmed.
+- 11.2: how the smolagents CodeAgent connects to llm_client.py is not checked yet.
+- llama-server has experimental built-in tools (--tools). configs/llama-swap.yaml does not
+  turn them on. Keep them off.
+
+### Exact next step
+
+1. Step 1.1 details in WORK_PLAN.md, docs/11-development-standards/git-workflow.md and
+   CHANGELOG.md, shown to the owner for approval.
+2. Phase 1, only after the owner says "start Phase 1".
+
 ## Session 4 November 2026: check and fixes
 
 Full check of the repo, GitHub and the docs after the chat page plan.
