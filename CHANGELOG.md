@@ -8,6 +8,7 @@ Versions are tagged at the end of each phase (WORK_PLAN.md rule G).
 ### Added
 
 - MLflow 3.17.2: the mlflow-skinny client for the platform and the full mlflow package in its own locked environment in ops/mlflow-server for the local server.
+- make mlflow starts the local MLflow server on the address in MRAG_MLFLOW_TRACKING_URI, with its data in mlflow/ and usage statistics turned off. It only accepts an address on this Mac.
 
 ### Changed
 

@@ -2,7 +2,7 @@
 # The backup copies the whole project on the SSD to Google Drive with rclone.
 # Details: docs/10-deployment-and-operations/backup-and-recovery.md
 
-.PHONY: backup restore-test pull-inbox
+.PHONY: backup restore-test pull-inbox mlflow
 
 # Copy the repo folder and multiagent-ai-lab-local to Drive, plus a Qdrant snapshot
 # and a clean SQLite copy. Changed or deleted files are kept in a dated history folder
@@ -17,3 +17,8 @@ restore-test:
 # Copy new files from the Drive inbox (Colab results) to data/inbox. Never overwrites
 pull-inbox:
 	uv run python ops/backup.py pull-inbox
+
+# Start the local MLflow server in this terminal (address from MRAG_MLFLOW_TRACKING_URI).
+# Stop it with Ctrl+C. Its data stays in the mlflow folder
+mlflow:
+	uv run python ops/mlflow_server.py
