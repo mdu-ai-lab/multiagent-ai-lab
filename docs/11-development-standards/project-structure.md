@@ -30,7 +30,7 @@ multiagent-ai-lab/
 ├── results/         exported result summaries (in Git)
 ├── tests/           unit/ integration/ e2e/ fixtures/
 ├── benchmarks/      measuring tools, for example measure_mac.py
-├── ops/             operations tools, for example backup.py (make backup)
+├── ops/             operations tools, for example backup.py (make backup) and mlflow-server/ (local MLflow server)
 ├── docs/            WORK_PLAN.md, HANDOVER.md, guides, data cards, system card
 ├── .github/workflows/  ci.yml pages.yml demo.yml health.yml release.yml
 ├── compose.yaml  Makefile  pyproject.toml  uv.lock  .env.example  LICENSE  README.md  CHANGELOG.md
