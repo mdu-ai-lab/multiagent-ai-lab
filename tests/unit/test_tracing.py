@@ -7,15 +7,6 @@ from mrag import tracing
 from mrag.config import Settings
 
 
-@pytest.fixture
-def store(tmp_path, monkeypatch):
-    # MLflow writes run files next to the working folder, so tests work in a temporary one
-    monkeypatch.chdir(tmp_path)
-    tracing.setup(Settings(profile="mac", mlflow_tracking_uri=f"sqlite:///{tmp_path}/mlflow.db"))
-    yield tmp_path
-    tracing.setup(Settings(profile="ci"))
-
-
 def last_trace():
     trace_id = mlflow.get_last_active_trace_id()
     mlflow.flush_trace_async_logging()
@@ -25,7 +16,8 @@ def last_trace():
 def test_request_records_totals_and_token_usage(store):
     with tracing.request("chat", {"question": "hello"}) as totals:
         for input_tokens, output_tokens in [(10, 5), (7, 3)]:
-            with tracing.model_call("main", "qwen3.5-9b", [{"role": "user", "content": "hi"}]) as call:
+            messages = [{"role": "user", "content": "hi"}]
+            with tracing.model_call("main", "qwen3.5-9b", {"messages": messages}) as call:
                 call.output, call.input_tokens, call.output_tokens = "ok", input_tokens, output_tokens
         tracing.set_fallback("single_answer")
         totals.output = "answer"
@@ -71,7 +63,7 @@ def test_run_logs_git_commit_config_models_and_datasets(store):
 def test_tracing_is_off_outside_the_mac_profile():
     assert tracing.setup(Settings(profile="ci")) is False
     with tracing.request("chat", {"question": "hello"}) as totals:
-        with tracing.model_call("main", "qwen3.5-9b", []) as call:
+        with tracing.model_call("main", "qwen3.5-9b", {}) as call:
             call.input_tokens, call.output_tokens = 2, 1
     # Totals are still counted, but nothing goes to MLflow
     assert (totals.model_calls, totals.input_tokens, totals.output_tokens) == (1, 2, 1)
@@ -87,3 +79,38 @@ def test_counters_outside_a_request_do_nothing():
     with tracing.request("chat", {}) as totals:
         tracing.count_tool_call()
     assert (totals.tool_calls, totals.fallback) == (1, None)
+
+
+def test_model_call_outside_a_request_is_not_recorded(store):
+    before = mlflow.get_last_active_trace_id()
+    with tracing.model_call("embedding", "qwen3-vl-embedding-2b", {"texts": ["chunk"]}) as call:
+        call.output = {"vectors": 1}
+    assert mlflow.get_last_active_trace_id() == before
+
+
+def test_stopped_and_failed_model_calls_are_kept(store):
+    def stream():
+        with tracing.model_call("main", "qwen3.5-9b", {"messages": []}) as call:
+            pieces = []
+            try:
+                for piece in ["first", "second"]:
+                    pieces.append(piece)
+                    yield piece
+            finally:
+                call.output = "".join(pieces)
+
+    with tracing.request("chat", {"question": "hello"}) as totals:
+        answer = stream()
+        next(answer)
+        # The reader stops after the first piece
+        answer.close()
+        with pytest.raises(RuntimeError):
+            with tracing.model_call("main", "qwen3.5-9b", {"messages": []}):
+                raise RuntimeError("model server down")
+        totals.output = "partial"
+    spans = [span for span in last_trace().data.spans if span.span_type == "CHAT_MODEL"]
+    assert totals.model_calls == 2
+    assert spans[0].status.status_code == "OK"
+    assert spans[0].outputs == "first"
+    assert spans[0].attributes["mrag.stopped_early"] is True
+    assert spans[1].status.status_code == "ERROR"

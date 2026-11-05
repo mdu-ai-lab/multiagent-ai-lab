@@ -24,6 +24,10 @@ from mrag.config import PROJECT_ROOT, Settings, get_settings
 
 TRACED_PROFILES = {"mac"}
 CONFIG_DIR = PROJECT_ROOT / "configs"
+# Span types for the calls llm_client makes
+CHAT = SpanType.CHAT_MODEL
+EMBEDDING = SpanType.EMBEDDING
+RERANKER = SpanType.RERANKER
 
 
 class TracingError(Exception):
@@ -143,27 +147,44 @@ def add_tokens(totals: RequestTotals | None, call: ModelCall) -> None:
 
 
 @contextmanager
-def model_call(role: str, model: str, messages: list[dict[str, Any]]) -> Iterator[ModelCall]:
-    # One call to a model. The caller fills in the answer and the token counts
+def model_call(role: str, model: str, inputs: dict[str, Any],
+               span_type: str = CHAT) -> Iterator[ModelCall]:
+    # One call to a model inside a request. The caller fills in the answer and the token
+    # counts. Calls outside a request, for example while indexing files, are not recorded
     call = ModelCall()
     totals = _current.get()
-    if totals is not None:
-        totals.model_calls += 1
+    if totals is None:
+        yield call
+        return
+    totals.model_calls += 1
     if not _enabled:
         yield call
         add_tokens(totals, call)
         return
-    with mlflow.start_span(name=f"model_call.{role}", span_type=SpanType.CHAT_MODEL) as span:
-        span.set_inputs({"messages": readable_messages(messages)})
-        span.set_attributes({"mrag.role": role, "mrag.model": model})
+    # A span that is not bound to the current context, so a streamed answer can be read
+    # piece by piece and still gets one span with the full time of the call
+    span = mlflow.start_span_no_context(name=f"model_call.{role}", span_type=span_type,
+                                        parent_span=mlflow.get_current_active_span(),
+                                        inputs=inputs,
+                                        attributes={"mrag.role": role, "mrag.model": model})
+    try:
         yield call
-        span.set_outputs(call.output)
-        if call.input_tokens is not None and call.output_tokens is not None:
-            # MLflow's own token field, so the trace shows the total of all its model calls
-            span.set_attribute(SpanAttributeKey.CHAT_USAGE, {
-                TokenUsageKey.INPUT_TOKENS: call.input_tokens,
-                TokenUsageKey.OUTPUT_TOKENS: call.output_tokens,
-                TokenUsageKey.TOTAL_TOKENS: call.input_tokens + call.output_tokens})
+    except GeneratorExit:
+        # The caller stopped reading a streamed answer early. Not an error
+        span.end(outputs=call.output, attributes={"mrag.stopped_early": True})
+        raise
+    except BaseException as error:
+        span.record_exception(error)
+        span.end(outputs=call.output, status="ERROR")
+        raise
+    attributes: dict[str, Any] = {}
+    if call.input_tokens is not None and call.output_tokens is not None:
+        # MLflow's own token field, so the trace shows the total of all its model calls
+        attributes[SpanAttributeKey.CHAT_USAGE] = {
+            TokenUsageKey.INPUT_TOKENS: call.input_tokens,
+            TokenUsageKey.OUTPUT_TOKENS: call.output_tokens,
+            TokenUsageKey.TOTAL_TOKENS: call.input_tokens + call.output_tokens}
+    span.end(outputs=call.output, attributes=attributes)
     add_tokens(totals, call)
 
 

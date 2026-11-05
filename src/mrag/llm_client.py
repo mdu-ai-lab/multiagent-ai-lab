@@ -17,6 +17,7 @@ import openai
 import yaml
 from pydantic import BaseModel, ConfigDict, ValidationError, field_validator
 
+from mrag import tracing
 from mrag.config import PROJECT_ROOT, get_settings
 
 MODELS_FILE = PROJECT_ROOT / "configs" / "models.yaml"
@@ -141,6 +142,19 @@ def server_errors() -> Iterator[None]:
         raise LLMError(str(error)) from error
 
 
+def chat_inputs(messages: list[Message], max_tokens: int, thinking: bool,
+                json_schema: dict[str, Any] | None) -> dict[str, Any]:
+    # What a trace shows about a chat call. Images are replaced by a short note
+    return {"messages": tracing.readable_messages(messages), "max_tokens": max_tokens,
+            "thinking": thinking, "json_schema": json_schema}
+
+
+def record(call: tracing.ModelCall, text: str, usage: Usage | None) -> None:
+    call.output = text
+    if usage is not None:
+        call.input_tokens, call.output_tokens = usage.prompt_tokens, usage.completion_tokens
+
+
 class OpenAIServerClient:
     def __init__(self, base_url: str, models: dict[Role, ModelRef],
                  timeout: float = 600.0, max_retries: int = 1) -> None:
@@ -177,46 +191,73 @@ class OpenAIServerClient:
              json_schema: dict[str, Any] | None = None,
              timeout: float | None = None) -> ChatResult:
         args = self.chat_args(messages, role, max_tokens, temperature, thinking, json_schema)
-        with server_errors():
-            response = self.client.chat.completions.create(**args, timeout=timeout)
-        choice = response.choices[0]
-        extra = choice.message.model_extra or {}
-        usage = None
-        if response.usage is not None:
-            usage = Usage(response.usage.prompt_tokens, response.usage.completion_tokens)
-        return ChatResult(text=choice.message.content or "",
-                          reasoning=extra.get("reasoning_content") or "",
-                          usage=usage, finish_reason=choice.finish_reason)
+        with tracing.model_call(role, args["model"],
+                                chat_inputs(messages, max_tokens, thinking, json_schema)) as call:
+            with server_errors():
+                response = self.client.chat.completions.create(**args, timeout=timeout)
+            choice = response.choices[0]
+            extra = choice.message.model_extra or {}
+            usage = None
+            if response.usage is not None:
+                usage = Usage(response.usage.prompt_tokens, response.usage.completion_tokens)
+            result = ChatResult(text=choice.message.content or "",
+                                reasoning=extra.get("reasoning_content") or "",
+                                usage=usage, finish_reason=choice.finish_reason)
+            record(call, result.text, usage)
+        return result
 
     def chat_stream(self, messages: list[Message], role: Role = "main", *,
                     max_tokens: int = 1024, temperature: float = 0.0, thinking: bool = False,
                     timeout: float | None = None) -> Iterator[str]:
         # Yields the answer text piece by piece. Reasoning text is not included
         args = self.chat_args(messages, role, max_tokens, temperature, thinking, None)
-        with server_errors():
-            stream = self.client.chat.completions.create(**args, stream=True, timeout=timeout)
-            for chunk in stream:
-                if chunk.choices and chunk.choices[0].delta.content:
-                    yield chunk.choices[0].delta.content
+        # The last streamed chunk then carries the token counts
+        args["stream_options"] = {"include_usage": True}
+        with tracing.model_call(role, args["model"],
+                                chat_inputs(messages, max_tokens, thinking, None)) as call:
+            pieces: list[str] = []
+            try:
+                with server_errors():
+                    stream = self.client.chat.completions.create(**args, stream=True,
+                                                                 timeout=timeout)
+                    for chunk in stream:
+                        if chunk.usage is not None:
+                            call.input_tokens = chunk.usage.prompt_tokens
+                            call.output_tokens = chunk.usage.completion_tokens
+                        if chunk.choices and chunk.choices[0].delta.content:
+                            pieces.append(chunk.choices[0].delta.content)
+                            yield chunk.choices[0].delta.content
+            finally:
+                # Also when the caller stops reading early, the trace keeps what was sent
+                call.output = "".join(pieces)
 
     def embed(self, texts: list[str], role: Role = "embedding", *,
               timeout: float | None = None) -> list[list[float]]:
-        with server_errors():
-            response = self.client.embeddings.create(model=self.model_name(role), input=texts,
-                                                     encoding_format="float", timeout=timeout)
-        return [item.embedding for item in sorted(response.data, key=lambda item: item.index)]
+        model = self.model_name(role)
+        with tracing.model_call(role, model, {"texts": texts}, tracing.EMBEDDING) as call:
+            with server_errors():
+                response = self.client.embeddings.create(model=model, input=texts,
+                                                         encoding_format="float", timeout=timeout)
+            vectors = [item.embedding for item in sorted(response.data, key=lambda item: item.index)]
+            call.output = {"vectors": len(vectors), "dimensions": len(vectors[0]) if vectors else 0}
+        return vectors
 
     def rerank(self, query: str, documents: list[str], role: Role = "reranker", *,
                timeout: float | None = None) -> list[RerankResult]:
         # Reranking is not part of the OpenAI API. llama-server and vLLM both offer /rerank
-        body = {"model": self.model_name(role), "query": query, "documents": documents}
-        with server_errors():
-            data = cast(dict[str, Any], self.client.post(
-                "/rerank", cast_to=object, body=body,
-                options={"timeout": timeout} if timeout else {}))
-        results = [RerankResult(index=item["index"], score=item["relevance_score"])
-                   for item in data["results"]]
-        return sorted(results, key=lambda result: result.score, reverse=True)
+        model = self.model_name(role)
+        body = {"model": model, "query": query, "documents": documents}
+        with tracing.model_call(role, model, {"query": query, "documents": documents},
+                                tracing.RERANKER) as call:
+            with server_errors():
+                data = cast(dict[str, Any], self.client.post(
+                    "/rerank", cast_to=object, body=body,
+                    options={"timeout": timeout} if timeout else {}))
+            results = [RerankResult(index=item["index"], score=item["relevance_score"])
+                       for item in data["results"]]
+            results.sort(key=lambda result: result.score, reverse=True)
+            call.output = [{"index": result.index, "score": result.score} for result in results]
+        return results
 
 
 class TransformersClient:
@@ -282,17 +323,22 @@ class TransformersClient:
             raise NotSupportedError("JSON schema output is not available in the transformers backend")
         processor, model = self.load(role)
         inputs = self.inputs(processor, model, messages, thinking)
-        output = model.generate(**inputs, **self.generate_args(max_tokens, temperature))
-        new_tokens = output[0][inputs["input_ids"].shape[1]:]
-        text = processor.decode(new_tokens, skip_special_tokens=True)
-        reasoning = ""
-        if "</think>" in text:
-            reasoning, text = text.split("</think>", 1)
-            reasoning = reasoning.replace("<think>", "")
-        finish = "length" if len(new_tokens) >= max_tokens else "stop"
-        usage = Usage(int(inputs["input_ids"].shape[1]), len(new_tokens))
-        return ChatResult(text=text.strip(), reasoning=reasoning.strip(), usage=usage,
-                          finish_reason=finish)
+        # Model loading above stays outside the span, so a first load is not a slow call
+        with tracing.model_call(role, self.models[role].name,
+                                chat_inputs(messages, max_tokens, thinking, None)) as call:
+            output = model.generate(**inputs, **self.generate_args(max_tokens, temperature))
+            new_tokens = output[0][inputs["input_ids"].shape[1]:]
+            text = processor.decode(new_tokens, skip_special_tokens=True)
+            reasoning = ""
+            if "</think>" in text:
+                reasoning, text = text.split("</think>", 1)
+                reasoning = reasoning.replace("<think>", "")
+            finish = "length" if len(new_tokens) >= max_tokens else "stop"
+            usage = Usage(int(inputs["input_ids"].shape[1]), len(new_tokens))
+            result = ChatResult(text=text.strip(), reasoning=reasoning.strip(), usage=usage,
+                                finish_reason=finish)
+            record(call, result.text, usage)
+        return result
 
     def chat_stream(self, messages: list[Message], role: Role = "main", *,
                     max_tokens: int = 1024, temperature: float = 0.0, thinking: bool = False,
@@ -305,22 +351,31 @@ class TransformersClient:
                                         skip_special_tokens=True)
         worker = threading.Thread(target=model.generate, kwargs={
             **inputs, **self.generate_args(max_tokens, temperature), "streamer": streamer})
-        worker.start()
-        # With thinking on, hold back everything up to the end of the reasoning
-        buffer = ""
-        answer_started = not thinking
-        for piece in streamer:
-            if answer_started:
-                if piece:
-                    yield piece
-                continue
-            buffer += piece
-            if "</think>" in buffer:
-                answer_started = True
-                rest = buffer.split("</think>", 1)[1].lstrip()
-                if rest:
-                    yield rest
-        worker.join()
+        # This streamer gives text pieces, not token counts, so the trace has no tokens here
+        with tracing.model_call(role, self.models[role].name,
+                                chat_inputs(messages, max_tokens, thinking, None)) as call:
+            pieces: list[str] = []
+            try:
+                worker.start()
+                # With thinking on, hold back everything up to the end of the reasoning
+                buffer = ""
+                answer_started = not thinking
+                for piece in streamer:
+                    if answer_started:
+                        if piece:
+                            pieces.append(piece)
+                            yield piece
+                        continue
+                    buffer += piece
+                    if "</think>" in buffer:
+                        answer_started = True
+                        rest = buffer.split("</think>", 1)[1].lstrip()
+                        if rest:
+                            pieces.append(rest)
+                            yield rest
+                worker.join()
+            finally:
+                call.output = "".join(pieces)
 
     def embed(self, texts: list[str], role: Role = "embedding", *,
               timeout: float | None = None) -> list[list[float]]:

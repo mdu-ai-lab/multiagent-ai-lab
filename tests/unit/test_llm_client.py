@@ -5,9 +5,10 @@ import json
 import threading
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 
+import mlflow
 import pytest
 
-from mrag import llm_client
+from mrag import llm_client, tracing
 from mrag.llm_client import (
     InputTooLongError,
     LLMError,
@@ -197,3 +198,50 @@ def test_transformers_backend_refuses_what_it_lacks():
         local.embed(["a"])
     with pytest.raises(NotSupportedError):
         local.rerank("q", ["d"])
+
+
+def last_trace():
+    trace_id = mlflow.get_last_active_trace_id()
+    mlflow.flush_trace_async_logging()
+    return mlflow.get_trace(trace_id)
+
+
+def test_chat_is_traced_with_its_tokens(store, server, client):
+    server.reply("/v1/chat/completions", completion("Stockholm"))
+    with tracing.request("chat", {"question": "Where?"}) as totals:
+        client.chat([{"role": "user", "content": "Where?"}])
+    span = [span for span in last_trace().data.spans if span.span_type == "CHAT_MODEL"][0]
+    assert (totals.model_calls, totals.input_tokens, totals.output_tokens) == (1, 12, 3)
+    assert span.attributes["mrag.model"] == "main-model"
+    assert span.outputs == "Stockholm"
+
+
+def test_chat_stream_asks_for_and_records_token_counts(store, server, client):
+    def event(**delta):
+        return {"id": "1", "object": "chat.completion.chunk", "created": 0,
+                "model": "main-model", "choices": [{"index": 0, "delta": delta}]}
+
+    # With include_usage the server sends the counts in a last chunk without choices
+    usage = {"id": "1", "object": "chat.completion.chunk", "created": 0, "model": "main-model",
+             "choices": [], "usage": {"prompt_tokens": 9, "completion_tokens": 2, "total_tokens": 11}}
+    server.reply_stream("/v1/chat/completions", [event(content="Hel"), event(content="lo"), usage])
+    with tracing.request("chat", {"question": "hi"}) as totals:
+        assert list(client.chat_stream([{"role": "user", "content": "hi"}])) == ["Hel", "lo"]
+    assert server.requests[-1][1]["stream_options"] == {"include_usage": True}
+    assert (totals.input_tokens, totals.output_tokens) == (9, 2)
+    assert last_trace().info.token_usage == {"input_tokens": 9, "output_tokens": 2,
+                                             "total_tokens": 11}
+
+
+def test_embed_and_rerank_count_as_model_calls_without_tokens(store, server, client):
+    server.reply("/v1/embeddings", {
+        "object": "list", "model": "embedding-model",
+        "data": [{"object": "embedding", "index": 0, "embedding": [1.0, 0.0]}],
+        "usage": {"prompt_tokens": 4, "total_tokens": 4}})
+    server.reply("/v1/rerank", {"results": [{"index": 0, "relevance_score": 0.9}]})
+    with tracing.request("qa", {"question": "q"}) as totals:
+        client.embed(["a"])
+        client.rerank("q", ["d0"])
+    types = [span.span_type for span in last_trace().data.spans]
+    assert types == ["CHAIN", "EMBEDDING", "RERANKER"]
+    assert (totals.model_calls, totals.input_tokens, totals.output_tokens) == (2, 0, 0)

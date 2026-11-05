@@ -7,6 +7,7 @@ import urllib.request
 
 import pytest
 
+from mrag import tracing
 from mrag.config import get_settings
 from mrag.llm_client import get_client, image_part
 
@@ -41,6 +42,15 @@ def test_chat_stream(client):
     pieces = list(client.chat_stream(QUESTION, max_tokens=100))
     assert len(pieces) > 1
     assert "Stockholm" in "".join(pieces)
+
+
+def test_chat_stream_reports_tokens(client):
+    # The server must send token counts for streamed answers (stream_options include_usage)
+    with tracing.request("chat", {"question": "capital"}) as totals:
+        "".join(client.chat_stream(QUESTION, max_tokens=100))
+    assert totals.model_calls == 1
+    assert totals.input_tokens > 0
+    assert totals.output_tokens > 0
 
 
 def test_thinking_switch(client):
