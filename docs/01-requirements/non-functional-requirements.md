@@ -41,7 +41,7 @@ Numbers come from the done-when tests in WORK_PLAN.md v1.10. They are starting t
 | NFR-REPRO-003 | Every result traces to its code, prompt, model and data versions | 1.3 | Not implemented |
 | NFR-PORT-001 | Same code runs in Mac, GPU, demo, CI and company profiles by config | 0.1, 0.5 | Partially implemented (mac and demo profiles only) |
 | NFR-PORT-002 | Database switches from SQLite to PostgreSQL by config | 15.3 | Not implemented |
-| NFR-OBS-001 | Every agent step and model call is traced with time and tokens. Each request also records its totals: tokens in and out, model calls, tool calls, time and the fallback used | 1.2 | Not implemented |
+| NFR-OBS-001 | Every agent step and model call is traced with time and tokens. Each request also records its totals: tokens in and out, model calls, tool calls, time and the fallback used | 1.2, 7.2 | Not implemented |
 | NFR-MAINT-001 | Flat modules, CI checks and an updated plan after every step | Rules C2, G | Not implemented |
 | NFR-MAINT-002 | Local output and verification numbers match the expected output for every step | Rules C12, C13 | Not implemented |
 | NFR-LEGAL-001 | Licences of models, datasets and tools checked before use | 2.1, 5.2, 5.4 | Not implemented |

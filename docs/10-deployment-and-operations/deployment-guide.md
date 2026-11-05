@@ -14,7 +14,7 @@ Commands are written when each step starts (rule C5). This guide lists what will
 
 | Environment | How it is set up | Step |
 |---|---|---|
-| Mac | uv project, Docker Qdrant and MLflow, native llama-swap | 0.1 to 0.3, 1.2 |
+| Mac | uv project, Docker Qdrant, native MLflow and llama-swap | 0.1 to 0.3, 1.2 |
 | Colab and Kaggle | Notebook template: clone at a commit, install with uv, start vLLM | 1.5 |
 | Dashboard | pages.yml after CI passes on main | 1.7 |
 | Demo | demo.yml uploads demo/ and src/ to the Space | 1.8 |

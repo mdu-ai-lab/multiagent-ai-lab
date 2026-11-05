@@ -12,7 +12,7 @@
 
 | What | Tool | Step |
 |---|---|---|
-| Every agent step and model call with time and tokens | MLflow tracing | 1.2 |
+| Every agent step and model call with time and tokens | MLflow tracing | 1.2, 7.2 |
 | Request totals: tokens in and out, model calls, tool calls, time and the fallback used | MLflow tracing | 1.2 |
 | Fallbacks | Logged in the trace | 7.4 |
 | Latency, errors, fallbacks, low-rated answers | Local monitoring view | 13.4 |

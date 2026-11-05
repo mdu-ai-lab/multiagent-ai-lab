@@ -13,8 +13,8 @@
 ```mermaid
 flowchart TB
   subgraph Mac[MacBook Air M2 - external SSD]
-    DK[Docker: Qdrant, MLflow, code sandbox]
-    NT[Native: llama.cpp + llama-swap, worker, API, UI]
+    DK[Docker: Qdrant, code sandbox]
+    NT[Native: llama.cpp + llama-swap, MLflow, worker, API, UI]
     SQ[(SQLite)]
   end
   subgraph Cloud[Free cloud - public data only]

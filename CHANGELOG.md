@@ -5,6 +5,10 @@ Versions are tagged at the end of each phase (WORK_PLAN.md rule G).
 
 ## [Unreleased]
 
+### Changed
+
+- Plan: MLflow 3.17.2 runs natively on the Mac through uv with its data in mlflow/ (D40). Model calls are traced from now on, LangGraph steps from 7.2. Usage telemetry is off. The deployment docs follow the plan.
+
 ## [0.0.1] - 2026-11-05
 
 ### Added
