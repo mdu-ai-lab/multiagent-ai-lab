@@ -7,6 +7,7 @@ Versions are tagged at the end of each phase (WORK_PLAN.md rule G).
 
 ### Changed
 
+- Plan: GitHub workflow (D39): ruleset protect-main on main, pull requests with merge commits only, one branch per phase and the gh command-line tool. The Git workflow doc and AT-1.1 follow the plan.
 - WORK_PLAN.md v1.10. The docs link to it.
 - Plan: one agent harness module, harness.py with configs/harness.yaml (D38, R35). Prompt token budget per profile from step 6.1, request limits in 7.4, the new step 7.6 for the tool list, the allowed tools per route and the basic safety rules, chat history only in the chat tables of 1.10, request totals in every trace from 1.2 and cost per answer in 2.3. Step 12.1 keeps the full rule tests. New FR-AGT-004, AT-7.6, the BFCL dataset, RISK-021 and RISK-022. The docs follow the plan.
 - Plan: own chat web page with accounts and login in the new step 1.10 (D37, R34). Rule A, sections 6.3, 8.1, 8.2 and 9 and steps 12.4 to 13.3 match it. New open question Q12 (MCP tool). The docs follow the plan.
