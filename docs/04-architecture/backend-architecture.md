@@ -5,7 +5,7 @@
 | Purpose | Planned backend layers and modules |
 | Status | Proposed |
 | Last updated | 2026-11-05 |
-| Source of truth | [WORK_PLAN.md](../WORK_PLAN.md) v1.9 |
+| Source of truth | [WORK_PLAN.md](../WORK_PLAN.md) v1.10 |
 | Related documents | [System architecture](../04-architecture/system-architecture.md), [Project structure](../11-development-standards/project-structure.md) |
 
 > Implementation status: Phase 0 done (project setup, search database, Mac model server, model client and backup). Later features are planned and not built yet. Test results are in docs/HANDOVER.md.

@@ -5,7 +5,7 @@
 | Purpose | Planned data stores and how they are used |
 | Status | Proposed |
 | Last updated | 2026-11-05 |
-| Source of truth | [WORK_PLAN.md](../WORK_PLAN.md) v1.9 |
+| Source of truth | [WORK_PLAN.md](../WORK_PLAN.md) v1.10 |
 | Related documents | [ER diagram](../05-database/er-diagram.md), [Data dictionary](../05-database/data-dictionary.md), [ADR-005](../04-architecture/architecture-decision-records/ADR-005.md) |
 
 > Implementation status: Phase 0 done (project setup, search database, Mac model server, model client and backup). Later features are planned and not built yet. Test results are in docs/HANDOVER.md.

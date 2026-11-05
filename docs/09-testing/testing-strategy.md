@@ -4,8 +4,8 @@
 |---|---|
 | Purpose | How the platform will be tested |
 | Status | Proposed |
-| Last updated | 2026-11-04 |
-| Source of truth | [WORK_PLAN.md](../WORK_PLAN.md) v1.9 |
+| Last updated | 2026-11-05 |
+| Source of truth | [WORK_PLAN.md](../WORK_PLAN.md) v1.10 |
 | Related documents | [Test plan](../09-testing/test-plan.md), [CI/CD pipeline](../10-deployment-and-operations/ci-cd-pipeline.md) |
 
 > Implementation status: Phase 0 done (project setup, search database, Mac model server, model client and backup). Later features are planned and not built yet. Test results are in docs/HANDOVER.md.

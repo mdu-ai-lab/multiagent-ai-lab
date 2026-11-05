@@ -5,7 +5,7 @@
 | Purpose | Planned security controls |
 | Status | Proposed |
 | Last updated | 2026-11-05 |
-| Source of truth | [WORK_PLAN.md](../WORK_PLAN.md) v1.9 |
+| Source of truth | [WORK_PLAN.md](../WORK_PLAN.md) v1.10 |
 | Related documents | [Threat model](../07-security/threat-model.md), [Non-functional requirements](../01-requirements/non-functional-requirements.md) |
 
 > Implementation status: Phase 0 done (project setup, search database, Mac model server, model client and backup). Later features are planned and not built yet. Test results are in docs/HANDOVER.md.

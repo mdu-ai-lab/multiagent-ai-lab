@@ -1,5 +1,5 @@
-# Rule V and section 6.3: private documents, public datasets, models, MLflow
-# and Qdrant files never go to GitHub
+# Private documents, public datasets, models, MLflow and Qdrant files
+# never go to GitHub
 
 # Data: only data/annotations/ is in Git
 data/*
@@ -38,5 +38,5 @@ dist/
 .DS_Store
 .vscode/
 
-# Planning helper scripts. They stay on this Mac only (owner decision, 30 Oct 2026)
+# Planning helper scripts. They stay on this Mac only
 scripts/

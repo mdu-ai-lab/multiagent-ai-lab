@@ -15,6 +15,9 @@ The agent parts of the plan were checked against current published sources on ag
   Step 12.1 keeps the full rule tests. New FR-AGT-004, AT-7.6, the BFCL dataset, RISK-021
   and RISK-022. 20 docs follow the plan. Last updated date in 46 docs.
 - No code, config or test files changed. Tests were not re-run.
+- Check before Phase 1: plan version 1.10 in WORK_PLAN.md and 99 docs, 5 comments in 4 files,
+  the current state row and R27. uv run pytest: 29 passed, 8 skipped. Verification numbers
+  unchanged.
 
 Notes for later steps:
 - 7.6: tool calls of Qwen3.5-9B Q4_K_M on llama.cpp b11960 are not tested yet. The b11960

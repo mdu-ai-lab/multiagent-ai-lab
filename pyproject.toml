@@ -18,7 +18,7 @@ dependencies = [
 requires = ["uv_build>=0.12.19,<0.13.0"]
 build-backend = "uv_build"
 
-# The package folder is src/mrag, not src/multiagent_ai_lab (rule C2)
+# The package folder is src/mrag, not src/multiagent_ai_lab
 [tool.uv.build-backend]
 module-name = "mrag"
 

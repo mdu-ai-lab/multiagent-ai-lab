@@ -4,8 +4,8 @@
 |---|---|
 | Purpose | In-scope and out-of-scope features for version 1 |
 | Status | Proposed |
-| Last updated | 2026-11-04 |
-| Source of truth | [WORK_PLAN.md](../WORK_PLAN.md) v1.9 |
+| Last updated | 2026-11-05 |
+| Source of truth | [WORK_PLAN.md](../WORK_PLAN.md) v1.10 |
 | Related documents | [Project overview](../00-project-overview/project-overview.md), [Functional requirements](../01-requirements/functional-requirements.md) |
 
 > Implementation status: Phase 0 done (project setup, search database, Mac model server, model client and backup). Later features are planned and not built yet. Test results are in docs/HANDOVER.md.

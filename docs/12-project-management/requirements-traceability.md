@@ -5,7 +5,7 @@
 | Purpose | Links from each requirement to module, test and status |
 | Status | Proposed |
 | Last updated | 2026-11-05 |
-| Source of truth | [WORK_PLAN.md](../WORK_PLAN.md) v1.9 |
+| Source of truth | [WORK_PLAN.md](../WORK_PLAN.md) v1.10 |
 | Related documents | [Functional requirements](../01-requirements/functional-requirements.md), [Acceptance test cases](../09-testing/acceptance-test-cases.md) |
 
 > Implementation status: Phase 0 done (project setup, search database, Mac model server, model client and backup). Later features are planned and not built yet. Test results are in docs/HANDOVER.md.
@@ -105,7 +105,7 @@ Components, entities and APIs per requirement are listed in each module document
 | R24 | Easy English, step by step, why for each step | Rule C1 | Planned |
 | R25 | Coding rules (flat modules, file creation by the coding assistant after approval, hashes, full commands, Git one per line, expected output, human style, no comma before and/or/but) | Section 5.2 | Planned |
 | R26 | One phase at a time with checks and permission. Done/not-done table after each phase. What to do next after each step | Rule P | Planned |
-| R27 | Copy-pasteable plan and a .docx copy | This file and WORK_PLAN.docx | Done (this file) |
+| R27 | Copy-pasteable plan | This file | Done |
 | R28 | Repo owned by a GitHub organization from the start | Step 0.1, step 1.1 | Partly done (organization repo created. Workflow in step 1.1) |
 | R29 | GraphRAG: answers that follow relationships between entities across documents | Phase 9A | Planned |
 | R30 | Ontology: a defined, versioned set of entity and relation types | Step 9A.1 | Planned |

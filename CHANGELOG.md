@@ -7,12 +7,15 @@ Versions are tagged at the end of each phase (WORK_PLAN.md rule G).
 
 ### Changed
 
+- WORK_PLAN.md v1.10. The docs link to it.
 - Plan: one agent harness module, harness.py with configs/harness.yaml (D38, R35). Prompt token budget per profile from step 6.1, request limits in 7.4, the new step 7.6 for the tool list, the allowed tools per route and the basic safety rules, chat history only in the chat tables of 1.10, request totals in every trace from 1.2 and cost per answer in 2.3. Step 12.1 keeps the full rule tests. New FR-AGT-004, AT-7.6, the BFCL dataset, RISK-021 and RISK-022. The docs follow the plan.
 - Plan: own chat web page with accounts and login in the new step 1.10 (D37, R34). Rule A, sections 6.3, 8.1, 8.2 and 9 and steps 12.4 to 13.3 match it. New open question Q12 (MCP tool). The docs follow the plan.
 - WORK_PLAN.md 15.1 and 6.4: make backup and make restore-test at the end of the project or when the owner asks.
 
 ### Fixed
 
+- Comments in .env.example, .gitignore, pyproject.toml and src/mrag/__init__.py describe the reason in plain words.
+- WORK_PLAN.md: last completed step in the current state table. R27 covers the plan file only.
 - Docs: review and approval lines in the decision records, the requirement documents and the docs index use group review wording. The architecture docs name the LangGraph agent graph.
 - Last updated date in 46 docs.
 - docs/README.md and srs.md: requirement status lines now match the requirement documents.

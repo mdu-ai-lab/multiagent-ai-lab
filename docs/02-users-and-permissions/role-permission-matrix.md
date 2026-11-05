@@ -4,8 +4,8 @@
 |---|---|
 | Purpose | What each proposed role may do |
 | Status | Proposed |
-| Last updated | 2026-11-04 |
-| Source of truth | [WORK_PLAN.md](../WORK_PLAN.md) v1.9 |
+| Last updated | 2026-11-05 |
+| Source of truth | [WORK_PLAN.md](../WORK_PLAN.md) v1.10 |
 | Related documents | [User types](../02-users-and-permissions/user-types.md), [Access control policy](../02-users-and-permissions/access-control-policy.md) |
 
 > Implementation status: Phase 0 done (project setup, search database, Mac model server, model client and backup). Later features are planned and not built yet. Test results are in docs/HANDOVER.md.

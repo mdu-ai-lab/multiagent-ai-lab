@@ -4,8 +4,8 @@
 |---|---|
 | Purpose | Instructions for AI assistants working on this project |
 | Status | Proposed |
-| Last updated | 2026-11-04 |
-| Source of truth | [WORK_PLAN.md](../WORK_PLAN.md) v1.9 |
+| Last updated | 2026-11-05 |
+| Source of truth | [WORK_PLAN.md](../WORK_PLAN.md) v1.10 |
 | Related documents | [WORK_PLAN handover](../WORK_PLAN.md), [Definition of done](../11-development-standards/definition-of-done.md) |
 
 > Implementation status: Phase 0 done (project setup, search database, Mac model server, model client and backup). Later features are planned and not built yet. Test results are in docs/HANDOVER.md.
@@ -45,6 +45,6 @@ Rules:
 2. Change nothing else.
 3. Add a decision-log row and update the current plan version.
 4. List every place changed.
-5. Return the updated WORK_PLAN.md and WORK_PLAN.docx.
+5. Return the updated WORK_PLAN.md.
 ```
 

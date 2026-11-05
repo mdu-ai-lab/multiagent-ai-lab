@@ -5,7 +5,7 @@
 | Purpose | Why the platform exists and the outcomes it must deliver |
 | Status | Proposed |
 | Last updated | 2026-11-05 |
-| Source of truth | [WORK_PLAN.md](../WORK_PLAN.md) v1.9 |
+| Source of truth | [WORK_PLAN.md](../WORK_PLAN.md) v1.10 |
 | Related documents | [SRS](../01-requirements/srs.md), [Stakeholders](../00-project-overview/stakeholders.md) |
 
 > Implementation status: Phase 0 done (project setup, search database, Mac model server, model client and backup). Later features are planned and not built yet. Test results are in docs/HANDOVER.md.

@@ -5,12 +5,12 @@
 | Purpose | Quality, security, cost and portability requirements with unique IDs |
 | Status | Proposed |
 | Last updated | 2026-11-05 |
-| Source of truth | [WORK_PLAN.md](../WORK_PLAN.md) v1.9 |
+| Source of truth | [WORK_PLAN.md](../WORK_PLAN.md) v1.10 |
 | Related documents | [SRS](../01-requirements/srs.md), [Security requirements](../07-security/security-requirements.md), [Performance testing](../09-testing/performance-testing.md) |
 
 > Implementation status: Phase 0 done (project setup, search database, Mac model server, model client and backup). Later features are planned and not built yet. Test results are in docs/HANDOVER.md.
 
-Numbers come from the done-when tests in WORK_PLAN.md v1.7. They are starting targets and may be calibrated against measured baselines in Phase 2, with the change recorded.
+Numbers come from the done-when tests in WORK_PLAN.md v1.10. They are starting targets and may be calibrated against measured baselines in Phase 2, with the change recorded.
 
 | ID | Requirement | Source | Status |
 |---|---|---|---|

@@ -5,12 +5,12 @@
 | Purpose | Every planned functional requirement with a unique ID |
 | Status | Proposed |
 | Last updated | 2026-11-05 |
-| Source of truth | [WORK_PLAN.md](../WORK_PLAN.md) v1.9 |
+| Source of truth | [WORK_PLAN.md](../WORK_PLAN.md) v1.10 |
 | Related documents | [SRS](../01-requirements/srs.md), [Traceability](../12-project-management/requirements-traceability.md), [Modules](../03-functional-modules/README.md) |
 
 > Implementation status: Phase 0 done (project setup, search database, Mac model server, model client and backup). Later features are planned and not built yet. Test results are in docs/HANDOVER.md.
 
-All requirements come from WORK_PLAN.md v1.7. They are proposed until the group confirms them. "Plan step" points to the step that builds and tests the requirement.
+All requirements come from WORK_PLAN.md v1.10. They are proposed until the group confirms them. "Plan step" points to the step that builds and tests the requirement.
 
 | ID | Requirement | Plan step | Status |
 |---|---|---|---|
