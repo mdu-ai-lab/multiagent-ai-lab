@@ -34,4 +34,8 @@ def test_summary_holds_only_numbers_and_versions(store):
 
 def test_missing_server_is_reported_at_once():
     # Port 9 on this Mac has no server, so the check fails within the timeout
-    assert export_results.server_reachable("http://127.0.0.1:9") is False
+    assert tracing.server_reachable("http://127.0.0.1:9") is False
+
+
+def test_local_database_file_counts_as_reachable(tmp_path):
+    assert tracing.server_reachable(f"sqlite:///{tmp_path}/mlflow.db") is True

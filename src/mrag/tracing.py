@@ -7,10 +7,11 @@ import hashlib
 import os
 import subprocess
 import time
+import urllib.request
 from collections.abc import Iterator
 from contextlib import contextmanager
 from contextvars import ContextVar
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
 
@@ -47,6 +48,8 @@ class RequestTotals:
     fallback: str | None = None
     # The final answer of the request, shown as the output of the trace
     output: Any = None
+    # Prompt name and version of every prompt used in the request
+    prompts: dict[str, str] = field(default_factory=dict)
 
     def metadata(self) -> dict[str, str]:
         # Trace metadata values must be strings. They can be searched in MLflow
@@ -54,7 +57,9 @@ class RequestTotals:
                   "tool_calls": self.tool_calls, "input_tokens": self.input_tokens,
                   "output_tokens": self.output_tokens, "duration_ms": self.duration_ms,
                   "fallback": self.fallback or "none"}
-        return {f"mrag.{key}": str(value) for key, value in values.items()}
+        metadata = {f"mrag.{key}": str(value) for key, value in values.items()}
+        metadata.update({f"mrag.prompt.{name}": version for name, version in self.prompts.items()})
+        return metadata
 
 
 @dataclass
@@ -67,6 +72,7 @@ class ModelCall:
 
 _enabled = False
 _profile = "mac"
+_tracking_uri = ""
 _experiment_ids: dict[str, str] = {}
 # The totals of the request that is running in this thread or task
 _current: ContextVar[RequestTotals | None] = ContextVar("mrag_request_totals", default=None)
@@ -74,11 +80,12 @@ _current: ContextVar[RequestTotals | None] = ContextVar("mrag_request_totals", d
 
 def setup(settings: Settings | None = None) -> bool:
     # Safe to call more than once. Returns True when runs and traces go to MLflow
-    global _enabled, _profile
+    global _enabled, _profile, _tracking_uri
     settings = settings or get_settings()
     # No usage statistics are sent to the MLflow developers
     os.environ["MLFLOW_DISABLE_TELEMETRY"] = "true"
     _profile = settings.profile
+    _tracking_uri = settings.mlflow_tracking_uri
     _enabled = settings.profile in TRACED_PROFILES
     _experiment_ids.clear()
     if _enabled:
@@ -87,6 +94,23 @@ def setup(settings: Settings | None = None) -> bool:
     else:
         mlflow.tracing.disable()
     return _enabled
+
+
+def enabled() -> bool:
+    return _enabled
+
+
+def server_reachable(tracking_uri: str | None = None) -> bool:
+    # The MLflow client retries for minutes when the server is down, so check it first.
+    # A local database file (tests) has no server and is always reachable
+    uri = tracking_uri or _tracking_uri
+    if not uri.startswith("http"):
+        return True
+    try:
+        with urllib.request.urlopen(f"{uri}/health", timeout=3) as response:
+            return response.status == 200
+    except OSError:
+        return False
 
 
 def experiment_id(route: str) -> str:
@@ -199,6 +223,14 @@ def set_fallback(name: str) -> None:
     # The backup path a request took, for example "single_answer" or "refusal"
     if (totals := _current.get()) is not None:
         totals.fallback = name
+
+
+def record_prompt(name: str, version: str) -> None:
+    # The prompt version goes to the running request and to the active run
+    if (totals := _current.get()) is not None:
+        totals.prompts[name] = version
+    if _enabled and mlflow.active_run() is not None:
+        mlflow.log_param(f"prompt.{name}", version)
 
 
 def git_tags() -> dict[str, str]:

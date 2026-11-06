@@ -6,7 +6,6 @@
 
 import json
 import sys
-import urllib.request
 from collections.abc import Iterator
 from datetime import UTC, datetime
 from pathlib import Path
@@ -69,18 +68,9 @@ def export(results_dir: Path = RESULTS_DIR) -> list[Path]:
     return written
 
 
-def server_reachable(tracking_uri: str) -> bool:
-    # The MLflow client retries for minutes when the server is down, so check it first
-    try:
-        with urllib.request.urlopen(f"{tracking_uri}/health", timeout=3) as response:
-            return response.status == 200
-    except OSError:
-        return False
-
-
 def main() -> int:
     settings = get_settings()
-    if not tracing.setup(settings) or not server_reachable(settings.mlflow_tracking_uri):
+    if not tracing.setup(settings) or not tracing.server_reachable(settings.mlflow_tracking_uri):
         print("Exporting results needs the mac profile and the MLflow server (make mlflow)",
               file=sys.stderr)
         return 1
