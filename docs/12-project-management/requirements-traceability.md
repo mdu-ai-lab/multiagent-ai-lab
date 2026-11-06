@@ -4,7 +4,7 @@
 |---|---|
 | Purpose | Links from each requirement to module, test and status |
 | Status | Proposed |
-| Last updated | 2026-11-06 |
+| Last updated | 2026-11-07 |
 | Source of truth | [WORK_PLAN.md](../WORK_PLAN.md) v1.10 |
 | Related documents | [Functional requirements](../01-requirements/functional-requirements.md), [Acceptance test cases](../09-testing/acceptance-test-cases.md) |
 
@@ -98,7 +98,7 @@ Components, entities and APIs per requirement are listed in each module document
 | R17 | Live website that updates automatically after every push, before and after the API exists | Section 11, steps 1.7, 1.8 | Planned |
 | R18 | API at the best stage, without rework | Step 1.6 (API-first), Phase 13 hardening | Planned |
 | R19 | CI/CD and MLOps where they have a purpose | Phase 1 | Planned |
-| R20 | MLflow for experiments, traces and versioning | 1.2, 1.3 | Partly done (MLflow runs and traces in 1.2. Versioning rules in 1.3) |
+| R20 | MLflow for experiments, traces and versioning | 1.2, 1.3 | Done |
 | R21 | Testing, monitoring, documentation, version control, data management, security | 1.4, 1.9, 13.4, 16.2, section 6, Phase 12 | Planned |
 | R22 | Future company use (on-prem, audit trail, versioned releases) | Phase 15 | Planned |
 | R23 | A self-contained handover | Sections 1 and 15 | Planned |

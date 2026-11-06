@@ -4,7 +4,7 @@
 |---|---|
 | Purpose | Quality, security, cost and portability requirements with unique IDs |
 | Status | Proposed |
-| Last updated | 2026-11-06 |
+| Last updated | 2026-11-07 |
 | Source of truth | [WORK_PLAN.md](../WORK_PLAN.md) v1.10 |
 | Related documents | [SRS](../01-requirements/srs.md), [Security requirements](../07-security/security-requirements.md), [Performance testing](../09-testing/performance-testing.md) |
 
@@ -36,9 +36,9 @@ Numbers come from the done-when tests in WORK_PLAN.md v1.10. They are starting t
 | NFR-SEC-005 | Secrets never in Git or Google Drive | Section 6.4 | Partially implemented (.env ignored by Git, login token files left out of the backup. Notebook secrets in step 1.5) |
 | NFR-SEC-006 | Personal data masked in traces, logs, MLflow and exports | 12.3 | Not implemented |
 | NFR-SEC-007 | Dependency and secret scanning on every push | 1.4 | Not implemented |
-| NFR-REPRO-001 | Models, datasets and packages pinned by version or hash | 1.3 | Not implemented |
+| NFR-REPRO-001 | Models, datasets and packages pinned by version or hash | 1.3 | Partially implemented (models, packages and the Qdrant image pinned. Datasets from 2.1) |
 | NFR-REPRO-002 | Running the same evaluation twice gives identical numbers | 2.3 | Not implemented |
-| NFR-REPRO-003 | Every result traces to its code, prompt, model and data versions | 1.3 | Not implemented |
+| NFR-REPRO-003 | Every result traces to its code, prompt, model and data versions | 1.3 | Partially implemented (code, configs, prompts and models traced and checked by ops/check_result.py. Data from 2.1) |
 | NFR-PORT-001 | Same code runs in Mac, GPU, demo, CI and company profiles by config | 0.1, 0.5 | Partially implemented (mac and demo profiles only) |
 | NFR-PORT-002 | Database switches from SQLite to PostgreSQL by config | 15.3 | Not implemented |
 | NFR-OBS-001 | Every agent step and model call is traced with time and tokens. Each request also records its totals: tokens in and out, model calls, tool calls, time and the fallback used | 1.2, 7.2 | Partially implemented (model calls and request totals are traced. LangGraph steps from 7.2) |

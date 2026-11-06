@@ -2,6 +2,36 @@
 
 Report of the last work session. Read this after docs/WORK_PLAN.md at the start of every session.
 
+## Session 6 and 7 November 2026: versioning rules (step 1.3)
+
+- Plan D41. Prompts are text files in configs/prompts/ (the first comes in 6.1). prompts.py
+  registers each changed text as a new MLflow prompt version and records every use in the
+  trace and the run. Without MLflow the version is the file's fingerprint.
+- configs/models.yaml pins each Mac model with source, revision and the SHA-256 of the 6 files
+  llama-server loads. The 3 downloaded files match the SHA-256 names in the Hugging Face cache.
+  A unit test keeps llama-swap.yaml and models.yaml in line. tests/integration/test_models_mac.py
+  checks the files (about 11 GB, 15 s).
+- Mac tests now run only with uv run pytest -m mac. uv run pytest runs the fast tests.
+- Pipeline version: one fingerprint of the git commit, uncommitted changes, profile, config
+  files and prompt files, taken at program start and stored on every run and trace.
+- compose.yaml pins Qdrant by digest (sha256:9bfc89f9…4cd2, the same on Docker Hub and on this
+  Mac).
+- ops/check_result.py traces one run to its exact versions. AT-1.3 passed: run e3192767 (mac
+  check) at commit ddd7abf, pipeline version p-74afc0dc4b62, RESULT: OK (0 warnings).
+- Tests: 73 unit tests and 16 Mac tests passed. Commits 20f5319 to ddd7abf.
+
+Notes for later steps:
+- MLflow's own app versions (LoggedModel) need numpy and pandas, so they are not used.
+- Runs made before step 1.3 have no pipeline version, so check_result.py reports them as failed.
+- New files that Git does not track yet count by name only in the changes fingerprint.
+- The running Qdrant container still uses the tag line. It changes to the digest line at the
+  next docker compose up -d (same image, data stays in the volume).
+- Dataset hashing comes with the datasets in step 2.1.
+
+### Exact next step
+
+1. Step 1.4 (CI pipeline), shown to the owner for approval first.
+
 ## Session 6 November 2026: MLflow (step 1.2)
 
 - MLflow 3.17.2 (D40). The mlflow-skinny client is in the project environment. The full server
