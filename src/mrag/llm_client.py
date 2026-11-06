@@ -5,6 +5,7 @@
 # Quick check (needs the model server running): uv run python -m mrag.llm_client
 
 import base64
+import re
 import threading
 from collections.abc import Iterator
 from contextlib import contextmanager
@@ -56,6 +57,20 @@ class ModelRef(BaseModel):
 
     name: str
     revision: str | None = None
+    # Hugging Face repo the files come from, when it differs from name
+    source: str | None = None
+    # True when the files were converted on this Mac from source at revision
+    converted_locally: bool = False
+    # File name and SHA-256 of every file the model server loads for this model
+    files: dict[str, str] = {}
+
+    @field_validator("files")
+    @classmethod
+    def full_sha256(cls, value: dict[str, str]) -> dict[str, str]:
+        for file_name, digest in value.items():
+            if not re.fullmatch(r"[0-9a-f]{64}", digest):
+                raise ValueError(f"{file_name}: not a full SHA-256")
+        return value
 
 
 class ProfileModels(BaseModel):
@@ -80,6 +95,15 @@ def load_models(path: Path = MODELS_FILE) -> dict[str, ProfileModels]:
         return {profile: ProfileModels.model_validate(entry) for profile, entry in data.items()}
     except ValidationError as error:
         raise LLMError(f"{path.name} is not valid: {error}") from error
+
+
+def model_file(ref: ModelRef, file_name: str, hf_home: Path, models_dir: Path) -> Path:
+    # Where the model server finds a file: the Hugging Face cache for downloaded files,
+    # the models folder for files converted on this Mac
+    if ref.converted_locally:
+        return models_dir / file_name
+    repo = (ref.source or ref.name).replace("/", "--")
+    return hf_home / "hub" / f"models--{repo}" / "snapshots" / str(ref.revision) / file_name
 
 
 @dataclass(frozen=True)

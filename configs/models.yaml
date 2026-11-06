@@ -5,13 +5,41 @@
 # Profiles without an entry here have no models yet.
 
 mac:
-  # Names are the model IDs in configs/llama-swap.yaml
+  # Names are the model IDs in configs/llama-swap.yaml. source and revision say where the
+  # files come from. files lists the SHA-256 of every file llama-server loads, so a changed
+  # or damaged file is noticed (a Mac test checks them)
   backend: openai_server
   models:
-    main: qwen3.5-9b
-    helper: qwen3.5-2b
-    embedding: qwen3-vl-embedding-2b
-    reranker: qwen3-vl-reranker-2b
+    main:
+      name: qwen3.5-9b
+      source: unsloth/Qwen3.5-9B-GGUF
+      revision: 3885219b6810b007914f3a7950a8d1b469d598a5
+      files:
+        Qwen3.5-9B-Q4_K_M.gguf: 03b74727a860a56338e042c4420bb3f04b2fec5734175f4cb9fa853daf52b7e8
+        mmproj-F16.gguf: f70dc3509053962b0d0d3ee8a7eacebf5d60aa560cad78254ae8698516ae029f
+    helper:
+      name: qwen3.5-2b
+      source: unsloth/Qwen3.5-2B-GGUF
+      revision: f6d5376be1edb4d416d56da11e5397a961aca8ae
+      files:
+        Qwen3.5-2B-Q8_0.gguf: 1b04acba824817554f4ce23639bc8495ff70453b8fcb047900c731521021f2c1
+    embedding:
+      name: qwen3-vl-embedding-2b
+      source: Qwen/Qwen3-VL-Embedding-2B
+      revision: 9f2f7e710d6d81056aa5c0a4f04764fec6bb7bda
+      # Converted on this Mac with the llama.cpp b11960 converter
+      converted_locally: true
+      files:
+        Qwen3-VL-Embedding-2B-Q4_K_M.gguf: f86715451a35b4b3fd4fdb3fa8a47d4e06a061ea0800355b2413968c8efe5d79
+        mmproj-Qwen3-VL-Embedding-2B-Q8_0.gguf: d8319affcd34108160f14ff351ea18dbac267f009cde3cb81f607089e0c3c97a
+    reranker:
+      name: qwen3-vl-reranker-2b
+      source: Qwen/Qwen3-VL-Reranker-2B
+      revision: 4bd860ac4f15ad1897a214615cccc700f8f71818
+      # Converted on this Mac with the llama.cpp b11960 converter
+      converted_locally: true
+      files:
+        Qwen3-VL-Reranker-2B-Q4_K_M.gguf: 8b98d325a9fb4b332634805ccd5416e504e713a50444dab1e9ecdb2e06691de0
 
 demo:
   # Loaded with Transformers inside the demo process

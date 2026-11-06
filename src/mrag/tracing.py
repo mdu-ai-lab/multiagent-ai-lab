@@ -220,7 +220,12 @@ def config_params(profile: str) -> dict[str, str]:
         params[f"config.{path.name}"] = hashlib.sha256(path.read_bytes()).hexdigest()[:12]
     entry = load_models().get(profile)
     for role, ref in (entry.models.items() if entry else []):
-        params[f"model.{role}"] = f"{ref.name}@{ref.revision}" if ref.revision else ref.name
+        params[f"model.{role}"] = ref.name
+        if ref.revision:
+            params[f"model.{role}.source"] = f"{ref.source or ref.name}@{ref.revision}"
+        if ref.files:
+            params[f"model.{role}.files"] = ", ".join(
+                f"{file_name}={digest[:12]}" for file_name, digest in sorted(ref.files.items()))
     return params
 
 

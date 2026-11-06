@@ -55,6 +55,8 @@ def test_run_logs_git_commit_config_models_and_datasets(store):
     assert data.tags["git_dirty"] in ("true", "false")
     assert data.params["profile"] == "mac"
     assert data.params["model.main"] == "qwen3.5-9b"
+    assert data.params["model.main.source"].startswith("unsloth/Qwen3.5-9B-GGUF@3885219b")
+    assert "Qwen3.5-9B-Q4_K_M.gguf=03b74727a860" in data.params["model.main.files"]
     assert "config.models.yaml" in data.params
     assert data.params["dataset.qasper"] == "abc123"
     assert data.metrics == {"f1": 0.5}

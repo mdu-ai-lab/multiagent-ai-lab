@@ -7,8 +7,11 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 
 import mlflow
 import pytest
+import yaml
+from pydantic import ValidationError
 
 from mrag import llm_client, tracing
+from mrag.config import PROJECT_ROOT
 from mrag.llm_client import (
     InputTooLongError,
     LLMError,
@@ -90,6 +93,39 @@ def test_invalid_models_file_is_rejected(tmp_path):
     path.write_text("mac:\n  backend: openai_server\n  models: {main: a}\n  extra: 1\n")
     with pytest.raises(LLMError, match="not valid"):
         llm_client.load_models(path)
+
+
+def test_every_mac_model_is_pinned():
+    for role, ref in llm_client.load_models()["mac"].models.items():
+        assert ref.source and len(ref.revision or "") == 40, role
+        assert ref.files, role
+
+
+def test_llama_swap_loads_exactly_the_pinned_files():
+    # The two config files must name the same model files, from the pinned revision
+    swap = yaml.safe_load((PROJECT_ROOT / "configs" / "llama-swap.yaml").read_text())
+    for role, ref in llm_client.load_models()["mac"].models.items():
+        paths = [word for word in swap["models"][ref.name]["cmd"].split() if word.endswith(".gguf")]
+        assert sorted(path.rsplit("/", 1)[1] for path in paths) == sorted(ref.files), role
+        for path in paths:
+            if ref.converted_locally:
+                assert path.startswith("${env.MRAG_MODELS_DIR}/"), path
+            else:
+                assert f"/snapshots/{ref.revision}/" in path, path
+
+
+def test_model_file_paths(tmp_path):
+    downloaded = ModelRef(name="qwen3.5-9b", source="unsloth/Qwen3.5-9B-GGUF", revision="abc")
+    converted = ModelRef(name="qwen3-vl-reranker-2b", converted_locally=True)
+    assert llm_client.model_file(downloaded, "m.gguf", tmp_path / "hf", tmp_path / "models") == (
+        tmp_path / "hf" / "hub" / "models--unsloth--Qwen3.5-9B-GGUF" / "snapshots" / "abc" / "m.gguf")
+    assert llm_client.model_file(converted, "r.gguf", tmp_path / "hf", tmp_path / "models") == (
+        tmp_path / "models" / "r.gguf")
+
+
+def test_short_file_fingerprint_is_refused():
+    with pytest.raises(ValidationError, match="not a full SHA-256"):
+        ModelRef(name="m", files={"m.gguf": "abc123"})
 
 
 def test_profile_without_models_is_reported():

@@ -41,7 +41,9 @@ dev = [
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+# Tests that need this Mac's models or servers run only with: uv run pytest -m mac
+addopts = "-m 'not mac'"
 markers = [
-    "mac: real calls to the Mac model server (llama-swap must be running)",
+    "mac: needs this Mac's model files or servers (run with: uv run pytest -m mac)",
     "transformers: real calls through the transformers backend (needs --group demo)",
 ]
