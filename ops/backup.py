@@ -53,6 +53,8 @@ EXCLUDES = {
 LOG_DIR = LOCAL / "backup-logs"
 QDRANT_FILE = "qdrant-full.snapshot"
 DB_FILE = "app.db"
+MLFLOW_FILE = "mlflow.db"
+MLFLOW_DB = REPO / "mlflow" / MLFLOW_FILE
 RESTORE_PREFIX = ".restore-test-"
 RESTORE_CONTAINER = "mrag-restore-test"
 RESTORE_PORT = 6334
@@ -222,6 +224,18 @@ def sqlite_copy(database_url: str, out_file: Path) -> dict:
     return {"status": "ok", "source": str(src_path), "bytes": out_file.stat().st_size}
 
 
+def mlflow_opens(db_file: Path) -> dict:
+    # Opens a copy of the MLflow database the way the server does and lists its
+    # experiments. Only used on restored copies, because MLflow may update the tables
+    from mlflow.tracking import MlflowClient
+
+    try:
+        experiments = MlflowClient(tracking_uri=f"sqlite:///{db_file.resolve()}").search_experiments()
+    except Exception as err:  # MLflow raises several error types for a broken database
+        return {"status": "failed", "reason": str(err)}
+    return {"status": "ok", "experiments": len(experiments)}
+
+
 def drive_usage() -> dict:
     remote = DRIVE_ROOT.split(":")[0] + ":"
     return json.loads(output(["rclone", "about", remote, "--json"]))
@@ -291,6 +305,12 @@ def backup() -> int:
         except (BackupError, sqlite3.Error) as err:
             manifest["sqlite"] = {"status": "failed", "reason": str(err)}
             manifest["errors"].append(f"sqlite: {err}")
+        print("MLflow copy ...")
+        try:
+            manifest["mlflow"] = sqlite_copy(f"sqlite:///{MLFLOW_DB}", snaps / MLFLOW_FILE)
+        except (BackupError, sqlite3.Error) as err:
+            manifest["mlflow"] = {"status": "failed", "reason": str(err)}
+            manifest["errors"].append(f"mlflow: {err}")
 
         for name, (folder, _) in SOURCES.items():
             print(f"Copying {folder} ...")
@@ -341,6 +361,7 @@ def print_summary(manifest: dict) -> None:
         print(f"  {name}: {entry['files']} files, {entry['bytes'] / 1e9:.2f} GB")
     print(f"  Qdrant snapshot: {manifest['qdrant']['status'].upper()}")
     print(f"  SQLite copy: {manifest['sqlite']['status'].upper()}")
+    print(f"  MLflow copy: {manifest['mlflow']['status'].upper()}")
     for err in manifest["errors"]:
         print(f"  ERROR {err}")
     print(f"  Log: {LOG_DIR / manifest['run']}")
@@ -461,6 +482,14 @@ def restore_test(full: bool) -> int:
         restored_db = temp / "multiagent-ai-lab" / "data" / DB_FILE
         if restored_db.exists():
             record("restored data/app.db integrity", integrity_ok(restored_db))
+        mlflow_copy = snaps / MLFLOW_FILE
+        if mlflow_copy.exists():
+            record("MLflow copy integrity", integrity_ok(mlflow_copy))
+            result = mlflow_opens(mlflow_copy)
+            record("MLflow opens the copy", result["status"] == "ok", result)
+        restored_mlflow = temp / "multiagent-ai-lab" / "mlflow" / MLFLOW_FILE
+        if restored_mlflow.exists():
+            record("restored mlflow/mlflow.db integrity", integrity_ok(restored_mlflow))
 
         # 4. Drive usage and the size of each backup folder on Drive
         report["drive_usage"] = drive_usage()

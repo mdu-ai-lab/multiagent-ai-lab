@@ -5,7 +5,7 @@
 .PHONY: backup restore-test pull-inbox mlflow
 
 # Copy the repo folder and multiagent-ai-lab-local to Drive, plus a Qdrant snapshot
-# and a clean SQLite copy. Changed or deleted files are kept in a dated history folder
+# and clean SQLite copies of the app and MLflow databases. Changed or deleted files are kept in a dated history folder
 backup:
 	uv run python ops/backup.py backup
 

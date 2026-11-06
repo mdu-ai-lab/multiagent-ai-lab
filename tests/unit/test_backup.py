@@ -130,3 +130,21 @@ def test_qdrant_snapshot_is_skipped_when_qdrant_is_off(tmp_path):
 
 def test_qdrant_image_comes_from_compose():
     assert backup.qdrant_image().startswith("qdrant/qdrant:v")
+
+
+def test_mlflow_opens_a_real_mlflow_database(tmp_path, monkeypatch):
+    from mlflow.tracking import MlflowClient
+
+    # MLflow writes run files next to the working folder, so the test works in a temporary one
+    monkeypatch.chdir(tmp_path)
+    db = tmp_path / "mlflow.db"
+    MlflowClient(tracking_uri=f"sqlite:///{db}").create_experiment("qa")
+    # The Default experiment plus qa
+    assert backup.mlflow_opens(db) == {"status": "ok", "experiments": 2}
+
+
+def test_mlflow_opens_reports_a_broken_database(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
+    broken = tmp_path / "mlflow.db"
+    broken.write_text("not a database")
+    assert backup.mlflow_opens(broken)["status"] == "failed"
