@@ -4,7 +4,7 @@
 |---|---|
 | Purpose | One test case per plan step |
 | Status | Proposed |
-| Last updated | 2026-11-05 |
+| Last updated | 2026-11-06 |
 | Source of truth | [WORK_PLAN.md](../WORK_PLAN.md) v1.10 |
 | Related documents | [Test plan](../09-testing/test-plan.md), [Traceability](../12-project-management/requirements-traceability.md) |
 
@@ -22,7 +22,7 @@ Copied from the done-when column of WORK_PLAN.md section 12. The plan stays the 
 | AT-0.6 | Backup and sync | Backup runs. A file restored into a temp folder matches the original. Drive usage recorded. | Passed |
 | AT-0.7 | Plan in the repo | docs/WORK_PLAN.md is on GitHub and shows Phase 0 progress. | Passed |
 | AT-1.1 | GitHub workflow | First pull request merged with tag v0.0.1. A direct push to main is refused. | Passed |
-| AT-1.2 | MLflow | A test run shows all fields. A trace shows each model call with time and tokens and the request totals. The export creates JSON files. | Not run |
+| AT-1.2 | MLflow | A test run shows all fields. A trace shows each model call with time and tokens and the request totals. The export creates JSON files. | Passed |
 | AT-1.3 | Versioning rules | Pick one old result and trace it to its exact versions. | Not run |
 | AT-1.4 | CI pipeline | CI is green. A deliberately broken commit fails CI. | Not run |
 | AT-1.5 | Free GPU profile | The smoke test runs on Colab and on Kaggle. The chosen GPU models are recorded. The runs appear in the Mac's MLflow. | Not run |

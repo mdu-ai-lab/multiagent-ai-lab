@@ -2,6 +2,48 @@
 
 Report of the last work session. Read this after docs/WORK_PLAN.md at the start of every session.
 
+## Session 6 November 2026: MLflow (step 1.2)
+
+- MLflow 3.17.2 (D40). The mlflow-skinny client is in the project environment. The full server
+  has its own locked environment in ops/mlflow-server, because the two packages install the
+  same files (1,326 shared files, counted in the 3.17.2 install files).
+- make mlflow starts the server on 127.0.0.1:5001 with its data in mlflow/. It only accepts an
+  address on this Mac and turns off usage statistics.
+- tracing.py: one trace per request with its totals (tokens in and out, model calls, tool
+  calls, time, fallback) and one span per model call. Runs record the git commit, config
+  fingerprints, model and dataset versions, metrics and result files. Only runs marked for
+  publishing are exported. On in the mac profile only. service.py calls tracing.setup() from
+  step 1.6.
+- llm_client.py records chat, streamed chat, embedding and rerank calls inside a request.
+  Streamed answers report their token counts (stream_options include_usage, confirmed with
+  llama.cpp b11960).
+- export_results.py writes published runs to results/<route>/<date>_<run id>.json. Without a
+  running server it stops at once with a message.
+- make backup takes a clean copy of mlflow/mlflow.db. make restore-test checks its integrity
+  and that MLflow opens it. Not run yet.
+- Tests: 52 unit tests and 10 Mac tests with both servers passed. AT-1.2 passed. Commits
+  6491fb1 to 1600e62.
+- Checked on the Mac: run file links start with mlflow-artifacts:, so the mlflow folder can
+  move to another computer. The server tells the MLflow page that usage data is off
+  (disable_ui_telemetry true). The page still shows an information box about usage data.
+  MLflow with its workers used about 125 MB (RSS).
+
+Notes for later steps:
+- MLflow 3.17.2 lists its automatic OpenAI tracing as tested only with openai 2.2.0 to 2.47.0.
+  Model calls are therefore traced inside llm_client.py. Check MLflow's tested range for
+  LangGraph before its tracing is turned on in 7.2.
+- The tests show one warning from SQLAlchemy 2.1 about MLflow's database code (noload).
+- Every run of the Mac tests adds one trace and one run to the MLflow experiment
+  integration-test.
+- One push failed with "fatal error in commit_refs_rules" on GitHub's side. The same push
+  worked on the second try.
+- Suggested: run make backup and make restore-test once, because the backup code changed in
+  this step. Before that, create the own Google Drive client_id for rclone (note of 4 November).
+
+### Exact next step
+
+1. Step 1.3 (versioning rules), shown to the owner for approval first.
+
 ## Session 5 November 2026: GitHub workflow (step 1.1)
 
 - gh 2.103.3 from Homebrew, logged in as Hossain007Bhuiyan.
