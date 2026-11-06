@@ -13,6 +13,7 @@ Versions are tagged at the end of each phase (WORK_PLAN.md rule G).
 - llm_client.py records every chat, streamed chat, embedding and rerank call inside a request with its model, inputs, answer, time and tokens. Streamed answers now report their token counts.
 - export_results.py writes a JSON summary of every published MLflow run into results/<route>/<date>_<run id>.json for the dashboard: metrics, versions and git commit only, each run once. Runs are published only when marked for public test sets.
 - make backup also takes a clean copy of the MLflow database. make restore-test checks its integrity and that MLflow opens it.
+- Mac test with the real model server and MLflow server: one request trace with its tokens and model calls, and one run with its result file.
 
 ### Changed
 
