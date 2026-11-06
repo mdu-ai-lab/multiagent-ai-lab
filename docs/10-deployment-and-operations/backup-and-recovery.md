@@ -4,7 +4,7 @@
 |---|---|
 | Purpose | How work is protected and restored |
 | Status | Proposed |
-| Last updated | 2026-11-05 |
+| Last updated | 2026-11-06 |
 | Source of truth | [WORK_PLAN.md](../WORK_PLAN.md) v1.10 |
 | Related documents | [Data privacy](../07-security/data-privacy.md) |
 
