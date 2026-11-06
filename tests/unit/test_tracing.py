@@ -116,3 +116,37 @@ def test_stopped_and_failed_model_calls_are_kept(store):
     assert spans[0].outputs == "first"
     assert spans[0].attributes["mrag.stopped_early"] is True
     assert spans[1].status.status_code == "ERROR"
+
+
+def test_pipeline_version_changes_with_any_part():
+    parts = {"git_commit": "a", "git_dirty": "false", "git_changes": "none", "profile": "mac",
+             "config.models.yaml": "b"}
+    assert tracing.pipeline_version(parts) == tracing.pipeline_version(dict(parts))
+    assert tracing.pipeline_version(parts).startswith("p-")
+    for key in parts:
+        changed = parts | {key: parts[key] + "x"}
+        assert tracing.pipeline_version(changed) != tracing.pipeline_version(parts), key
+
+
+def test_run_and_trace_carry_the_same_pipeline_version(store):
+    with tracing.request("chat", {"question": "hello"}) as totals:
+        totals.output = "answer"
+    trace = last_trace()
+    with tracing.run("chat", run_name="test") as run_id:
+        pass
+    data = mlflow.get_run(run_id).data
+    version = trace.info.trace_metadata["mrag.pipeline_version"]
+    assert version.startswith("p-")
+    assert data.tags["mrag.pipeline_version"] == version
+    assert data.tags["git_changes"] == "none" or len(data.tags["git_changes"]) == 12
+    assert data.params["profile"] == "mac"
+    assert "config.models.yaml" in data.params
+
+
+def test_prompt_files_are_part_of_the_pipeline(tmp_path, monkeypatch):
+    monkeypatch.setattr(tracing, "PROMPTS_DIR", tmp_path)
+    before = tracing.pipeline_parts("mac")
+    (tmp_path / "qa-answer.txt").write_text("Answer {{question}}")
+    after = tracing.pipeline_parts("mac")
+    assert "prompt_file.qa-answer" in after and "prompt_file.qa-answer" not in before
+    assert tracing.pipeline_version(after) != tracing.pipeline_version(before)

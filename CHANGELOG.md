@@ -7,6 +7,7 @@ Versions are tagged at the end of each phase (WORK_PLAN.md rule G).
 
 ### Added
 
+- Pipeline version: one fingerprint of the code version (commit and uncommitted changes), profile, config files (with the model revisions) and prompt files, stored on every run and trace and in the dashboard export.
 - prompts.py loads prompts from configs/prompts/<name>.txt and registers each changed text as a new MLflow prompt version. Every use is recorded in the trace and the run. Without MLflow the version is the file's fingerprint.
 - Mac models pinned in models.yaml with source, revision and the SHA-256 of every file the model server loads. Runs record them. A unit test keeps llama-swap.yaml and models.yaml in line. A Mac test checks the files.
 - MLflow 3.17.2: the mlflow-skinny client for the platform and the full mlflow package in its own locked environment in ops/mlflow-server for the local server.

@@ -26,7 +26,7 @@ def test_summary_holds_only_numbers_and_versions(store):
     data = json.loads(path.read_text())
     assert set(data) == {"route", "run_id", "run_name", "started", "status", "tags",
                          "params", "metrics"}
-    assert set(data["tags"]) == {"git_commit", "git_dirty"}
+    assert set(data["tags"]) == {"git_commit", "git_dirty", "mrag.pipeline_version"}
     assert data["metrics"] == {"f1": 0.61}
     assert data["params"]["dataset.qasper"] == "abc123"
     assert data["status"] == "FINISHED"

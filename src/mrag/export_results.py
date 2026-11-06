@@ -19,7 +19,7 @@ from mrag.config import PROJECT_ROOT, get_settings
 
 RESULTS_DIR = PROJECT_ROOT / "results"
 # Tags that are safe to publish. Every other tag stays in MLflow
-SAFE_TAGS = ("git_commit", "git_dirty")
+SAFE_TAGS = ("git_commit", "git_dirty", "mrag.pipeline_version")
 
 
 def all_experiments(client: MlflowClient) -> Iterator[Experiment]:

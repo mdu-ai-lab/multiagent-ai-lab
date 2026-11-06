@@ -4,6 +4,7 @@
 # and one child span per model call. MLflow adds up the tokens of the model call spans.
 
 import hashlib
+import json
 import os
 import subprocess
 import time
@@ -27,6 +28,7 @@ TRACED_PROFILES = {"mac"}
 # Runs with this tag set to "true" are exported to results/ and shown on the dashboard
 PUBLISH_TAG = "mrag.publish"
 CONFIG_DIR = PROJECT_ROOT / "configs"
+PROMPTS_DIR = CONFIG_DIR / "prompts"
 # Span types for the calls llm_client makes
 CHAT = SpanType.CHAT_MODEL
 EMBEDDING = SpanType.EMBEDDING
@@ -73,6 +75,9 @@ class ModelCall:
 _enabled = False
 _profile = "mac"
 _tracking_uri = ""
+# Snapshot of the setup this process started with (see pipeline_parts)
+_pipeline_parts: dict[str, str] = {}
+_pipeline_version = ""
 _experiment_ids: dict[str, str] = {}
 # The totals of the request that is running in this thread or task
 _current: ContextVar[RequestTotals | None] = ContextVar("mrag_request_totals", default=None)
@@ -80,7 +85,7 @@ _current: ContextVar[RequestTotals | None] = ContextVar("mrag_request_totals", d
 
 def setup(settings: Settings | None = None) -> bool:
     # Safe to call more than once. Returns True when runs and traces go to MLflow
-    global _enabled, _profile, _tracking_uri
+    global _enabled, _profile, _tracking_uri, _pipeline_parts, _pipeline_version
     settings = settings or get_settings()
     # No usage statistics are sent to the MLflow developers
     os.environ["MLFLOW_DISABLE_TELEMETRY"] = "true"
@@ -89,6 +94,10 @@ def setup(settings: Settings | None = None) -> bool:
     _enabled = settings.profile in TRACED_PROFILES
     _experiment_ids.clear()
     if _enabled:
+        # A running program keeps the code, configs and prompts it loaded at start, so the
+        # start is the moment that describes its results
+        _pipeline_parts = pipeline_parts(settings.profile)
+        _pipeline_version = pipeline_version(_pipeline_parts)
         mlflow.set_tracking_uri(settings.mlflow_tracking_uri)
         mlflow.tracing.enable()
     else:
@@ -148,7 +157,8 @@ def request(route: str, inputs: dict[str, Any]) -> Iterator[RequestTotals]:
             finally:
                 totals.duration_ms = elapsed_ms(start)
                 span.set_outputs(totals.output)
-                mlflow.update_current_trace(metadata=totals.metadata())
+                mlflow.update_current_trace(
+                    metadata=totals.metadata() | {"mrag.pipeline_version": _pipeline_version})
     finally:
         _current.reset(token)
 
@@ -233,23 +243,42 @@ def record_prompt(name: str, version: str) -> None:
         mlflow.log_param(f"prompt.{name}", version)
 
 
-def git_tags() -> dict[str, str]:
+def git_state() -> dict[str, str]:
+    # The code version: commit, whether there are uncommitted changes and a fingerprint of
+    # them. New files that Git does not track yet count by name only
     def git(*args: str) -> str:
         done = subprocess.run(["git", *args], cwd=PROJECT_ROOT, capture_output=True,
                               text=True, check=False)
         return done.stdout.strip()
+    status = git("status", "--porcelain")
+    changes = status + "\n" + git("diff", "HEAD")
     return {"git_commit": git("rev-parse", "HEAD") or "unknown",
-            "git_dirty": "true" if git("status", "--porcelain") else "false"}
+            "git_dirty": "true" if status else "false",
+            "git_changes": hashlib.sha256(changes.encode()).hexdigest()[:12] if status else "none"}
 
 
-def config_params(profile: str) -> dict[str, str]:
+def pipeline_parts(profile: str) -> dict[str, str]:
+    # Everything that defines the setup: code, profile, configs (models.yaml holds the
+    # model revisions and file fingerprints) and prompts
+    parts = git_state() | {"profile": profile}
+    for path in sorted(CONFIG_DIR.glob("*.yaml")):
+        parts[f"config.{path.name}"] = hashlib.sha256(path.read_bytes()).hexdigest()[:12]
+    for path in sorted(PROMPTS_DIR.glob("*.txt")):
+        parts[f"prompt_file.{path.stem}"] = hashlib.sha256(path.read_bytes()).hexdigest()[:12]
+    return parts
+
+
+def pipeline_version(parts: dict[str, str]) -> str:
+    # One short name for the whole setup. Any change in a part gives a new name
+    text = json.dumps(parts, sort_keys=True)
+    return "p-" + hashlib.sha256(text.encode()).hexdigest()[:12]
+
+
+def model_params(profile: str) -> dict[str, str]:
     # Imported here because llm_client records its model calls through this module
     from mrag.llm_client import load_models
 
-    params = {"profile": profile}
-    # A short fingerprint of each config file shows which settings a run used
-    for path in sorted(CONFIG_DIR.glob("*.yaml")):
-        params[f"config.{path.name}"] = hashlib.sha256(path.read_bytes()).hexdigest()[:12]
+    params = {}
     entry = load_models().get(profile)
     for role, ref in (entry.models.items() if entry else []):
         params[f"model.{role}"] = ref.name
@@ -269,10 +298,14 @@ def run(route: str, run_name: str | None = None, datasets: dict[str, str] | None
     # name is published too, so it must not contain private information
     if not _enabled:
         raise TracingError("MLflow runs are only logged in the mac profile")
-    tags = git_tags() | {PUBLISH_TAG: "true" if publish else "false"}
+    # Tags and parameters come from the same snapshot as the pipeline version
+    git_parts = {key: value for key, value in _pipeline_parts.items() if key.startswith("git_")}
+    tags = git_parts | {"mrag.pipeline_version": _pipeline_version,
+                        PUBLISH_TAG: "true" if publish else "false"}
     with mlflow.start_run(experiment_id=experiment_id(route), run_name=run_name,
                           tags=tags) as active:
-        params = config_params(_profile)
+        params = {key: value for key, value in _pipeline_parts.items() if key not in git_parts}
+        params.update(model_params(_profile))
         params.update({f"dataset.{name}": version for name, version in (datasets or {}).items()})
         mlflow.log_params(params)
         yield active.info.run_id
