@@ -139,7 +139,7 @@ uv sync
 5. Restore Qdrant into its Docker volume. The first command loads the snapshot. Wait until `curl -s http://127.0.0.1:6333/healthz` prints "healthz check passed", then stop it and start Qdrant normally:
 
 ```
-docker run -d --rm --name qdrant-restore -p 127.0.0.1:6333:6333 -v multiagent-ai-lab_qdrant_data:/qdrant/storage -v /Volumes/MacbookAPFS/Project/restore-snapshots:/restore:ro qdrant/qdrant:v1.20.0 ./qdrant --storage-snapshot /restore/qdrant-full.snapshot
+docker run -d --rm --name qdrant-restore -p 127.0.0.1:6333:6333 -v multiagent-ai-lab_qdrant_data:/qdrant/storage -v /Volumes/MacbookAPFS/Project/restore-snapshots:/restore:ro qdrant/qdrant:v1.20.0@sha256:9bfc89f9914fc14876a88c05270685921a55b8877b254a98bcc1cc2f0a424cd2 ./qdrant --storage-snapshot /restore/qdrant-full.snapshot
 docker stop qdrant-restore
 docker compose up -d
 ```

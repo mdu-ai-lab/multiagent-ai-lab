@@ -1,6 +1,7 @@
 # Unit tests for ops/backup.py. They test the safety parts without rclone, Drive or Docker.
 
 import importlib.util
+import re
 import sqlite3
 from datetime import datetime
 from pathlib import Path
@@ -130,6 +131,12 @@ def test_qdrant_snapshot_is_skipped_when_qdrant_is_off(tmp_path):
 
 def test_qdrant_image_comes_from_compose():
     assert backup.qdrant_image().startswith("qdrant/qdrant:v")
+
+
+def test_qdrant_image_is_pinned_by_digest():
+    # The tag names the release, the digest makes sure it is exactly that image
+    image = backup.qdrant_image()
+    assert re.fullmatch(r"qdrant/qdrant:v[\d.]+@sha256:[0-9a-f]{64}", image)
 
 
 def test_mlflow_opens_a_real_mlflow_database(tmp_path, monkeypatch):

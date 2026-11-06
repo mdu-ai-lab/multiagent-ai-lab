@@ -20,6 +20,7 @@ Versions are tagged at the end of each phase (WORK_PLAN.md rule G).
 
 ### Changed
 
+- compose.yaml pins the Qdrant image by digest as well as by version tag.
 - Plan: versioning rules (D41). Prompts as text files in Git registered in the MLflow prompt registry, a pipeline version ID on every run and trace, models pinned with source, revision and file SHA-256, datasets pinned by revision and file hash from 2.1 and Qdrant pinned by image digest.
 - Plan: MLflow 3.17.2 runs natively on the Mac through uv with its data in mlflow/ (D40). Model calls are traced from now on, LangGraph steps from 7.2. Usage telemetry is off. The deployment docs follow the plan.
 
