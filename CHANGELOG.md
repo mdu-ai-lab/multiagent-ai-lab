@@ -7,6 +7,7 @@ Versions are tagged at the end of each phase (WORK_PLAN.md rule G).
 
 ### Added
 
+- Dependabot (.github/dependabot.yml): weekly pull requests for newer Python packages in both uv lock files, GitHub actions and the Qdrant image, with a 7-day wait for new releases and minor and patch updates grouped. It starts once the file is on main.
 - Evaluation gate (ops/eval_gate.py), run by CI on every push: the newest published result of each route, profile and dataset in results/ must meet its minimum or maximum in configs/eval/limits.yaml. A missing or broken score fails. No limits yet, so it passes and says so.
 - CI runs one real model test: llama.cpp b11960 (the same server program as on the Mac) serves Qwen3.5-0.8B on the CPU and llm_client.py asks it a question, normally and streamed. The model is pinned in the new ci profile of configs/models.yaml. Both downloads are checked against their SHA-256 on every run and cached between runs.
 - CI on GitHub Actions (.github/workflows/ci.yml): ruff, formatting, mypy, pip-audit on both lock files and the unit tests on every push and pull request to main, on a free standard runner with actions pinned to commit IDs.

@@ -1,0 +1,53 @@
+# Dependabot opens pull requests to main when a pinned dependency has a newer version: the
+# Python packages in both uv lock files, the GitHub actions in the workflows and the Qdrant
+# image in compose.yaml. Every pull request runs the full CI before it can be merged.
+# Security fixes come as soon as they are published, without waiting for this schedule.
+version: 2
+
+updates:
+  - package-ecosystem: uv
+    directories:
+      - "/"
+      - "/ops/mlflow-server"
+    schedule:
+      interval: weekly
+      day: monday
+      time: "06:00"
+      timezone: Europe/Stockholm
+    # A new release is proposed only after 7 days, so a broken or harmful release is
+    # usually found and pulled by then
+    cooldown:
+      default-days: 7
+    # Minor and patch updates come together in one pull request per lock file. Major
+    # updates come one by one, because they can change how a package works
+    groups:
+      python-packages:
+        patterns:
+          - "*"
+        update-types:
+          - minor
+          - patch
+
+  - package-ecosystem: github-actions
+    directory: "/"
+    schedule:
+      interval: weekly
+      day: monday
+      time: "06:00"
+      timezone: Europe/Stockholm
+    cooldown:
+      default-days: 7
+    groups:
+      github-actions:
+        patterns:
+          - "*"
+
+  - package-ecosystem: docker-compose
+    directory: "/"
+    schedule:
+      interval: weekly
+      day: monday
+      time: "06:00"
+      timezone: Europe/Stockholm
+    cooldown:
+      default-days: 7
