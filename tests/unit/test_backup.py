@@ -27,7 +27,8 @@ def test_drive_paths_stay_inside_the_root_folder():
     assert paths["multiagent-ai-lab"] == f"{ROOT}/multiagent-ai-lab"
     assert paths["multiagent-ai-lab-local"] == f"{ROOT}/multiagent-ai-lab-local"
     assert paths["history/multiagent-ai-lab"] == (
-        f"{ROOT}/multiagent-ai-lab-backup/history/2026-11-02_090507/multiagent-ai-lab")
+        f"{ROOT}/multiagent-ai-lab-backup/history/2026-11-02_090507/multiagent-ai-lab"
+    )
     assert paths["logs"] == f"{ROOT}/multiagent-ai-lab-backup/logs/2026-11-02_090507"
     # No target is the root itself, so other folders in it are never touched
     assert all(p.startswith(ROOT + "/") for p in paths.values())
@@ -59,9 +60,13 @@ def test_check_sources_accepts_a_complete_folder(tmp_path):
 
 
 def test_sync_command_keeps_links_permissions_and_history(tmp_path):
-    cmd = backup.sync_command(Path("/src"), f"{ROOT}/multiagent-ai-lab-local",
-                              f"{ROOT}/multiagent-ai-lab-backup/history/r/multiagent-ai-lab-local",
-                              "multiagent-ai-lab-local", tmp_path / "log")
+    cmd = backup.sync_command(
+        Path("/src"),
+        f"{ROOT}/multiagent-ai-lab-local",
+        f"{ROOT}/multiagent-ai-lab-backup/history/r/multiagent-ai-lab-local",
+        "multiagent-ai-lab-local",
+        tmp_path / "log",
+    )
     assert cmd[:4] == ["rclone", "sync", "/src", f"{ROOT}/multiagent-ai-lab-local"]
     assert cmd[cmd.index("--backup-dir") + 1].endswith("/history/r/multiagent-ai-lab-local")
     for flag in ("--links", "-M", "--create-empty-src-dirs"):

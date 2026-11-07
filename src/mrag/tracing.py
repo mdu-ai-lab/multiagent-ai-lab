@@ -55,10 +55,15 @@ class RequestTotals:
 
     def metadata(self) -> dict[str, str]:
         # Trace metadata values must be strings. They can be searched in MLflow
-        values = {"route": self.route, "model_calls": self.model_calls,
-                  "tool_calls": self.tool_calls, "input_tokens": self.input_tokens,
-                  "output_tokens": self.output_tokens, "duration_ms": self.duration_ms,
-                  "fallback": self.fallback or "none"}
+        values = {
+            "route": self.route,
+            "model_calls": self.model_calls,
+            "tool_calls": self.tool_calls,
+            "input_tokens": self.input_tokens,
+            "output_tokens": self.output_tokens,
+            "duration_ms": self.duration_ms,
+            "fallback": self.fallback or "none",
+        }
         metadata = {f"mrag.{key}": str(value) for key, value in values.items()}
         metadata.update({f"mrag.prompt.{name}": version for name, version in self.prompts.items()})
         return metadata
@@ -117,7 +122,7 @@ def server_reachable(tracking_uri: str | None = None) -> bool:
         return True
     try:
         with urllib.request.urlopen(f"{uri}/health", timeout=3) as response:
-            return response.status == 200
+            return bool(response.status == 200)
     except OSError:
         return False
 
@@ -149,8 +154,9 @@ def request(route: str, inputs: dict[str, Any]) -> Iterator[RequestTotals]:
                 totals.duration_ms = elapsed_ms(start)
             return
         location = MlflowExperimentLocation(experiment_id(route))
-        with mlflow.start_span(name=route, span_type=SpanType.CHAIN,
-                               trace_destination=location) as span:
+        with mlflow.start_span(
+            name=route, span_type=SpanType.CHAIN, trace_destination=location
+        ) as span:
             span.set_inputs(inputs)
             try:
                 yield totals
@@ -158,7 +164,8 @@ def request(route: str, inputs: dict[str, Any]) -> Iterator[RequestTotals]:
                 totals.duration_ms = elapsed_ms(start)
                 span.set_outputs(totals.output)
                 mlflow.update_current_trace(
-                    metadata=totals.metadata() | {"mrag.pipeline_version": _pipeline_version})
+                    metadata=totals.metadata() | {"mrag.pipeline_version": _pipeline_version}
+                )
     finally:
         _current.reset(token)
 
@@ -169,9 +176,15 @@ def readable_messages(messages: list[dict[str, Any]]) -> list[dict[str, Any]]:
     for message in messages:
         content = message.get("content")
         if isinstance(content, list):
-            content = [{"type": "image_url",
-                        "image_url": {"url": f"<image, {len(part['image_url']['url'])} characters>"}}
-                       if part.get("type") == "image_url" else part for part in content]
+            content = [
+                {
+                    "type": "image_url",
+                    "image_url": {"url": f"<image, {len(part['image_url']['url'])} characters>"},
+                }
+                if part.get("type") == "image_url"
+                else part
+                for part in content
+            ]
         readable.append({**message, "content": content})
     return readable
 
@@ -183,8 +196,9 @@ def add_tokens(totals: RequestTotals | None, call: ModelCall) -> None:
 
 
 @contextmanager
-def model_call(role: str, model: str, inputs: dict[str, Any],
-               span_type: str = CHAT) -> Iterator[ModelCall]:
+def model_call(
+    role: str, model: str, inputs: dict[str, Any], span_type: str = CHAT
+) -> Iterator[ModelCall]:
     # One call to a model inside a request. The caller fills in the answer and the token
     # counts. Calls outside a request, for example while indexing files, are not recorded
     call = ModelCall()
@@ -199,10 +213,13 @@ def model_call(role: str, model: str, inputs: dict[str, Any],
         return
     # A span that is not bound to the current context, so a streamed answer can be read
     # piece by piece and still gets one span with the full time of the call
-    span = mlflow.start_span_no_context(name=f"model_call.{role}", span_type=span_type,
-                                        parent_span=mlflow.get_current_active_span(),
-                                        inputs=inputs,
-                                        attributes={"mrag.role": role, "mrag.model": model})
+    span = mlflow.start_span_no_context(
+        name=f"model_call.{role}",
+        span_type=span_type,
+        parent_span=mlflow.get_current_active_span(),
+        inputs=inputs,
+        attributes={"mrag.role": role, "mrag.model": model},
+    )
     try:
         yield call
     except GeneratorExit:
@@ -210,7 +227,8 @@ def model_call(role: str, model: str, inputs: dict[str, Any],
         span.end(outputs=call.output, attributes={"mrag.stopped_early": True})
         raise
     except BaseException as error:
-        span.record_exception(error)
+        # MLflow takes normal errors. A stop such as Ctrl+C is recorded as text
+        span.record_exception(error if isinstance(error, Exception) else repr(error))
         span.end(outputs=call.output, status="ERROR")
         raise
     attributes: dict[str, Any] = {}
@@ -219,7 +237,8 @@ def model_call(role: str, model: str, inputs: dict[str, Any],
         attributes[SpanAttributeKey.CHAT_USAGE] = {
             TokenUsageKey.INPUT_TOKENS: call.input_tokens,
             TokenUsageKey.OUTPUT_TOKENS: call.output_tokens,
-            TokenUsageKey.TOTAL_TOKENS: call.input_tokens + call.output_tokens}
+            TokenUsageKey.TOTAL_TOKENS: call.input_tokens + call.output_tokens,
+        }
     span.end(outputs=call.output, attributes=attributes)
     add_tokens(totals, call)
 
@@ -247,14 +266,18 @@ def git_state() -> dict[str, str]:
     # The code version: commit, whether there are uncommitted changes and a fingerprint of
     # them. New files that Git does not track yet count by name only
     def git(*args: str) -> str:
-        done = subprocess.run(["git", *args], cwd=PROJECT_ROOT, capture_output=True,
-                              text=True, check=False)
+        done = subprocess.run(
+            ["git", *args], cwd=PROJECT_ROOT, capture_output=True, text=True, check=False
+        )
         return done.stdout.strip()
+
     status = git("status", "--porcelain")
     changes = status + "\n" + git("diff", "HEAD")
-    return {"git_commit": git("rev-parse", "HEAD") or "unknown",
-            "git_dirty": "true" if status else "false",
-            "git_changes": hashlib.sha256(changes.encode()).hexdigest()[:12] if status else "none"}
+    return {
+        "git_commit": git("rev-parse", "HEAD") or "unknown",
+        "git_dirty": "true" if status else "false",
+        "git_changes": hashlib.sha256(changes.encode()).hexdigest()[:12] if status else "none",
+    }
 
 
 def pipeline_parts(profile: str) -> dict[str, str]:
@@ -280,19 +303,24 @@ def model_params(profile: str) -> dict[str, str]:
 
     params = {}
     entry = load_models().get(profile)
-    for role, ref in (entry.models.items() if entry else []):
+    for role, ref in entry.models.items() if entry else []:
         params[f"model.{role}"] = ref.name
         if ref.revision:
             params[f"model.{role}.source"] = f"{ref.source or ref.name}@{ref.revision}"
         if ref.files:
             params[f"model.{role}.files"] = ", ".join(
-                f"{file_name}={digest[:12]}" for file_name, digest in sorted(ref.files.items()))
+                f"{file_name}={digest[:12]}" for file_name, digest in sorted(ref.files.items())
+            )
     return params
 
 
 @contextmanager
-def run(route: str, run_name: str | None = None, datasets: dict[str, str] | None = None,
-        publish: bool = False) -> Iterator[str]:
+def run(
+    route: str,
+    run_name: str | None = None,
+    datasets: dict[str, str] | None = None,
+    publish: bool = False,
+) -> Iterator[str]:
     # One experiment run, for example an evaluation. Yields the run ID. publish=True only
     # for runs on public test sets: their metrics go to GitHub and the dashboard. The run
     # name is published too, so it must not contain private information
@@ -300,10 +328,13 @@ def run(route: str, run_name: str | None = None, datasets: dict[str, str] | None
         raise TracingError("MLflow runs are only logged in the mac profile")
     # Tags and parameters come from the same snapshot as the pipeline version
     git_parts = {key: value for key, value in _pipeline_parts.items() if key.startswith("git_")}
-    tags = git_parts | {"mrag.pipeline_version": _pipeline_version,
-                        PUBLISH_TAG: "true" if publish else "false"}
-    with mlflow.start_run(experiment_id=experiment_id(route), run_name=run_name,
-                          tags=tags) as active:
+    tags = git_parts | {
+        "mrag.pipeline_version": _pipeline_version,
+        PUBLISH_TAG: "true" if publish else "false",
+    }
+    with mlflow.start_run(
+        experiment_id=experiment_id(route), run_name=run_name, tags=tags
+    ) as active:
         params = {key: value for key, value in _pipeline_parts.items() if key not in git_parts}
         params.update(model_params(_profile))
         params.update({f"dataset.{name}": version for name, version in (datasets or {}).items()})

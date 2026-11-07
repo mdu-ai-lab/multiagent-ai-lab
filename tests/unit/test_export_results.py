@@ -19,13 +19,20 @@ def test_only_published_runs_are_exported_once(store):
 
 
 def test_summary_holds_only_numbers_and_versions(store):
-    with tracing.run("qa", run_name="public test set", datasets={"qasper": "abc123"},
-                     publish=True):
+    with tracing.run("qa", run_name="public test set", datasets={"qasper": "abc123"}, publish=True):
         tracing.log_results({"f1": 0.61})
     [path] = export_results.export(store / "results")
     data = json.loads(path.read_text())
-    assert set(data) == {"route", "run_id", "run_name", "started", "status", "tags",
-                         "params", "metrics"}
+    assert set(data) == {
+        "route",
+        "run_id",
+        "run_name",
+        "started",
+        "status",
+        "tags",
+        "params",
+        "metrics",
+    }
     assert set(data["tags"]) == {"git_commit", "git_dirty", "mrag.pipeline_version"}
     assert data["metrics"] == {"f1": 0.61}
     assert data["params"]["dataset.qasper"] == "abc123"

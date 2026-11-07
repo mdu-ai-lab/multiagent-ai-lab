@@ -23,17 +23,30 @@ def host_and_port(tracking_uri: str) -> tuple[str, int]:
     parts = urlsplit(tracking_uri)
     if parts.scheme != "http" or parts.hostname not in LOCAL_HOSTS or parts.port is None:
         raise MlflowServerError(
-            f"MRAG_MLFLOW_TRACKING_URI must be http://127.0.0.1:<port>, got {tracking_uri!r}")
+            f"MRAG_MLFLOW_TRACKING_URI must be http://127.0.0.1:<port>, got {tracking_uri!r}"
+        )
     return parts.hostname, parts.port
 
 
 def server_command(host: str, port: int, data_dir: Path) -> list[str]:
     # --artifacts-destination makes runs store mlflow-artifacts:/ links instead of
     # disk paths, so the mlflow folder can move to another computer
-    return ["uv", "run", "--project", str(SERVER_PROJECT), "mlflow", "server",
-            "--host", host, "--port", str(port),
-            "--backend-store-uri", f"sqlite:///{data_dir / 'mlflow.db'}",
-            "--artifacts-destination", str(data_dir / "artifacts")]
+    return [
+        "uv",
+        "run",
+        "--project",
+        str(SERVER_PROJECT),
+        "mlflow",
+        "server",
+        "--host",
+        host,
+        "--port",
+        str(port),
+        "--backend-store-uri",
+        f"sqlite:///{data_dir / 'mlflow.db'}",
+        "--artifacts-destination",
+        str(data_dir / "artifacts"),
+    ]
 
 
 def server_env(base: dict[str, str]) -> dict[str, str]:

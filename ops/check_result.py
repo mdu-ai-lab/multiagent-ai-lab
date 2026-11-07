@@ -15,6 +15,7 @@ from dataclasses import dataclass
 
 import mlflow
 import yaml
+from mlflow.exceptions import MlflowException
 from mlflow.tracking import MlflowClient
 
 from mrag import tracing
@@ -49,9 +50,13 @@ def file_at_commit(commit: str, path: str) -> bytes | None:
     return done.stdout if done.returncode == 0 else None
 
 
-def check_run(tags: dict[str, str], params: dict[str, str], commit_found: bool,
-              read_file: Callable[[str], bytes | None],
-              prompt_text: Callable[[str, str], str | None]) -> list[Check]:
+def check_run(
+    tags: dict[str, str],
+    params: dict[str, str],
+    commit_found: bool,
+    read_file: Callable[[str], bytes | None],
+    prompt_text: Callable[[str, str], str | None],
+) -> list[Check]:
     # read_file gives a file as it is in the run's commit. prompt_text gives the text of an
     # MLflow prompt version. Both are passed in, so the checks can be tested without Git or MLflow
     checks: list[Check] = []
@@ -65,9 +70,14 @@ def check_run(tags: dict[str, str], params: dict[str, str], commit_found: bool,
         return checks
     checks.append(Check(OK, "git commit", commit))
     if dirty:
-        checks.append(Check(WARNING, "uncommitted changes",
-                            f"the run had changes (fingerprint {tags.get('git_changes')}). "
-                            "Files at the commit may differ from what ran"))
+        checks.append(
+            Check(
+                WARNING,
+                "uncommitted changes",
+                f"the run had changes (fingerprint {tags.get('git_changes')}). "
+                "Files at the commit may differ from what ran",
+            )
+        )
 
     for key, recorded in sorted(params.items()):
         if key.startswith("config."):
@@ -80,8 +90,9 @@ def check_run(tags: dict[str, str], params: dict[str, str], commit_found: bool,
         if content is None:
             checks.append(Check(differs, path, "not in that commit"))
         elif short_hash(content) != recorded:
-            checks.append(Check(differs, path,
-                                f"recorded {recorded}, commit has {short_hash(content)}"))
+            checks.append(
+                Check(differs, path, f"recorded {recorded}, commit has {short_hash(content)}")
+            )
         else:
             checks.append(Check(OK, path, f"matches the commit ({recorded})"))
 
@@ -90,6 +101,7 @@ def check_run(tags: dict[str, str], params: dict[str, str], commit_found: bool,
             continue
         name = key.removeprefix("prompt.")
         expected = params.get(f"prompt_file.{name}")
+        found: str | None
         if version.startswith("file-"):
             found = version.removeprefix("file-")
         else:
@@ -98,11 +110,17 @@ def check_run(tags: dict[str, str], params: dict[str, str], commit_found: bool,
         if found is None:
             checks.append(Check(FAIL, f"prompt {name} version {version}", "not found in MLflow"))
         elif found != expected:
-            checks.append(Check(FAIL, f"prompt {name} version {version}",
-                                f"text fingerprint {found}, prompt file {expected}"))
+            checks.append(
+                Check(
+                    FAIL,
+                    f"prompt {name} version {version}",
+                    f"text fingerprint {found}, prompt file {expected}",
+                )
+            )
         else:
-            checks.append(Check(OK, f"prompt {name} version {version}",
-                                "same text as the prompt file"))
+            checks.append(
+                Check(OK, f"prompt {name} version {version}", "same text as the prompt file")
+            )
 
     models_file = read_file("configs/models.yaml")
     profile = params.get("profile", "")
@@ -110,33 +128,51 @@ def check_run(tags: dict[str, str], params: dict[str, str], commit_found: bool,
     if profile in (profiles or {}):
         models = ProfileModels.model_validate(profiles[profile]).models
         for role, ref in sorted(models.items()):
-            pinned = ", ".join(f"{file_name}={digest[:12]}"
-                               for file_name, digest in sorted(ref.files.items()))
+            pinned = ", ".join(
+                f"{file_name}={digest[:12]}" for file_name, digest in sorted(ref.files.items())
+            )
             recorded = params.get(f"model.{role}.files", "")
             if pinned != recorded:
-                checks.append(Check(differs, f"model {role} files",
-                                    f"recorded {recorded or 'none'}, pinned {pinned or 'none'}"))
+                checks.append(
+                    Check(
+                        differs,
+                        f"model {role} files",
+                        f"recorded {recorded or 'none'}, pinned {pinned or 'none'}",
+                    )
+                )
             else:
                 checks.append(Check(OK, f"model {role} files", pinned or "none pinned"))
     else:
-        checks.append(Check(FAIL, "models",
-                            f"profile {profile or 'missing'} not in configs/models.yaml"))
+        checks.append(
+            Check(FAIL, "models", f"profile {profile or 'missing'} not in configs/models.yaml")
+        )
 
     # The pipeline version is made from the git state, the profile and the file fingerprints
     parts = {key: tags[key] for key in GIT_KEYS if key in tags}
-    parts.update({key: value for key, value in params.items()
-                  if key == "profile" or key.startswith(("config.", "prompt_file."))})
+    parts.update(
+        {
+            key: value
+            for key, value in params.items()
+            if key == "profile" or key.startswith(("config.", "prompt_file."))
+        }
+    )
     recomputed = tracing.pipeline_version(parts)
     recorded_version = tags.get("mrag.pipeline_version", "")
     if recomputed == recorded_version:
         checks.append(Check(OK, "pipeline version", recorded_version))
     else:
-        checks.append(Check(FAIL, "pipeline version",
-                            f"recorded {recorded_version or 'missing'}, recomputed {recomputed}"))
+        checks.append(
+            Check(
+                FAIL,
+                "pipeline version",
+                f"recorded {recorded_version or 'missing'}, recomputed {recomputed}",
+            )
+        )
 
     datasets = {key: value for key, value in params.items() if key.startswith("dataset.")}
-    detail = ", ".join(f"{key.removeprefix('dataset.')}={value}"
-                       for key, value in sorted(datasets.items()))
+    detail = ", ".join(
+        f"{key.removeprefix('dataset.')}={value}" for key, value in sorted(datasets.items())
+    )
     checks.append(Check(OK, "datasets", detail or "none recorded"))
     return checks
 
@@ -144,7 +180,7 @@ def check_run(tags: dict[str, str], params: dict[str, str], commit_found: bool,
 def mlflow_prompt_text(name: str, version: str) -> str | None:
     try:
         return mlflow.genai.load_prompt(f"prompts:/{name}/{version}", link_to_model=False).template
-    except Exception:  # a missing prompt raises different MLflow errors
+    except MlflowException:  # a missing prompt or version
         return None
 
 
@@ -152,21 +188,28 @@ def main() -> int:
     parser = argparse.ArgumentParser(description="Trace one MLflow run to its exact versions")
     target = parser.add_mutually_exclusive_group(required=True)
     target.add_argument("run_id", nargs="?", help="ID of the run to check")
-    target.add_argument("--latest", metavar="EXPERIMENT",
-                        help="check the newest run of an experiment")
+    target.add_argument(
+        "--latest", metavar="EXPERIMENT", help="check the newest run of an experiment"
+    )
     args = parser.parse_args()
 
     if not tracing.setup() or not tracing.server_reachable():
-        print("Checking a run needs the mac profile and the MLflow server (make mlflow)",
-              file=sys.stderr)
+        print(
+            "Checking a run needs the mac profile and the MLflow server (make mlflow)",
+            file=sys.stderr,
+        )
         return 1
     client = MlflowClient()
     run_id = args.run_id
     if args.latest:
         experiment = client.get_experiment_by_name(args.latest)
-        runs = client.search_runs([experiment.experiment_id],
-                                  order_by=["attributes.start_time DESC"],
-                                  max_results=1) if experiment else []
+        runs = (
+            client.search_runs(
+                [experiment.experiment_id], order_by=["attributes.start_time DESC"], max_results=1
+            )
+            if experiment
+            else []
+        )
         if not runs:
             print(f"No run found in experiment {args.latest}", file=sys.stderr)
             return 1
@@ -174,8 +217,13 @@ def main() -> int:
     run = client.get_run(run_id)
     tags, params = run.data.tags, run.data.params
     commit = tags.get("git_commit", "")
-    checks = check_run(tags, params, bool(commit) and commit_exists(commit),
-                       lambda path: file_at_commit(commit, path), mlflow_prompt_text)
+    checks = check_run(
+        tags,
+        params,
+        bool(commit) and commit_exists(commit),
+        lambda path: file_at_commit(commit, path),
+        mlflow_prompt_text,
+    )
 
     print(f"Run {run_id} ({run.info.run_name})")
     for check in checks:

@@ -14,7 +14,9 @@ from mrag.llm_client import get_client
 SETTINGS = get_settings()
 # Checks from this test go to their own experiment, apart from the real routes
 ROUTE = "integration-test"
-QUESTION = [{"role": "user", "content": "What is the capital of Sweden? Answer in one short sentence."}]
+QUESTION = [
+    {"role": "user", "content": "What is the capital of Sweden? Answer in one short sentence."}
+]
 
 
 def reachable(url):
@@ -25,10 +27,16 @@ def reachable(url):
         return False
 
 
-pytestmark = [pytest.mark.mac,
-              pytest.mark.skipif(not (reachable(f"{SETTINGS.model_server_url}/models")
-                                      and reachable(f"{SETTINGS.mlflow_tracking_uri}/health")),
-                                 reason="llama-swap or the MLflow server is not running")]
+pytestmark = [
+    pytest.mark.mac,
+    pytest.mark.skipif(
+        not (
+            reachable(f"{SETTINGS.model_server_url}/models")
+            and reachable(f"{SETTINGS.mlflow_tracking_uri}/health")
+        ),
+        reason="llama-swap or the MLflow server is not running",
+    ),
+]
 
 
 @pytest.fixture(scope="module", autouse=True)

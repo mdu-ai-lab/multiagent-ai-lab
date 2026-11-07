@@ -53,9 +53,12 @@ def registry_version(name: str, template: str) -> str:
     latest = mlflow.genai.load_prompt(name, allow_missing=True, link_to_model=False)
     if latest is not None and latest.template == template:
         return str(latest.version)
-    created = mlflow.genai.register_prompt(name, template,
-                                           commit_message=f"configs/prompts/{name}.txt",
-                                           tags={"sha256": fingerprint(template)})
+    created = mlflow.genai.register_prompt(
+        name,
+        template,
+        commit_message=f"configs/prompts/{name}.txt",
+        tags={"sha256": fingerprint(template)},
+    )
     return str(created.version)
 
 

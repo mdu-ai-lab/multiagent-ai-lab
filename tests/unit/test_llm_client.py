@@ -23,8 +23,9 @@ from mrag.llm_client import (
     TransformersClient,
 )
 
-MODELS = {role: ModelRef(name=f"{role}-model")
-          for role in ("main", "helper", "embedding", "reranker")}
+MODELS = {
+    role: ModelRef(name=f"{role}-model") for role in ("main", "helper", "embedding", "reranker")
+}
 
 
 class FakeServer:
@@ -75,9 +76,14 @@ def completion(content, reasoning=None):
     message = {"role": "assistant", "content": content}
     if reasoning is not None:
         message["reasoning_content"] = reasoning
-    return {"id": "1", "object": "chat.completion", "created": 0, "model": "main-model",
-            "choices": [{"index": 0, "message": message, "finish_reason": "stop"}],
-            "usage": {"prompt_tokens": 12, "completion_tokens": 3, "total_tokens": 15}}
+    return {
+        "id": "1",
+        "object": "chat.completion",
+        "created": 0,
+        "model": "main-model",
+        "choices": [{"index": 0, "message": message, "finish_reason": "stop"}],
+        "usage": {"prompt_tokens": 12, "completion_tokens": 3, "total_tokens": 15},
+    }
 
 
 def test_models_file_is_valid():
@@ -118,9 +124,17 @@ def test_model_file_paths(tmp_path):
     downloaded = ModelRef(name="qwen3.5-9b", source="unsloth/Qwen3.5-9B-GGUF", revision="abc")
     converted = ModelRef(name="qwen3-vl-reranker-2b", converted_locally=True)
     assert llm_client.model_file(downloaded, "m.gguf", tmp_path / "hf", tmp_path / "models") == (
-        tmp_path / "hf" / "hub" / "models--unsloth--Qwen3.5-9B-GGUF" / "snapshots" / "abc" / "m.gguf")
+        tmp_path
+        / "hf"
+        / "hub"
+        / "models--unsloth--Qwen3.5-9B-GGUF"
+        / "snapshots"
+        / "abc"
+        / "m.gguf"
+    )
     assert llm_client.model_file(converted, "r.gguf", tmp_path / "hf", tmp_path / "models") == (
-        tmp_path / "models" / "r.gguf")
+        tmp_path / "models" / "r.gguf"
+    )
 
 
 def test_short_file_fingerprint_is_refused():
@@ -142,8 +156,7 @@ def test_image_part_is_a_data_url():
 def test_chat_sends_thinking_switch_and_schema(server, client):
     server.reply("/v1/chat/completions", completion('{"city": "Stockholm"}', reasoning="hmm"))
     schema = {"type": "object", "properties": {"city": {"type": "string"}}}
-    result = client.chat([{"role": "user", "content": "Where?"}], json_schema=schema,
-                         max_tokens=50)
+    result = client.chat([{"role": "user", "content": "Where?"}], json_schema=schema, max_tokens=50)
     path, body = server.requests[-1]
     assert path == "/v1/chat/completions"
     assert body["model"] == "main-model"
@@ -167,49 +180,80 @@ def test_chat_uses_role_model(server, client):
 
 def test_chat_stream_yields_answer_pieces(server, client):
     def event(**delta):
-        return {"id": "1", "object": "chat.completion.chunk", "created": 0,
-                "model": "main-model", "choices": [{"index": 0, "delta": delta}]}
+        return {
+            "id": "1",
+            "object": "chat.completion.chunk",
+            "created": 0,
+            "model": "main-model",
+            "choices": [{"index": 0, "delta": delta}],
+        }
 
-    server.reply_stream("/v1/chat/completions", [
-        event(role="assistant"), event(reasoning_content="thinking"),
-        event(content="Hel"), event(content="lo")])
+    server.reply_stream(
+        "/v1/chat/completions",
+        [
+            event(role="assistant"),
+            event(reasoning_content="thinking"),
+            event(content="Hel"),
+            event(content="lo"),
+        ],
+    )
     pieces = list(client.chat_stream([{"role": "user", "content": "hi"}]))
     assert pieces == ["Hel", "lo"]
     assert server.requests[-1][1]["stream"] is True
 
 
 def test_embed_keeps_input_order(server, client):
-    server.reply("/v1/embeddings", {
-        "object": "list", "model": "embedding-model",
-        "data": [{"object": "embedding", "index": 1, "embedding": [0.0, 1.0]},
-                 {"object": "embedding", "index": 0, "embedding": [1.0, 0.0]}],
-        "usage": {"prompt_tokens": 4, "total_tokens": 4}})
+    server.reply(
+        "/v1/embeddings",
+        {
+            "object": "list",
+            "model": "embedding-model",
+            "data": [
+                {"object": "embedding", "index": 1, "embedding": [0.0, 1.0]},
+                {"object": "embedding", "index": 0, "embedding": [1.0, 0.0]},
+            ],
+            "usage": {"prompt_tokens": 4, "total_tokens": 4},
+        },
+    )
     assert client.embed(["a", "b"]) == [[1.0, 0.0], [0.0, 1.0]]
     assert server.requests[-1][1]["model"] == "embedding-model"
 
 
 def test_rerank_returns_best_first(server, client):
-    server.reply("/v1/rerank", {"results": [{"index": 0, "relevance_score": 0.2},
-                                            {"index": 1, "relevance_score": 0.9}]})
+    server.reply(
+        "/v1/rerank",
+        {"results": [{"index": 0, "relevance_score": 0.2}, {"index": 1, "relevance_score": 0.9}]},
+    )
     results = client.rerank("q", ["d0", "d1"])
     assert [(r.index, r.score) for r in results] == [(1, 0.9), (0, 0.2)]
-    assert server.requests[-1][1] == {"model": "reranker-model", "query": "q",
-                                      "documents": ["d0", "d1"]}
+    assert server.requests[-1][1] == {
+        "model": "reranker-model",
+        "query": "q",
+        "documents": ["d0", "d1"],
+    }
 
 
 def test_too_long_input_has_its_own_error(server, client):
     # Error body as llama-server sends it
-    server.reply("/v1/chat/completions", {"error": {
-        "code": 400, "type": "exceed_context_size_error",
-        "message": "request (2153 tokens) exceeds the available context size (2048 tokens)"}},
-        status=400)
+    server.reply(
+        "/v1/chat/completions",
+        {
+            "error": {
+                "code": 400,
+                "type": "exceed_context_size_error",
+                "message": "request (2153 tokens) exceeds the available context size (2048 tokens)",
+            }
+        },
+        status=400,
+    )
     with pytest.raises(InputTooLongError):
         client.chat([{"role": "user", "content": "long"}])
 
 
 def test_server_failure_is_a_server_error(server, client):
-    server.reply("/v1/chat/completions", {"error": {"code": 500, "message": "Compute error."}},
-                 status=500)
+    server.reply(
+        "/v1/chat/completions", {"error": {"code": 500, "message": "Compute error."}}, status=500
+    )
     with pytest.raises(ModelServerError):
         client.chat([{"role": "user", "content": "hi"}])
 
@@ -246,7 +290,7 @@ def test_chat_is_traced_with_its_tokens(store, server, client):
     server.reply("/v1/chat/completions", completion("Stockholm"))
     with tracing.request("chat", {"question": "Where?"}) as totals:
         client.chat([{"role": "user", "content": "Where?"}])
-    span = [span for span in last_trace().data.spans if span.span_type == "CHAT_MODEL"][0]
+    span = next(span for span in last_trace().data.spans if span.span_type == "CHAT_MODEL")
     assert (totals.model_calls, totals.input_tokens, totals.output_tokens) == (1, 12, 3)
     assert span.attributes["mrag.model"] == "main-model"
     assert span.outputs == "Stockholm"
@@ -254,26 +298,45 @@ def test_chat_is_traced_with_its_tokens(store, server, client):
 
 def test_chat_stream_asks_for_and_records_token_counts(store, server, client):
     def event(**delta):
-        return {"id": "1", "object": "chat.completion.chunk", "created": 0,
-                "model": "main-model", "choices": [{"index": 0, "delta": delta}]}
+        return {
+            "id": "1",
+            "object": "chat.completion.chunk",
+            "created": 0,
+            "model": "main-model",
+            "choices": [{"index": 0, "delta": delta}],
+        }
 
     # With include_usage the server sends the counts in a last chunk without choices
-    usage = {"id": "1", "object": "chat.completion.chunk", "created": 0, "model": "main-model",
-             "choices": [], "usage": {"prompt_tokens": 9, "completion_tokens": 2, "total_tokens": 11}}
+    usage = {
+        "id": "1",
+        "object": "chat.completion.chunk",
+        "created": 0,
+        "model": "main-model",
+        "choices": [],
+        "usage": {"prompt_tokens": 9, "completion_tokens": 2, "total_tokens": 11},
+    }
     server.reply_stream("/v1/chat/completions", [event(content="Hel"), event(content="lo"), usage])
     with tracing.request("chat", {"question": "hi"}) as totals:
         assert list(client.chat_stream([{"role": "user", "content": "hi"}])) == ["Hel", "lo"]
     assert server.requests[-1][1]["stream_options"] == {"include_usage": True}
     assert (totals.input_tokens, totals.output_tokens) == (9, 2)
-    assert last_trace().info.token_usage == {"input_tokens": 9, "output_tokens": 2,
-                                             "total_tokens": 11}
+    assert last_trace().info.token_usage == {
+        "input_tokens": 9,
+        "output_tokens": 2,
+        "total_tokens": 11,
+    }
 
 
 def test_embed_and_rerank_count_as_model_calls_without_tokens(store, server, client):
-    server.reply("/v1/embeddings", {
-        "object": "list", "model": "embedding-model",
-        "data": [{"object": "embedding", "index": 0, "embedding": [1.0, 0.0]}],
-        "usage": {"prompt_tokens": 4, "total_tokens": 4}})
+    server.reply(
+        "/v1/embeddings",
+        {
+            "object": "list",
+            "model": "embedding-model",
+            "data": [{"object": "embedding", "index": 0, "embedding": [1.0, 0.0]}],
+            "usage": {"prompt_tokens": 4, "total_tokens": 4},
+        },
+    )
     server.reply("/v1/rerank", {"results": [{"index": 0, "relevance_score": 0.9}]})
     with tracing.request("qa", {"question": "q"}) as totals:
         client.embed(["a"])

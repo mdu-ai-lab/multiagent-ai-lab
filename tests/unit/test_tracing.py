@@ -18,7 +18,11 @@ def test_request_records_totals_and_token_usage(store):
         for input_tokens, output_tokens in [(10, 5), (7, 3)]:
             messages = [{"role": "user", "content": "hi"}]
             with tracing.model_call("main", "qwen3.5-9b", {"messages": messages}) as call:
-                call.output, call.input_tokens, call.output_tokens = "ok", input_tokens, output_tokens
+                call.output, call.input_tokens, call.output_tokens = (
+                    "ok",
+                    input_tokens,
+                    output_tokens,
+                )
         tracing.set_fallback("single_answer")
         totals.output = "answer"
     trace = last_trace()
@@ -32,9 +36,8 @@ def test_request_records_totals_and_token_usage(store):
 
 
 def test_failed_request_is_traced_as_error(store):
-    with pytest.raises(ValueError):
-        with tracing.request("chat", {"question": "hello"}):
-            raise ValueError("model server down")
+    with pytest.raises(ValueError), tracing.request("chat", {"question": "hello"}):
+        raise ValueError("model server down")
     assert last_trace().info.state == "ERROR"
 
 
@@ -64,14 +67,15 @@ def test_run_logs_git_commit_config_models_and_datasets(store):
 
 def test_tracing_is_off_outside_the_mac_profile():
     assert tracing.setup(Settings(profile="ci")) is False
-    with tracing.request("chat", {"question": "hello"}) as totals:
-        with tracing.model_call("main", "qwen3.5-9b", {}) as call:
-            call.input_tokens, call.output_tokens = 2, 1
+    with (
+        tracing.request("chat", {"question": "hello"}) as totals,
+        tracing.model_call("main", "qwen3.5-9b", {}) as call,
+    ):
+        call.input_tokens, call.output_tokens = 2, 1
     # Totals are still counted, but nothing goes to MLflow
     assert (totals.model_calls, totals.input_tokens, totals.output_tokens) == (1, 2, 1)
-    with pytest.raises(tracing.TracingError):
-        with tracing.run("chat"):
-            pass
+    with pytest.raises(tracing.TracingError), tracing.run("chat"):
+        pass
 
 
 def test_counters_outside_a_request_do_nothing():
@@ -106,9 +110,11 @@ def test_stopped_and_failed_model_calls_are_kept(store):
         next(answer)
         # The reader stops after the first piece
         answer.close()
-        with pytest.raises(RuntimeError):
-            with tracing.model_call("main", "qwen3.5-9b", {"messages": []}):
-                raise RuntimeError("model server down")
+        with (
+            pytest.raises(RuntimeError),
+            tracing.model_call("main", "qwen3.5-9b", {"messages": []}),
+        ):
+            raise RuntimeError("model server down")
         totals.output = "partial"
     spans = [span for span in last_trace().data.spans if span.span_type == "CHAT_MODEL"]
     assert totals.model_calls == 2
@@ -119,12 +125,17 @@ def test_stopped_and_failed_model_calls_are_kept(store):
 
 
 def test_pipeline_version_changes_with_any_part():
-    parts = {"git_commit": "a", "git_dirty": "false", "git_changes": "none", "profile": "mac",
-             "config.models.yaml": "b"}
+    parts = {
+        "git_commit": "a",
+        "git_dirty": "false",
+        "git_changes": "none",
+        "profile": "mac",
+        "config.models.yaml": "b",
+    }
     assert tracing.pipeline_version(parts) == tracing.pipeline_version(dict(parts))
     assert tracing.pipeline_version(parts).startswith("p-")
-    for key in parts:
-        changed = parts | {key: parts[key] + "x"}
+    for key, value in parts.items():
+        changed = parts | {key: value + "x"}
         assert tracing.pipeline_version(changed) != tracing.pipeline_version(parts), key
 
 

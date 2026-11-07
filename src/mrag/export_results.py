@@ -45,11 +45,16 @@ def published_runs(client: MlflowClient, experiment_id: str) -> Iterator[Run]:
 
 def summary(run: Run, route: str) -> dict[str, Any]:
     started = datetime.fromtimestamp(run.info.start_time / 1000, tz=UTC)
-    return {"route": route, "run_id": run.info.run_id, "run_name": run.info.run_name,
-            "started": started.isoformat(timespec="seconds"), "status": run.info.status,
-            "tags": {key: run.data.tags[key] for key in SAFE_TAGS if key in run.data.tags},
-            "params": dict(sorted(run.data.params.items())),
-            "metrics": dict(sorted(run.data.metrics.items()))}
+    return {
+        "route": route,
+        "run_id": run.info.run_id,
+        "run_name": run.info.run_name,
+        "started": started.isoformat(timespec="seconds"),
+        "status": run.info.status,
+        "tags": {key: run.data.tags[key] for key in SAFE_TAGS if key in run.data.tags},
+        "params": dict(sorted(run.data.params.items())),
+        "metrics": dict(sorted(run.data.metrics.items())),
+    }
 
 
 def export(results_dir: Path = RESULTS_DIR) -> list[Path]:
@@ -71,8 +76,10 @@ def export(results_dir: Path = RESULTS_DIR) -> list[Path]:
 def main() -> int:
     settings = get_settings()
     if not tracing.setup(settings) or not tracing.server_reachable(settings.mlflow_tracking_uri):
-        print("Exporting results needs the mac profile and the MLflow server (make mlflow)",
-              file=sys.stderr)
+        print(
+            "Exporting results needs the mac profile and the MLflow server (make mlflow)",
+            file=sys.stderr,
+        )
         return 1
     written = export()
     for path in written:

@@ -10,8 +10,12 @@ from mrag.llm_client import ModelRef, TransformersClient, image_part
 pytest.importorskip("transformers", minversion="5.22.1")
 pytestmark = pytest.mark.transformers
 
-SMALL_MODEL = ModelRef(name="Qwen/Qwen3.5-0.8B", revision="2fc06364715b967f1860aea9cf38778875588b17")
-QUESTION = [{"role": "user", "content": "What is the capital of Sweden? Answer in one short sentence."}]
+SMALL_MODEL = ModelRef(
+    name="Qwen/Qwen3.5-0.8B", revision="2fc06364715b967f1860aea9cf38778875588b17"
+)
+QUESTION = [
+    {"role": "user", "content": "What is the capital of Sweden? Answer in one short sentence."}
+]
 
 
 @pytest.fixture(scope="module")
@@ -31,8 +35,17 @@ def test_chat_stream(client):
 
 
 def test_image_chat(client, red_blue_png):
-    messages = [{"role": "user", "content": [
-        {"type": "text", "text": "Which two colours are in this picture? One short sentence."},
-        image_part(red_blue_png)]}]
+    messages = [
+        {
+            "role": "user",
+            "content": [
+                {
+                    "type": "text",
+                    "text": "Which two colours are in this picture? One short sentence.",
+                },
+                image_part(red_blue_png),
+            ],
+        }
+    ]
     text = client.chat(messages, max_tokens=60).text.lower()
     assert "red" in text and "blue" in text

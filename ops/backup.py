@@ -106,9 +106,20 @@ def exclude_flags(name: str) -> list[str]:
 
 
 def sync_command(src: Path, dst: str, history: str, name: str, log_file: Path) -> list[str]:
-    return ["rclone", "sync", str(src), dst, "--backup-dir", history,
-            *COPY_FLAGS, *exclude_flags(name),
-            "--log-file", str(log_file), "--log-level", "INFO"]
+    return [
+        "rclone",
+        "sync",
+        str(src),
+        dst,
+        "--backup-dir",
+        history,
+        *COPY_FLAGS,
+        *exclude_flags(name),
+        "--log-file",
+        str(log_file),
+        "--log-level",
+        "INFO",
+    ]
 
 
 def rclone(args: list[str], log_file: Path | None = None) -> int:
@@ -179,8 +190,10 @@ def qdrant_snapshot(url: str, out_file: Path) -> dict:
     info = http_json(f"{url}/snapshots", method="POST")["result"]
     name = info["name"]
     try:
-        with urllib.request.urlopen(f"{url}/snapshots/{name}", timeout=600) as resp, \
-                open(out_file, "wb") as fh:
+        with (
+            urllib.request.urlopen(f"{url}/snapshots/{name}", timeout=600) as resp,
+            open(out_file, "wb") as fh,
+        ):
             shutil.copyfileobj(resp, fh)
     finally:
         http_json(f"{url}/snapshots/{name}", method="DELETE")
@@ -193,7 +206,7 @@ def qdrant_snapshot(url: str, out_file: Path) -> dict:
 
 def sqlite_path(database_url: str) -> Path | None:
     prefix = "sqlite:///"
-    return Path(database_url[len(prefix):]) if database_url.startswith(prefix) else None
+    return Path(database_url[len(prefix) :]) if database_url.startswith(prefix) else None
 
 
 def integrity_ok(db_file: Path) -> bool:
@@ -230,8 +243,11 @@ def mlflow_opens(db_file: Path) -> dict:
     from mlflow.tracking import MlflowClient
 
     try:
-        experiments = MlflowClient(tracking_uri=f"sqlite:///{db_file.resolve()}").search_experiments()
-    except Exception as err:  # MLflow raises several error types for a broken database
+        experiments = MlflowClient(
+            tracking_uri=f"sqlite:///{db_file.resolve()}"
+        ).search_experiments()
+    # On purpose: a broken database copy must be reported, never stop the restore test
+    except Exception as err:  # noqa: BLE001
         return {"status": "failed", "reason": str(err)}
     return {"status": "ok", "experiments": len(experiments)}
 
@@ -316,8 +332,11 @@ def backup() -> int:
             print(f"Copying {folder} ...")
             skip = ("backup-logs",) if name == "multiagent-ai-lab-local" else ()
             entry = scan(folder, skip)
-            code = run(sync_command(folder, paths[name], paths[f"history/{name}"], name,
-                                    logs / f"rclone-{name}.log"))
+            code = run(
+                sync_command(
+                    folder, paths[name], paths[f"history/{name}"], name, logs / f"rclone-{name}.log"
+                )
+            )
             entry["rclone_exit"] = code
             manifest["sources"][name] = entry
             if code != 0:
@@ -327,9 +346,17 @@ def backup() -> int:
         # An overwritten snapshot moves to the history folder
         if any(snaps.iterdir()):
             print("Copying snapshots ...")
-            code = rclone(["copy", str(snaps), paths["snapshots"],
-                           "--backup-dir", paths["history/snapshots"], *COPY_FLAGS],
-                          logs / "rclone-snapshots.log")
+            code = rclone(
+                [
+                    "copy",
+                    str(snaps),
+                    paths["snapshots"],
+                    "--backup-dir",
+                    paths["history/snapshots"],
+                    *COPY_FLAGS,
+                ],
+                logs / "rclone-snapshots.log",
+            )
             if code != 0:
                 manifest["errors"].append(f"snapshots: rclone exit code {code}")
         rclone(["mkdir", paths["inbox"]])
@@ -387,18 +414,37 @@ def collection_counts(url: str) -> dict[str, int]:
 def restore_qdrant(snapshot_dir: Path, live_url: str) -> dict:
     # Starts a temporary Qdrant from the snapshot on another port and compares
     # collections and point counts with the live Qdrant
-    if shutil.which("docker") is None or subprocess.run(
-            ["docker", "info"], capture_output=True, check=False).returncode != 0:
+    if (
+        shutil.which("docker") is None
+        or subprocess.run(["docker", "info"], capture_output=True, check=False).returncode != 0
+    ):
         return {"status": "skipped", "reason": "Docker is not running"}
     url = f"http://127.0.0.1:{RESTORE_PORT}"
     # A container left over from an interrupted test would block the name
     subprocess.run(["docker", "rm", "-f", RESTORE_CONTAINER], capture_output=True, check=False)
     started = subprocess.run(
-        ["docker", "run", "-d", "--rm", "--name", RESTORE_CONTAINER,
-         "-p", f"127.0.0.1:{RESTORE_PORT}:6333", "-e", "QDRANT__TELEMETRY_DISABLED=true",
-         "-v", f"{snapshot_dir}:/restore:ro", qdrant_image(),
-         "./qdrant", "--storage-snapshot", f"/restore/{QDRANT_FILE}"],
-        capture_output=True, text=True, check=False)
+        [
+            "docker",
+            "run",
+            "-d",
+            "--rm",
+            "--name",
+            RESTORE_CONTAINER,
+            "-p",
+            f"127.0.0.1:{RESTORE_PORT}:6333",
+            "-e",
+            "QDRANT__TELEMETRY_DISABLED=true",
+            "-v",
+            f"{snapshot_dir}:/restore:ro",
+            qdrant_image(),
+            "./qdrant",
+            "--storage-snapshot",
+            f"/restore/{QDRANT_FILE}",
+        ],
+        capture_output=True,
+        text=True,
+        check=False,
+    )
     if started.returncode != 0:
         return {"status": "failed", "reason": started.stderr.strip()}
     try:
@@ -447,8 +493,10 @@ def restore_test(full: bool) -> int:
         print(f"Restore test {stamp} {'(full)' if full else ''}")
         # 1. Checksum of every file on Drive against the SSD, without downloading
         for name, (folder, _) in SOURCES.items():
-            code = rclone(["check", str(folder), paths[name], "--links", *exclude_flags(name)],
-                          logs / f"check-drive-{name}.log")
+            code = rclone(
+                ["check", str(folder), paths[name], "--links", *exclude_flags(name)],
+                logs / f"check-drive-{name}.log",
+            )
             record(f"drive copy of {name} matches the SSD", code == 0)
 
         # 2. Download into a temporary folder and compare with the SSD
@@ -456,17 +504,21 @@ def restore_test(full: bool) -> int:
         for name in names:
             folder = SOURCES[name][0]
             target = temp / name
-            code = rclone(["copy", paths[name], str(target), *COPY_FLAGS],
-                          logs / f"restore-{name}.log")
+            code = rclone(
+                ["copy", paths[name], str(target), *COPY_FLAGS], logs / f"restore-{name}.log"
+            )
             if code == 0:
-                code = rclone(["check", str(folder), str(target), "--links", *exclude_flags(name)],
-                              logs / f"check-restored-{name}.log")
+                code = rclone(
+                    ["check", str(folder), str(target), "--links", *exclude_flags(name)],
+                    logs / f"check-restored-{name}.log",
+                )
             record(f"restored {name} matches the SSD", code == 0)
 
         # 3. Snapshots: Qdrant checksum and a real Qdrant start, SQLite integrity
         snaps = temp / "snapshots"
-        code = rclone(["copy", paths["snapshots"], str(snaps), *COPY_FLAGS],
-                      logs / "restore-snapshots.log")
+        code = rclone(
+            ["copy", paths["snapshots"], str(snaps), *COPY_FLAGS], logs / "restore-snapshots.log"
+        )
         qfile = snaps / QDRANT_FILE
         if code == 0 and qfile.exists():
             expected = (snaps / (QDRANT_FILE + ".sha256")).read_text().split()[0]
@@ -495,7 +547,8 @@ def restore_test(full: bool) -> int:
         report["drive_usage"] = drive_usage()
         report["drive_sizes"] = {
             name: json.loads(output(["rclone", "size", path, "--json"]))
-            for name, path in [(n, paths[n]) for n in SOURCES] + [("multiagent-ai-lab-backup", EXTRA)]
+            for name, path in [(n, paths[n]) for n in SOURCES]
+            + [("multiagent-ai-lab-backup", EXTRA)]
         }
     finally:
         report["duration_s"] = round(time.time() - started)

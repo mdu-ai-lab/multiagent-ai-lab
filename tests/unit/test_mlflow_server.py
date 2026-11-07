@@ -7,7 +7,9 @@ import pytest
 from mrag.config import PROJECT_ROOT
 
 # ops/ is a tools folder, not a package, so the script is loaded from its file path
-spec = importlib.util.spec_from_file_location("mlflow_server", PROJECT_ROOT / "ops" / "mlflow_server.py")
+spec = importlib.util.spec_from_file_location(
+    "mlflow_server", PROJECT_ROOT / "ops" / "mlflow_server.py"
+)
 mlflow_server = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(mlflow_server)
 
@@ -16,8 +18,15 @@ def test_host_and_port_from_the_tracking_address():
     assert mlflow_server.host_and_port("http://127.0.0.1:5001") == ("127.0.0.1", 5001)
 
 
-@pytest.mark.parametrize("uri", ["http://0.0.0.0:5001", "http://192.168.1.10:5001",
-                                 "https://127.0.0.1:5001", "http://127.0.0.1"])
+@pytest.mark.parametrize(
+    "uri",
+    [
+        "http://0.0.0.0:5001",
+        "http://192.168.1.10:5001",
+        "https://127.0.0.1:5001",
+        "http://127.0.0.1",
+    ],
+)
 def test_only_a_local_http_address_with_a_port_is_accepted(uri):
     with pytest.raises(mlflow_server.MlflowServerError):
         mlflow_server.host_and_port(uri)
