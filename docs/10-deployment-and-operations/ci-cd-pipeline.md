@@ -4,7 +4,7 @@
 |---|---|
 | Purpose | Planned GitHub Actions workflows |
 | Status | Proposed |
-| Last updated | 2026-11-05 |
+| Last updated | 2026-11-07 |
 | Source of truth | [WORK_PLAN.md](../WORK_PLAN.md) v1.10 |
 | Related documents | [Testing strategy](../09-testing/testing-strategy.md), [Git workflow](../11-development-standards/git-workflow.md) |
 
@@ -27,7 +27,7 @@ flowchart LR
 | health.yml | Weekly | 1.9 |
 | release.yml | Version tag | 15.1 |
 
-Cost guard: public repo, standard runners only, small artifacts with short retention (rule Z, 1.4). Dependabot proposes security updates (1.4).
+Cost guard: public repo, standard runners only, no paid features and no stored artifacts. An organization without a payment method cannot be billed (rule Z, D42). Dependabot proposes updates (1.4).
 
 ## Live website: how it works and updates (WORK_PLAN.md section 11, word for word)
 
