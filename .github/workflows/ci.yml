@@ -1,0 +1,62 @@
+# Checks every push and every pull request to main: code style, formatting, types, known
+# security holes in the pinned packages and the unit tests.
+# Free: a standard GitHub-hosted runner in a public repository, and nothing is stored after a run.
+name: CI
+
+on:
+  push:
+  pull_request:
+    branches: [main]
+
+# Read access to the code is all the checks need
+permissions:
+  contents: read
+
+# A newer push to the same branch cancels the older run that is still going
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  # Use exactly the versions in uv.lock and never update the lock file in CI
+  UV_FROZEN: "1"
+
+jobs:
+  checks:
+    name: Code checks and unit tests
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - name: Get the code
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@68559e99cc807c1eb7e9238fd43a15bba460eec2 # v10.3.3
+        with:
+          version: "0.13.7"
+          enable-cache: true
+          cache-dependency-glob: "uv.lock"
+
+      - name: Install the project and its dev tools from uv.lock
+        run: uv sync
+
+      - name: Style and common mistakes (ruff)
+        run: uv run ruff check --output-format github
+
+      - name: Formatting (ruff)
+        run: uv run ruff format --check
+
+      - name: Types (mypy)
+        run: uv run mypy
+
+      - name: Known security holes in the pinned packages (pip-audit)
+        run: |
+          uv export --all-groups --no-emit-project --format requirements-txt -o "$RUNNER_TEMP/platform.txt"
+          uv export --project ops/mlflow-server --no-emit-project --format requirements-txt -o "$RUNNER_TEMP/mlflow-server.txt"
+          uv run pip-audit --require-hashes --disable-pip -r "$RUNNER_TEMP/platform.txt"
+          uv run pip-audit --require-hashes --disable-pip -r "$RUNNER_TEMP/mlflow-server.txt"
+
+      - name: Unit tests
+        run: uv run pytest -q
