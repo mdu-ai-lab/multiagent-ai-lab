@@ -1,5 +1,6 @@
 # Checks every push and every pull request to main: code style, formatting, types, known
-# security holes in the pinned packages, the unit tests and one real model test.
+# security holes in the pinned packages, the unit tests, the evaluation gate and one real
+# model test.
 # Free: standard GitHub-hosted runners in a public repository, and nothing is stored after a run.
 name: CI
 
@@ -62,6 +63,9 @@ jobs:
 
       - name: Unit tests
         run: uv run pytest -q
+
+      - name: Evaluation gate (committed results against configs/eval/limits.yaml)
+        run: uv run python ops/eval_gate.py
 
   model:
     # The same server program as on the Mac (llama.cpp build b11960) with a small model on
