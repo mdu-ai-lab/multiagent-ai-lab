@@ -7,6 +7,7 @@ Versions are tagged at the end of each phase (WORK_PLAN.md rule G).
 
 ### Added
 
+- CI runs one real model test: llama.cpp b11960 (the same server program as on the Mac) serves Qwen3.5-0.8B on the CPU and llm_client.py asks it a question, normally and streamed. The model is pinned in the new ci profile of configs/models.yaml. Both downloads are checked against their SHA-256 on every run and cached between runs.
 - CI on GitHub Actions (.github/workflows/ci.yml): ruff, formatting, mypy, pip-audit on both lock files and the unit tests on every push and pull request to main, on a free standard runner with actions pinned to commit IDs.
 - Code checks: ruff (style and common mistakes, line length 100, automatic formatting), mypy (strict checks for the platform package) and pip-audit (known security holes), pinned in the dev group. One crash risk when recording a stopped model call is fixed.
 - ops/check_result.py traces one MLflow run to its exact versions: git commit, config and prompt files at that commit, MLflow prompt versions, pinned model files and the pipeline version.

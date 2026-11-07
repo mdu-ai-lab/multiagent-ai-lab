@@ -107,6 +107,16 @@ def test_every_mac_model_is_pinned():
         assert ref.files, role
 
 
+def test_ci_model_is_pinned_to_one_file():
+    # The CI workflow downloads exactly this one file and checks its SHA-256
+    ci = llm_client.load_models()["ci"]
+    assert ci.backend == "openai_server"
+    assert set(ci.models) == {"main"}
+    ref = ci.models["main"]
+    assert ref.source and len(ref.revision or "") == 40
+    assert len(ref.files) == 1
+
+
 def test_llama_swap_loads_exactly_the_pinned_files():
     # The two config files must name the same model files, from the pinned revision
     swap = yaml.safe_load((PROJECT_ROOT / "configs" / "llama-swap.yaml").read_text())

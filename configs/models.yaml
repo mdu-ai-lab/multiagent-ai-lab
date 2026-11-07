@@ -48,3 +48,15 @@ demo:
     main:
       name: Qwen/Qwen3.5-9B
       revision: c202236235762e1c871ad0ccb60c8ee5ba337b9a
+
+ci:
+  # A small model for the real model test in CI, served by llama-server on the CI computer.
+  # The workflow reads this entry, downloads exactly this file and checks its SHA-256
+  backend: openai_server
+  models:
+    main:
+      name: qwen3.5-0.8b
+      source: unsloth/Qwen3.5-0.8B-GGUF
+      revision: 6ab461498e2023f6e3c1baea90a8f0fe38ab64d0
+      files:
+        Qwen3.5-0.8B-Q4_K_M.gguf: bd258782e35f7f458f8aced1adc053e6e92e89bc735ba3be89d38a06121dc517

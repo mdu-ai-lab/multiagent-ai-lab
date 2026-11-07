@@ -1,6 +1,6 @@
 # Checks every push and every pull request to main: code style, formatting, types, known
-# security holes in the pinned packages and the unit tests.
-# Free: a standard GitHub-hosted runner in a public repository, and nothing is stored after a run.
+# security holes in the pinned packages, the unit tests and one real model test.
+# Free: standard GitHub-hosted runners in a public repository, and nothing is stored after a run.
 name: CI
 
 on:
@@ -20,6 +20,8 @@ concurrency:
 env:
   # Use exactly the versions in uv.lock and never update the lock file in CI
   UV_FROZEN: "1"
+  # MLflow prints a setup hint when it is imported. It is not needed in CI logs
+  MLFLOW_DISABLE_AGENT_HINT: "1"
 
 jobs:
   checks:
@@ -60,3 +62,98 @@ jobs:
 
       - name: Unit tests
         run: uv run pytest -q
+
+  model:
+    # The same server program as on the Mac (llama.cpp build b11960) with a small model on
+    # the CPU, called through llm_client.py
+    name: Real model test (llama.cpp and Qwen3.5-0.8B on CPU)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    env:
+      LLAMA_CPP_BUILD: b11960
+      # Published with the release file llama-b11960-bin-ubuntu-x64.tar.gz
+      LLAMA_CPP_SHA256: 31cc3a6bc638ac6c48dc4b1b74888f1eaadf3d14227c1e5f67daf9a49541d97a
+      # Downloads are kept here between runs. Only the checked files are cached
+      CI_FILES: ${{ github.workspace }}/.ci-files
+    steps:
+      - name: Get the code
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@68559e99cc807c1eb7e9238fd43a15bba460eec2 # v10.3.3
+        with:
+          version: "0.13.7"
+          enable-cache: true
+          cache-dependency-glob: "uv.lock"
+
+      - name: Install the project from uv.lock
+        run: uv sync
+
+      # The model, its revision and its SHA-256 are pinned in one place: configs/models.yaml
+      - name: Read the pinned CI model from configs/models.yaml
+        run: |
+          uv run python - >> "$GITHUB_ENV" <<'EOF'
+          from mrag.llm_client import load_models
+
+          ref = load_models()["ci"].models["main"]
+          (file_name, digest), = ref.files.items()
+          print(f"MODEL_NAME={ref.name}")
+          print(f"MODEL_FILE={file_name}")
+          print(f"MODEL_SHA256={digest}")
+          print(f"MODEL_URL=https://huggingface.co/{ref.source}/resolve/{ref.revision}/{file_name}")
+          EOF
+
+      # The key holds both checksums, so a changed pin downloads the files again
+      - name: Reuse the downloaded files from an earlier run
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: ${{ env.CI_FILES }}
+          key: ci-files-${{ env.LLAMA_CPP_SHA256 }}-${{ env.MODEL_SHA256 }}
+
+      # Files from the cache are checked again too, so a run never uses an unchecked file
+      - name: Download llama.cpp and the model and check their SHA-256
+        run: |
+          mkdir -p "$CI_FILES"
+          cd "$CI_FILES"
+          archive="llama-$LLAMA_CPP_BUILD-bin-ubuntu-x64.tar.gz"
+          if [ ! -f "$archive" ]; then
+            curl -fsSL --retry 3 -o "$archive" \
+              "https://github.com/ggml-org/llama.cpp/releases/download/$LLAMA_CPP_BUILD/$archive"
+          fi
+          if [ ! -f "$MODEL_FILE" ]; then
+            curl -fsSL --retry 3 -o "$MODEL_FILE" "$MODEL_URL"
+          fi
+          echo "$LLAMA_CPP_SHA256  $archive" | sha256sum --check
+          echo "$MODEL_SHA256  $MODEL_FILE" | sha256sum --check
+          tar -xzf "$archive" -C "$RUNNER_TEMP"
+
+      # Only reachable on the CI computer itself. The server keeps running for the next steps
+      - name: Start llama-server
+        run: |
+          "$RUNNER_TEMP/llama-$LLAMA_CPP_BUILD/llama-server" \
+            --model "$CI_FILES/$MODEL_FILE" \
+            --alias "$MODEL_NAME" \
+            --host 127.0.0.1 \
+            --port 8080 \
+            --ctx-size 4096 \
+            --offline \
+            > "$RUNNER_TEMP/llama-server.log" 2>&1 &
+          for _ in $(seq 60); do
+            if curl -fs http://127.0.0.1:8080/health > /dev/null; then
+              echo "llama-server is ready"
+              exit 0
+            fi
+            sleep 2
+          done
+          echo "llama-server did not start within 2 minutes"
+          cat "$RUNNER_TEMP/llama-server.log"
+          exit 1
+
+      - name: Real model test
+        run: uv run pytest -m ci_model -v
+
+      - name: Show the server log when something failed
+        if: failure()
+        run: cat "$RUNNER_TEMP/llama-server.log"

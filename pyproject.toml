@@ -45,10 +45,12 @@ dev = [
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
-# Tests that need this Mac's models or servers run only with: uv run pytest -m mac
-addopts = "-m 'not mac'"
+# Tests that need a running model server run only when asked for: uv run pytest -m mac
+# on this Mac and uv run pytest -m ci_model in CI
+addopts = "-m 'not mac and not ci_model'"
 markers = [
     "mac: needs this Mac's model files or servers (run with: uv run pytest -m mac)",
+    "ci_model: needs llama-server with the small CI model (run with: uv run pytest -m ci_model)",
     "transformers: real calls through the transformers backend (needs --group demo)",
 ]
 
