@@ -35,7 +35,7 @@ Browser (chat page)  ·  Live demo (ZeroGPU Space)  ·  MCP clients
      retrieval.py + rerank.py (question time, access filter) · tools.py · limits.py
      guards.py (data wrapping, injection rules) · verify.py (citations, claim check, refusal)
           ┌──────────────┼──────────────────┬──────────────────┐
-       Qdrant      llm_client.py     tools (web.py, calc.py sandbox)   prompts.py · tracing.py
+       Qdrant      llm_client.py     tools (web.py, calc.py sandbox)   prompts.py · tracing.py (trace totals)
           ▲              │
           │        llama.cpp + llama-swap (Mac) · vLLM (Colab/Kaggle/company) · Transformers (demo)
    worker.py: parse.py (Docling) → figures.py → chunking.py → pii.py → embed.py → index.py

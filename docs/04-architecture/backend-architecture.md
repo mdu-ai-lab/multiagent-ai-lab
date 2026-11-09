@@ -6,7 +6,7 @@
 | Status | Proposed |
 | Last updated | 2026-11-09 |
 | Source of truth | [WORK_PLAN.md](../WORK_PLAN.md) v1.10 |
-| Related documents | [System architecture](../04-architecture/system-architecture.md), [Project structure](../11-development-standards/project-structure.md) |
+| Related documents | [System architecture](../04-architecture/system-architecture.md), [Agent harness](../04-architecture/agent-harness.md), [Project structure](../11-development-standards/project-structure.md) |
 
 > Implementation status: Phase 0 done (project setup, search database, Mac model server, model client and backup). Later features are planned and not built yet. Test results are in docs/HANDOVER.md.
 
@@ -14,7 +14,7 @@
 |---|---|---|
 | API | api.py, auth.py, ui.py | HTTP under /v1, pages, login (1.10, hardened in Phase 13), streaming |
 | Service | service.py | Core functions shared by API, demo, tests and MCP (ADR-008) |
-| Orchestration | harness/ package (D43): __init__.py, handle.py, loop.py, router.py, planner.py, memory.py, context.py, settings.py, limits.py, tools.py | One entry harness.run() with streamed events, routes, prompt budget, tool list, loop limits, chat memory |
+| Orchestration | harness/ package (D43): __init__.py, handle.py, loop.py, router.py, planner.py, memory.py, context.py, settings.py, limits.py, tools.py | One entry harness.run() with streamed events, routes, prompt budget, tool list, loop limits, trace totals, chat memory |
 | Routes | qa.py, web.py, summary.py, extract.py, calc.py, audio.py, graphrag.py | One task each |
 | Knowledge | ontology.py, kg.py | LinkML ontology, graph extraction and store (9A) |
 | Notebooks | notebook.py, study.py | Notebooks, notes and study outputs (9B) |

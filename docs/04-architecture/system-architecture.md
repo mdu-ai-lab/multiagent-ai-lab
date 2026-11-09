@@ -27,7 +27,7 @@ flowchart TB
   DEMO -->|in-process| SVC
   SVC -->|harness.run streamed events| HP[harness package D43]
   HP --> G[LangGraph agent graph harness/loop.py]
-  HP --> HX[harness context, memory, tools, limits, guards]
+  HP --> HX[harness context, memory, tools, limits, guards, trace totals]
   G --> R[harness/router.py]
   R --> CHAT[chat]
   R --> QA[document Q&A qa.py]
