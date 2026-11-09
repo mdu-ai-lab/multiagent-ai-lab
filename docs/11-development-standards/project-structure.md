@@ -4,7 +4,7 @@
 |---|---|
 | Purpose | Planned repository layout |
 | Status | Proposed |
-| Last updated | 2026-11-06 |
+| Last updated | 2026-11-09 |
 | Source of truth | [WORK_PLAN.md](../WORK_PLAN.md) v1.10 |
 | Related documents | [Backend architecture](../04-architecture/backend-architecture.md) |
 
@@ -16,12 +16,14 @@ Copied from WORK_PLAN.md section 8.2.
 multiagent-ai-lab/
 ├── src/mrag/        config.py db.py llm_client.py service.py api.py auth.py ui.py
 │                    jobs.py worker.py parse.py figures.py chunking.py pii.py versioning.py
-│                    embed.py index.py retrieve.py rerank.py router.py graph.py qa.py planner.py
+│                    embed.py index.py qa.py
 │                    ontology.py kg.py graphrag.py notebook.py study.py
-│                    grounding.py memory.py web.py summary.py extract.py calc.py security.py harness.py prompts.py
+│                    web.py summary.py extract.py calc.py prompts.py
 │                    audio.py tracing.py eval_data.py eval_metrics.py eval_run.py judge.py
 │                    export_results.py site_build.py
 │                    admin.py translations.py templates/ static/ (pages of ui.py)
+│   └── harness/     __init__.py handle.py loop.py settings.py context.py limits.py memory.py
+│                    retrieval.py rerank.py verify.py router.py planner.py tools.py guards.py (D43)
 ├── demo/            app.py and requirements for the ZeroGPU Space
 ├── notebooks/       colab_gpu.ipynb kaggle_gpu.ipynb (every cell labelled)
 ├── configs/         settings, models.yaml, harness.yaml, prompts/, schemas/, ontology/, eval/

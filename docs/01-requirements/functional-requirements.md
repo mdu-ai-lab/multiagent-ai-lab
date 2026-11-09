@@ -4,7 +4,7 @@
 |---|---|
 | Purpose | Every planned functional requirement with a unique ID |
 | Status | Proposed |
-| Last updated | 2026-11-05 |
+| Last updated | 2026-11-09 |
 | Source of truth | [WORK_PLAN.md](../WORK_PLAN.md) v1.10 |
 | Related documents | [SRS](../01-requirements/srs.md), [Traceability](../12-project-management/requirements-traceability.md), [Modules](../03-functional-modules/README.md) |
 
@@ -15,7 +15,7 @@ All requirements come from WORK_PLAN.md v1.10. They are proposed until the group
 | ID | Requirement | Plan step | Status |
 |---|---|---|---|
 | FR-CHAT-001 | Chat without files. Answers are labelled "no sources" | 7.2 | Not implemented |
-| FR-CHAT-002 | Answers stream word by word | 6.1 | Not implemented |
+| FR-CHAT-002 | Answers stream word by word | 1.6, 6.1 | Not implemented |
 | FR-CHAT-003 | Chat memory per thread. Follow-up questions are rewritten into full questions. Long chats get a running summary | 7.5 | Not implemented |
 | FR-ING-001 | Upload PDF, Word, PowerPoint, Excel, CSV, HTML, Markdown, text and image files | 3.2 | Not implemented |
 | FR-ING-002 | Background jobs with status queued, parsing, indexing, done or failed with reason. A crashed job restarts | 3.1 | Not implemented |
@@ -38,6 +38,7 @@ All requirements come from WORK_PLAN.md v1.10. They are proposed until the group
 | FR-AGT-002 | Run the Planner, Navigator and Reviewer loop only for hard questions, max 3 rounds | 7.3 | Not implemented |
 | FR-AGT-003 | Enforce request limits and fallback paths | 7.4 | Not implemented |
 | FR-AGT-004 | Give each route only the tools on its list, each with a timeout and a result size limit. Choose tools that reach outside the Mac from the user's question before any file or web text enters the prompt | 7.6 | Not implemented |
+| FR-AGT-005 | All agent work goes through the harness package with one entry, harness.run(). Route agents never call the model, search or a tool around it | 1.6, 7.7 | Not implemented |
 | FR-WEB-001 | Web search only when the user turns it on. Send only the rewritten question | 8.1 | Not implemented |
 | FR-WEB-002 | Read and clean fetched pages. Do not store them in collections | 8.2 | Not implemented |
 | FR-WEB-003 | Cite web sources as [W#] with URL and apply the claim check | 8.3 | Not implemented |
@@ -69,7 +70,7 @@ All requirements come from WORK_PLAN.md v1.10. They are proposed until the group
 | FR-OPS-003 | Weekly health check that opens a GitHub issue on failure | 1.9 | Not implemented |
 | FR-OPS-004 | One-way backup to Google Drive, inbox import and restore test | 0.6 | Implemented verification incomplete (make pull-inbox not tested yet) |
 | FR-OPS-005 | Local monitoring view of latency, errors, fallbacks and low-rated answers | 13.4 | Not implemented |
-| FR-EVAL-001 | Evaluation harness with metrics per route, logged to MLflow | 2.3 | Not implemented |
+| FR-EVAL-001 | Evaluation scripts with metrics per route, logged to MLflow | 2.3 | Not implemented |
 | FR-EVAL-002 | Closed-book baselines per profile | 2.4 | Not implemented |
 | FR-EVAL-003 | Judge model with a frozen scoring guide and a human check | 2.5 | Not implemented |
 | FR-ADM-001 | Users and collections stored in the database. Each user sees only their collections. How collections are created and shared: REQUIRES CONFIRMATION | 12.4 | Not implemented |

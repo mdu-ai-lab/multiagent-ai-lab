@@ -26,6 +26,7 @@ Versions are tagged at the end of each phase (WORK_PLAN.md rule G).
 
 ### Changed
 
+- Plan: the agent harness becomes one package, src/mrag/harness/ (D43, replaces D38). It holds context building, retrieval at question time, memory, tools, the agent loop, limits, guards and answer checks behind one entry, harness.run(), which streams answer events from the first chat endpoint on. Rule C2 allows this one package. New: a harness check (an import test and a part-by-part ablation), the requirement FR-AGT-005 and the risk RISK-023. The docs follow the plan.
 - Python is pinned to 3.12.16 (the newest 3.12 security release) for the platform and the MLflow server, so the Mac, CI and every other computer use exactly the same Python.
 - Plan: CI pipeline (D42). Standard runners in the public repo only, no stored artifacts, a real model test with llama.cpp and Qwen3.5-0.8B, GitHub's secret scanning with push protection, Dependabot and CI required on main.
 - compose.yaml pins the Qdrant image by digest as well as by version tag.

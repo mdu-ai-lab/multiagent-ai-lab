@@ -4,13 +4,13 @@
 |---|---|
 | Purpose | Project, technical and security risks |
 | Status | Proposed |
-| Last updated | 2026-11-05 |
+| Last updated | 2026-11-09 |
 | Source of truth | [WORK_PLAN.md](../WORK_PLAN.md) v1.10 |
 | Related documents | [Threat model](../07-security/threat-model.md) |
 
 > Implementation status: Phase 0 done (project setup, search database, Mac model server, model client and backup). Later features are planned and not built yet. Test results are in docs/HANDOVER.md.
 
-Risks RISK-001 to RISK-022 are copied from WORK_PLAN.md section 14. Security findings SF-01 to SF-14 are in the [threat model](../07-security/threat-model.md).
+Risks RISK-001 to RISK-023 are copied from WORK_PLAN.md section 14. Security findings SF-01 to SF-14 are in the [threat model](../07-security/threat-model.md).
 
 | ID / Risk | Impact | Mitigation |
 |---|---|---|
@@ -36,3 +36,4 @@ Risks RISK-001 to RISK-022 are copied from WORK_PLAN.md section 14. Security fin
 | RISK-020  Context lost between chats | Wrong decisions repeated | This file, decision log, end-of-chat checklist |
 | RISK-021  Native tool calls are unreliable with the 4-bit main model | Wrong or missing tool calls | Mac test in 7.6. JSON schema output as the fallback |
 | RISK-022  Agent steps cost more tokens and time without better answers | Slower answers | Cost per answer in 2.3 and per route in 7.6. Agent loops kept only where they help (7.3) |
+| RISK-023  A route agent calls the model, search or a tool around the harness | No limits, checks or traces for that call | Import test in CI (7.7). One entry, harness.run() (D43) |

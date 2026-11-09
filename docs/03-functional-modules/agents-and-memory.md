@@ -4,7 +4,7 @@
 |---|---|
 | Purpose | Specification of the agents and memory module |
 | Status | Proposed |
-| Last updated | 2026-11-05 |
+| Last updated | 2026-11-09 |
 | Source of truth | [WORK_PLAN.md](../WORK_PLAN.md) v1.10 |
 | Related documents | [Modules index](../03-functional-modules/README.md), [Traceability](../12-project-management/requirements-traceability.md) |
 
@@ -12,11 +12,11 @@
 
 | Item | Detail |
 |---|---|
-| Purpose | Send each request to the right route and remember the chat |
+| Purpose | The agent harness (D43). It sends each request to the right route, builds its context, gives it tools within limits and remembers the chat |
 | Actors | Member, MCP client |
-| Functional requirements | FR-AGT-001 to FR-AGT-004, FR-QA-006, FR-CHAT-001, FR-CHAT-003 |
+| Functional requirements | FR-AGT-001 to FR-AGT-005, FR-QA-006, FR-CHAT-001, FR-CHAT-003 |
 | Business rules | BR-AGT-001, BR-SEC-001 |
-| Planned files | router.py, graph.py, planner.py, memory.py, harness.py, security.py |
+| Planned files | harness/ package (D43): __init__.py, handle.py, loop.py, router.py, planner.py, memory.py, context.py, settings.py, limits.py, tools.py, guards.py |
 | Models and tools | LangGraph, Qwen3.5-2B helper |
 | Data entities | Chat tables of 1.10. State of a running request (LangGraph checkpoints) |
 | API endpoints | Chat endpoint |
@@ -25,8 +25,8 @@
 | Error conditions | Low confidence leads to the main model or a question. Limits stop loops |
 | Events and notifications | — |
 | Security considerations | Router manipulation by user text. Hidden instructions in file and web text |
-| Testing requirements | Routing accuracy, loop limits, fallbacks, tool access and tool-call reliability |
-| Acceptance criteria | AT-7.1 to AT-7.6 |
+| Testing requirements | Routing accuracy, loop limits, fallbacks, tool access, tool-call reliability, the import boundary and a part-by-part ablation |
+| Acceptance criteria | AT-7.1 to AT-7.7 |
 | Plan and paper references | Phase 7 [Chakravorty, Abstract, p. iii; Sec 8.7, p. 47] |
 | Permissions | See [role permission matrix](../02-users-and-permissions/role-permission-matrix.md) |
 | Current implementation status | Not implemented |

@@ -4,7 +4,7 @@
 |---|---|
 | Purpose | Links from each requirement to module, test and status |
 | Status | Proposed |
-| Last updated | 2026-11-07 |
+| Last updated | 2026-11-09 |
 | Source of truth | [WORK_PLAN.md](../WORK_PLAN.md) v1.10 |
 | Related documents | [Functional requirements](../01-requirements/functional-requirements.md), [Acceptance test cases](../09-testing/acceptance-test-cases.md) |
 
@@ -15,7 +15,7 @@ Components, entities and APIs per requirement are listed in each module document
 | Requirement | Module | Test | Status |
 |---|---|---|---|
 | FR-CHAT-001 | [agents-and-memory](../03-functional-modules/agents-and-memory.md) | AT-7.2 | Not implemented |
-| FR-CHAT-002 | [agents-and-memory](../03-functional-modules/agents-and-memory.md) | AT-6.1 | Not implemented |
+| FR-CHAT-002 | [agents-and-memory](../03-functional-modules/agents-and-memory.md) | AT-1.6, AT-6.1 | Not implemented |
 | FR-CHAT-003 | [agents-and-memory](../03-functional-modules/agents-and-memory.md) | AT-7.5 | Not implemented |
 | FR-ING-001 | [ingestion](../03-functional-modules/ingestion.md) | AT-3.2 | Not implemented |
 | FR-ING-002 | [ingestion](../03-functional-modules/ingestion.md) | AT-3.1 | Not implemented |
@@ -38,6 +38,7 @@ Components, entities and APIs per requirement are listed in each module document
 | FR-AGT-002 | [agents-and-memory](../03-functional-modules/agents-and-memory.md) | AT-7.3 | Not implemented |
 | FR-AGT-003 | [agents-and-memory](../03-functional-modules/agents-and-memory.md) | AT-7.4 | Not implemented |
 | FR-AGT-004 | [agents-and-memory](../03-functional-modules/agents-and-memory.md) | AT-7.6 | Not implemented |
+| FR-AGT-005 | [agents-and-memory](../03-functional-modules/agents-and-memory.md) | AT-1.6, AT-7.7 | Not implemented |
 | FR-WEB-001 | [web-search](../03-functional-modules/web-search.md) | AT-8.1 | Not implemented |
 | FR-WEB-002 | [web-search](../03-functional-modules/web-search.md) | AT-8.2 | Not implemented |
 | FR-WEB-003 | [web-search](../03-functional-modules/web-search.md) | AT-8.3 | Not implemented |
@@ -113,4 +114,4 @@ Components, entities and APIs per requirement are listed in each module document
 | R32 | Notebooks (workspaces on one topic): sources, chat, notes, study guide, FAQ, briefing, flashcards, quiz, mind map | Phase 9B | Planned |
 | R33 | Verification loop: code, commands and expected output with a 12-character verification number per Python code file, checked locally with uv | Rules C12, C13, step 0.1 | Done (in use since step 0.1) |
 | R34 | Own chat web page with accounts, login and an admin panel from Phase 1, rebuilt from the chat page preview | Step 1.10, D37 | Planned |
-| R35 | One agent harness: context building, retrieval, tool access, limits, safety rules and traces brought together in one place | D38, steps 6.1, 7.4, 7.6, 12.1 | Planned |
+| R35 | One agent harness: context building, retrieval, tool access, limits, safety rules and traces brought together in one place | D43, steps 1.6, 5.3, 6.1, 7.2, 7.4, 7.6, 7.7, 12.1 | Planned |

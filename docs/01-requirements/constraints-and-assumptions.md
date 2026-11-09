@@ -4,7 +4,7 @@
 |---|---|
 | Purpose | Fixed limits and open assumptions that shape the design |
 | Status | Proposed |
-| Last updated | 2026-11-05 |
+| Last updated | 2026-11-09 |
 | Source of truth | [WORK_PLAN.md](../WORK_PLAN.md) v1.10 |
 | Related documents | [SRS](../01-requirements/srs.md), [Risk register](../12-project-management/risk-register.md) |
 
@@ -20,7 +20,7 @@
 | CON-004 | Private documents stay on the Mac | Rule V |
 | CON-005 | Google Drive: the owner's existing 2 TB plan | Section 7 |
 | CON-006 | ZeroGPU Spaces only on the personal Hugging Face account (organizations need a paid plan) | D16 |
-| CON-008 | Python 3.12, uv, flat modules in src/<package>/ | Rule C2 |
+| CON-008 | Python 3.12, uv, flat modules in src/<package>/ and one package for the agent harness (D43) | Rule C2 |
 
 ## Assumptions (each needs confirmation)
 

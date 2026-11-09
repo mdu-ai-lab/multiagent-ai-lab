@@ -4,7 +4,7 @@
 |---|---|
 | Purpose | Assets, entry points, threats and planned mitigations |
 | Status | Proposed |
-| Last updated | 2026-11-06 |
+| Last updated | 2026-11-09 |
 | Source of truth | [WORK_PLAN.md](../WORK_PLAN.md) v1.10 |
 | Related documents | [Security requirements](../07-security/security-requirements.md), [Risk register](../12-project-management/risk-register.md) |
 
@@ -35,6 +35,6 @@ API, UI, MCP, uploaded files, fetched web pages, the demo, GitHub Actions, noteb
 | SF-09 | Personal data in traces or exports | Medium | 12.3 | Presidio masking | Before Phase 12 traces are unmasked |
 | SF-10 | Tampered model or package | Medium | 1.3, 1.4 | Pinned revisions, model file SHA-256 checked by a Mac test, Qdrant pinned by image digest, pip-audit, Dependabot | — |
 | SF-11 | rclone or Drive token on the Mac misused | Low | 0.6 | Password manager, no secrets in Drive | — |
-| SF-12 | Entity merging links facts from collections a user cannot see | Medium | 9A.2, 9A.4 | Graph built per collection, same filter as retrieve.py | Merge rules across collections REQUIRES CONFIRMATION |
+| SF-12 | Entity merging links facts from collections a user cannot see | Medium | 9A.2, 9A.4 | Graph built per collection, same filter as harness/retrieval.py | Merge rules across collections REQUIRES CONFIRMATION |
 | SF-13 | A poisoned document adds false relations to the graph | Medium | 9A.2 | Source page for every fact, claim check, ontology-constrained output | — |
 | SF-14 | Stolen session cookie or forged requests from another site | Medium | 1.10 | HttpOnly and SameSite cookies, check against forged requests | Checked in 1.10 and Phase 12 |

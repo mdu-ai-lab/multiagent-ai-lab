@@ -4,7 +4,7 @@
 |---|---|
 | Purpose | Index of planned modules |
 | Status | Proposed |
-| Last updated | 2026-11-05 |
+| Last updated | 2026-11-09 |
 | Source of truth | [WORK_PLAN.md](../WORK_PLAN.md) v1.10 |
 | Related documents | [Functional requirements](../01-requirements/functional-requirements.md), [System architecture](../04-architecture/system-architecture.md) |
 
@@ -16,7 +16,7 @@
 | [Visual content](visual-content.md) | Make charts, figures and tables searchable | Phase 4 |
 | [Retrieval](retrieval.md) | Find the right evidence fast | Phase 5 |
 | [Grounded answers](grounded-answers.md) | Produce cited answers or refuse | Phase 6 |
-| [Agents and memory](agents-and-memory.md) | Send each request to the right route and remember the chat | Phase 7 |
+| [Agents and memory](agents-and-memory.md) | The agent harness: routes, context, tools, limits and chat memory | 1.6, Phase 7 |
 | [Web search](web-search.md) | Bring in online information on request | Phase 8 |
 | [Summaries](summaries.md) | Summaries that miss nothing | Phase 9 |
 | [Extraction](extraction.md) | Reliable JSON from documents | Phase 10 |

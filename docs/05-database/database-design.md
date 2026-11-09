@@ -4,7 +4,7 @@
 |---|---|
 | Purpose | Planned data stores and how they are used |
 | Status | Proposed |
-| Last updated | 2026-11-05 |
+| Last updated | 2026-11-09 |
 | Source of truth | [WORK_PLAN.md](../WORK_PLAN.md) v1.10 |
 | Related documents | [ER diagram](../05-database/er-diagram.md), [Data dictionary](../05-database/data-dictionary.md), [ADR-005](../04-architecture/architecture-decision-records/ADR-005.md) |
 
@@ -17,7 +17,7 @@ No tables, models or migration files exist yet. data/app.db holds only Alembic's
 | Store | Holds | Owner module | Source |
 |---|---|---|---|
 | SQLite through SQLAlchemy (PostgreSQL by config in Phase 15) | Users, chats, collections, access, documents, versions, elements, jobs | db.py | ADR-005, 1.10, 3.4, 12.4 |
-| LangGraph checkpointer (SQLite, Postgres later) | State of a running request, saved under its request ID. Schema owned by LangGraph, not by us | memory.py | D38, 7.5, 15.3 |
+| LangGraph checkpointer (SQLite, Postgres later) | State of a running request, saved under its request ID. Schema owned by LangGraph, not by us | harness/memory.py | D43, 7.5, 15.3 |
 | Qdrant | Chunk and page-image vectors with payload | index.py | ADR-004, 5.2 |
 | MLflow | Runs, prompts, pipeline versions, traces, feedback | tracing.py | ADR-006, 13.4 |
 | Files on the SSD | Uploaded originals, page images, results | worker.py | Section 6.3 |

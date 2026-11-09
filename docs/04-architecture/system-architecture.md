@@ -4,7 +4,7 @@
 |---|---|
 | Purpose | Components, data flow and boundaries of the planned system |
 | Status | Proposed |
-| Last updated | 2026-11-05 |
+| Last updated | 2026-11-09 |
 | Source of truth | [WORK_PLAN.md](../WORK_PLAN.md) v1.10 |
 | Related documents | [Backend architecture](../04-architecture/backend-architecture.md), [Integration architecture](../04-architecture/integration-architecture.md), [Threat model](../07-security/threat-model.md) |
 
@@ -25,9 +25,10 @@ flowchart TB
   UI --> API
   MCP --> API
   DEMO -->|in-process| SVC
-  SVC --> G[LangGraph agent graph graph.py]
-  G --> H[harness.py prompt budget, tool list, limits]
-  G --> R[router.py]
+  SVC -->|harness.run streamed events| HP[harness package D43]
+  HP --> G[LangGraph agent graph harness/loop.py]
+  HP --> HX[harness context, memory, tools, limits, guards]
+  G --> R[harness/router.py]
   R --> CHAT[chat]
   R --> QA[document Q&A qa.py]
   R --> CMP[compare]
@@ -40,9 +41,9 @@ flowchart TB
   ONT[ontology.py LinkML] --> KG[kg.py graph extraction] --> KGS
   NB[notebook.py + study.py] --> SUM
   NB --> KGS
-  QA --> PL[planner.py loop max 3]
-  QA --> GR[grounding.py]
-  QA --> RET[retrieve.py + rerank.py]
+  QA --> PL[harness/planner.py loop max 3]
+  QA --> GR[harness/verify.py]
+  QA --> RET[harness/retrieval.py + harness/rerank.py]
   RET --> QD[(Qdrant)]
   G --> LLM[llm_client.py]
   LLM --> MS[llama.cpp + llama-swap / vLLM / Transformers]
@@ -57,12 +58,12 @@ flowchart TB
 sequenceDiagram
   participant U as User
   participant A as api.py
-  participant G as graph.py
-  participant R as retrieve.py
+  participant G as harness/loop.py
+  participant R as harness/retrieval.py
   participant M as Model server
-  participant C as grounding.py
+  participant C as harness/verify.py
   U->>A: question + chosen files
-  A->>G: run with user and collection filter
+  A->>G: harness.run with user and collection filter
   G->>G: router picks document Q&A
   G->>R: hybrid search with filters
   R-->>G: top 6 to 8 chunks
