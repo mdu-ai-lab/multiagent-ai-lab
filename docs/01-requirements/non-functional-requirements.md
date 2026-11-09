@@ -35,7 +35,7 @@ Numbers come from the done-when tests in WORK_PLAN.md v1.10. They are starting t
 | NFR-SEC-004 | Input limits: 50 MB per file, 1,000 pages, type checked by content, question length, request rate | 12.4 | Not implemented |
 | NFR-SEC-005 | Secrets never in Git or Google Drive | Section 6.4 | Partially implemented (.env ignored by Git, login token files left out of the backup. Notebook secrets in step 1.5) |
 | NFR-SEC-006 | Personal data masked in traces, logs, MLflow and exports | 12.3 | Not implemented |
-| NFR-SEC-007 | Dependency and secret scanning on every push | 1.4 | Not implemented |
+| NFR-SEC-007 | Dependency and secret scanning on every push | 1.4 | Implemented (pip-audit on both lock files in CI, GitHub's secret scanning with push protection, Dependabot alerts and security updates. Push protection not tested with a real secret) |
 | NFR-REPRO-001 | Models, datasets and packages pinned by version or hash | 1.3 | Partially implemented (models, packages and the Qdrant image pinned. Datasets from 2.1) |
 | NFR-REPRO-002 | Running the same evaluation twice gives identical numbers | 2.3 | Not implemented |
 | NFR-REPRO-003 | Every result traces to its code, prompt, model and data versions | 1.3 | Partially implemented (code, configs, prompts and models traced and checked by ops/check_result.py. Data from 2.1) |

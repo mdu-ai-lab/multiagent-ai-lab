@@ -4,7 +4,7 @@
 |---|---|
 | Purpose | Planned security controls |
 | Status | Proposed |
-| Last updated | 2026-11-05 |
+| Last updated | 2026-11-09 |
 | Source of truth | [WORK_PLAN.md](../WORK_PLAN.md) v1.10 |
 | Related documents | [Threat model](../07-security/threat-model.md), [Non-functional requirements](../01-requirements/non-functional-requirements.md) |
 
@@ -20,7 +20,7 @@
 | Input limits and rate limits | NFR-SEC-004 | 12.4, 13.1 | Not implemented |
 | Secrets handling | NFR-SEC-005 | 0.1, 1.5 | Partially implemented (.env ignored by Git, login token files left out of the backup. Notebook secrets in step 1.5) |
 | Personal data masking | NFR-SEC-006 | 12.3 | Not implemented |
-| Dependency and secret scanning | NFR-SEC-007 | 1.4 | Not implemented |
+| Dependency and secret scanning | NFR-SEC-007 | 1.4 | Implemented (pip-audit on both lock files in CI, GitHub's secret scanning with push protection, Dependabot alerts and security updates. Push protection not tested with a real secret) |
 | Login and tokens | FR-ADM-002, FR-API-002 | 1.10, 13.1 | Not implemented |
 | No outgoing traffic except opt-in web search (company setup) | — | 15.5 | Not implemented |
 

@@ -2,6 +2,50 @@
 
 Report of the last work session. Read this after docs/WORK_PLAN.md at the start of every session.
 
+## Session 7 to 9 November 2026: CI pipeline (step 1.4)
+
+- Plan D42 (c6f1765). Code checks pinned in the dev group (b102773): ruff 0.17.3 with its default
+  rules and a line length of 100, ruff format, mypy 2.4.1 (the strict checks for mrag, normal
+  checks for ops/ and benchmarks/) and pip-audit 2.10.1. ruff format changed only the layout of 14
+  Python files (verification numbers unchanged). Fixes the checks found: tracing records a stop
+  such as Ctrl+C as text, check_result.py catches only MLflow errors, 9 points in measure_mac.py.
+- .github/workflows/ci.yml (c392f99): job "Code checks and unit tests" on ubuntu-24.04 with ruff,
+  formatting, mypy, pip-audit on both lock files, the unit tests and the evaluation gate. Read-only
+  token, actions pinned to commit SHAs (checkout v7.0.1, setup-uv v10.3.3, cache v6.1.0), no
+  stored artifacts. Python pinned to 3.12.16 for the platform and the MLflow server (1845968). The
+  uv_build range and an unused mypy setting fixed (974a559).
+- Job "Real model test" (6f4bb3d): llama.cpp b11960 ubuntu-x64 serves Qwen3.5-0.8B Q4_K_M from the
+  new ci profile of configs/models.yaml. Both downloads are checked against their SHA-256 on every
+  run and cached (517 MiB). 2 tests: a plain and a streamed answer.
+- Evaluation gate ops/eval_gate.py with configs/eval/limits.yaml, no limits yet (79b8dfe).
+  Dependabot (eb8c6f7): weekly, a 7-day wait for new releases, minor and patch updates grouped.
+- GitHub settings (owner): secret scanning with push protection, Dependabot security updates and
+  protect-main requiring both CI checks and a branch up to date with main. First secret scan: 0
+  alerts.
+- Done-when: CI green on phase-1 (run 42652265120, commit 8ee3d16). A deliberately failing test on
+  the branch ci-must-fail turned CI red (run 42656989310, only that test failed). Its pull request
+  #2 to main was BLOCKED with no conflict and 0 commits behind main. Closed without merging and
+  the branch deleted.
+- Tests: 91 unit tests passed on the Mac and in CI, 2 CI model tests passed in CI, 16 Mac tests
+  passed with both servers (uv run pytest -m mac: 16 passed, 1 skipped, 93 deselected).
+  Verification numbers of all 28 Python files checked.
+
+Notes for later steps:
+- Artifact and log retention stays at 90 days. Since 1 October 2026 it also deletes checks,
+  workflow runs and commit statuses.
+- The setting that requires actions pinned to a full-length commit SHA: switch it on after
+  Dependabot runs on main, then check its first run.
+- Before the next pull request to main, merge origin/main into phase-1. The up-to-date rule
+  requires it. Checked: no conflict and no file changes.
+- Dependabot starts only when .github/dependabot.yml is on main.
+- Push protection was not tested with a real secret.
+- llama.cpp marks almost every build as pre-release. b11960 stays because the Mac uses it.
+- The label ubuntu-latest moves to Ubuntu 26.04 in November 2026. CI names ubuntu-24.04.
+
+### Exact next step
+
+1. Step 1.5 (free GPU profile), shown to the owner for approval first.
+
 ## Session 7 to 9 November 2026: agent harness package plan (during step 1.4)
 
 - Plan D43 replaces D38: the agent harness is one package, src/mrag/harness/, with context
