@@ -26,7 +26,7 @@ Copied from the done-when column of WORK_PLAN.md section 12. The plan stays the 
 | AT-1.3 | Versioning rules | Pick one old result and trace it to its exact versions. | Passed |
 | AT-1.4 | CI pipeline | CI is green. A deliberately broken commit fails CI. | Not run |
 | AT-1.5 | Free GPU profile | The smoke test runs on Colab and on Kaggle. The chosen GPU models are recorded. The runs appear in the Mac's MLflow. | Not run |
-| AT-1.6 | API-first skeleton | The API runs locally. All endpoint tests pass in CI. A chat answer streams through harness.run(). A unit test shows that the history never goes over the budget in any profile. | Not run |
+| AT-1.6 | API-first skeleton | The API runs locally. All endpoint tests pass in CI. A chat answer streams through harness.run(). A unit test shows that the history never goes over the budget in any profile. An import test in CI shows that service.py, api.py and the route agents never create a model client (llm_client.get_client) or import the search or a tool directly and that no harness module imports them. | Not run |
 | AT-1.7 | Live dashboard (CD) | The site URL works. A pushed change appears on it within minutes. Site size stays far below 1 GB. | Not run |
 | AT-1.8 | Live demo (CD) | The Space URL works. A pushed change appears after the Space rebuilds. | Not run |
 | AT-1.9 | Health checks | A deliberately wrong URL creates an issue. | Not run |

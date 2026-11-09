@@ -36,4 +36,4 @@ Risks RISK-001 to RISK-023 are copied from WORK_PLAN.md section 14. Security fin
 | RISK-020  Context lost between chats | Wrong decisions repeated | This file, decision log, end-of-chat checklist |
 | RISK-021  Native tool calls are unreliable with the 4-bit main model | Wrong or missing tool calls | Mac test in 7.6. JSON schema output as the fallback |
 | RISK-022  Agent steps cost more tokens and time without better answers | Slower answers | Cost per answer in 2.3 and per route in 7.6. Agent loops kept only where they help (7.3) |
-| RISK-023  A route agent calls the model, search or a tool around the harness | No limits, checks or traces for that call | Import test in CI (7.7). One entry, harness.run() (D43) |
+| RISK-023  A route agent calls the model, search or a tool around the harness | No limits, checks or traces for that call | Import test in CI from 1.6 (again in 7.7). One entry, harness.run() (D43) |

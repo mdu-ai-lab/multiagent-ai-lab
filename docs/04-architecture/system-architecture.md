@@ -32,15 +32,15 @@ flowchart TB
   R --> CHAT[chat]
   R --> QA[document Q&A qa.py]
   R --> CMP[compare]
-  R --> WEB[web.py]
+  R --> WEB[web route, search through web.py]
   R --> SUM[summary.py]
   R --> EXT[extract.py]
   R --> CALC[calc.py sandbox]
   R --> GR2[graphrag.py graph route]
-  GR2 --> KGS[(Graph store - format chosen in 9A.3)]
+  GR2 -->|graph facts through harness/retrieval.py| KGS[(Graph store - format chosen in 9A.3)]
   ONT[ontology.py LinkML] --> KG[kg.py graph extraction] --> KGS
   NB[notebook.py + study.py] --> SUM
-  NB --> KGS
+  NB -->|through harness/retrieval.py| KGS
   QA --> PL[harness/planner.py loop max 3]
   QA --> GR[harness/verify.py]
   QA --> RET[harness/retrieval.py + harness/rerank.py]
@@ -48,6 +48,7 @@ flowchart TB
   G --> LLM[llm_client.py]
   LLM --> MS[llama.cpp + llama-swap / vLLM / Transformers]
   WK[worker.py] --> PARSE[parse.py Docling] --> FIG[figures.py] --> CH[chunking.py] --> PII[pii.py] --> EMB[embed.py] --> IDX[index.py] --> QD
+  CH --> SEC[sections.py section summaries at upload]
   SVC --> DB[(SQLite)]
   G --> ML[(MLflow traces)]
 ```
@@ -80,6 +81,7 @@ sequenceDiagram
 flowchart LR
   UP[Upload] --> J[Job queued] --> P[Parse + OCR] --> F[Describe figures] --> C[Chunk] --> X[Mask personal data in logs] --> E[Embed] --> I[Index in Qdrant] --> D[Job done]
   P -->|failure| FL[Job failed with reason]
+  C -->|for the summary route| SM[Section summaries with sections.py - 9.1]
   I -->|optional per collection| KX[Graph extraction with ontology - 9A.2] --> KD[Graph store]
 ```
 

@@ -4,7 +4,7 @@
 |---|---|
 | Purpose | Specification of the summaries module |
 | Status | Proposed |
-| Last updated | 2026-11-05 |
+| Last updated | 2026-11-09 |
 | Source of truth | [WORK_PLAN.md](../WORK_PLAN.md) v1.10 |
 | Related documents | [Modules index](../03-functional-modules/README.md), [Traceability](../12-project-management/requirements-traceability.md) |
 
@@ -16,7 +16,7 @@
 | Actors | Member |
 | Functional requirements | FR-SUM-001, FR-SUM-002 |
 | Business rules | BR-GND-002 |
-| Planned files | summary.py |
+| Planned files | summary.py (question time), sections.py (section summaries at upload) |
 | Models and tools | Main model, pandas |
 | Data entities | Section summaries (storage REQUIRES CONFIRMATION) |
 | API endpoints | Summary endpoint (path REQUIRES CONFIRMATION) |

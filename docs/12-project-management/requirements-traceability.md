@@ -114,4 +114,4 @@ Components, entities and APIs per requirement are listed in each module document
 | R32 | Notebooks (workspaces on one topic): sources, chat, notes, study guide, FAQ, briefing, flashcards, quiz, mind map | Phase 9B | Planned |
 | R33 | Verification loop: code, commands and expected output with a 12-character verification number per Python code file, checked locally with uv | Rules C12, C13, step 0.1 | Done (in use since step 0.1) |
 | R34 | Own chat web page with accounts, login and an admin panel from Phase 1, rebuilt from the chat page preview | Step 1.10, D37 | Planned |
-| R35 | One agent harness: context building, retrieval, tool access, limits, safety rules and traces brought together in one place | D43, steps 1.6, 5.3, 6.1, 7.2, 7.4, 7.6, 7.7, 12.1 | Planned |
+| R35 | One agent harness: context building, retrieval, memory, tool access, the agent loop, limits, safety rules, answer checks and traces brought together in one place | D43, steps 1.6, 5.3, 6.1, 7.2, 7.4, 7.6, 7.7, 12.1 | Planned |

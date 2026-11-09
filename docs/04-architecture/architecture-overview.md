@@ -38,7 +38,7 @@ Browser (chat page)  ·  Live demo (ZeroGPU Space)  ·  MCP clients
        Qdrant      llm_client.py     tools (web.py, calc.py sandbox)   prompts.py · tracing.py (trace totals)
           ▲              │
           │        llama.cpp + llama-swap (Mac) · vLLM (Colab/Kaggle/company) · Transformers (demo)
-   worker.py: parse.py (Docling) → figures.py → chunking.py → pii.py → embed.py → index.py
+   worker.py: parse.py (Docling) → figures.py → chunking.py → sections.py → pii.py → embed.py → index.py
    SQLite (users, collections, documents, versions, jobs, chat memory)
    MLflow (experiments, prompts, versions, traces, feedback) → export → results/ → dashboard
 ```

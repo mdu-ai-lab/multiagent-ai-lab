@@ -18,7 +18,7 @@
 | ACP-004 | MCP tools act with the rights of the token's user | MCP tool chosen in Q12 (13.3) | Not implemented |
 | ACP-005 | The demo holds only public sample documents | demo/ (1.8) | Not implemented |
 | ACP-006 | Before step 1.10 the API has no login, so it must only listen on the Mac itself | api.py (1.6) | Recommendation. Not in WORK_PLAN.md yet |
-| ACP-007 | The graph route applies the same collection filter as harness/retrieval.py | graphrag.py (9A.4) | Not implemented |
+| ACP-007 | The graph route gets graph facts only through harness/retrieval.py, with the same collection filter | harness/retrieval.py and kg.py (9A.4) | Not implemented |
 | ACP-008 | Notebooks use the existing collection access rules | notebook.py (9B.1) | Not implemented |
 
 ACP-006 is a recommendation from this documentation review, not an existing plan decision. See finding SF-01 in the [threat model](../07-security/threat-model.md).

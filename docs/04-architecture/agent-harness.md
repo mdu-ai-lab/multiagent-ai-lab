@@ -30,9 +30,9 @@ Agent = Model + Harness. The model only reads text and images and writes text. E
 | Agent loop: LangGraph graph, stop conditions, 2 interrupts | `loop.py` | 7.2, 7.1, 10.3 | Each node answers its test questions |
 | Planner–Navigator–Reviewer, off unless it helps | `planner.py` | 7.3 | Judge score up, faithfulness drop ≤ 2 points |
 | Tools: registry, allowed tools per route, timeouts, result size limits, call format | `tools.py` | 7.6, 8.1, 11.2 | A route cannot call a tool outside its list. BFCL test on the Mac |
-| Guards: data wrapping, injection rules, optional classifier, personal data masking of traces | `guards.py` | 7.6, 12.1 to 12.3 | Rule test suite. 0 personal data in sampled traces |
+| Guards: data wrapping, injection rules, the optional classifier (injection.py) for web pages, personal data masking of traces | `guards.py` | 7.6, 12.1 to 12.3 | Rule test suite. 0 personal data in sampled traces |
 | Request trace and its totals (tokens, model calls, tool calls, time, fallback) | recorded by `loop.py` through tracing.py | 1.6 | 1.2 tracing tests |
-| The whole harness | all files | 7.7 | Import test. Each optional part switched off one at a time |
+| The whole harness | all files | 1.6, 7.7 | Import test from 1.6. Each optional part switched off one at a time in 7.7 |
 
 ## Outside the package
 
@@ -40,9 +40,9 @@ Agent = Model + Harness. The model only reads text and images and writes text. E
 |---|---|
 | llm_client.py | The model side. The harness calls it |
 | prompts.py, tracing.py, config.py, db.py | Shared infrastructure, built in Phases 0 and 1 and also used by the evaluation runs |
-| embed.py, index.py, worker.py | Indexing at upload is not part of a question. The harness reads the index schema from index.py |
-| web.py, the graph engine, pii.py, the code sandbox | Engines. The harness registers or calls them. pii.py also runs in the upload pipeline |
-| qa.py, summary.py, extract.py, calc.py, graphrag.py, notebook.py, study.py | Route agents. They use the Harness handle and nothing else on the model or tool side |
+| embed.py, index.py, worker.py, figures.py, sections.py | Work at upload is not part of a question: indexing, figure descriptions (figures.py), section summaries (sections.py), graph extraction (kg.py) and the injection scan (injection.py). figures.py, sections.py and kg.py call llm_client.py directly. injection.py runs its own small classifier. The harness reads the index schema from index.py |
+| web.py, kg.py (the graph engine chosen in 9A.3), pii.py, injection.py, the code sandbox | Engines. The harness registers or calls them: harness/retrieval.py reads graph facts from kg.py at question time. kg.py, pii.py and injection.py also run in the upload pipeline |
+| qa.py, summary.py, extract.py, calc.py, graphrag.py, notebook.py, study.py | Route agents. They use the Harness handle and nothing else on the model or tool side. summary.py only reads the stored section summaries. graphrag.py gets graph facts through harness/retrieval.py |
 
 ## Import direction
 
@@ -53,7 +53,7 @@ route agents ─────────────► harness (Harness handle 
 harness/* ────────────────► llm_client · prompts · tracing · config · db · index schema · engines
 ```
 
-The harness never imports a route agent, service.py or api.py. loop.py receives the route table as an argument, so no import goes in the other direction. The evaluation baselines of 2.4 (the model with no documents) and the tools in ops/ call llm_client.py directly on purpose. Step 7.7 adds a unit test that reads the imports of every module and fails CI if a route agent imports llm_client.py, the search or a tool directly. It also fails if a harness module imports a route agent.
+The harness never imports a route agent, service.py or api.py. loop.py receives the route table as an argument, so no import goes in the other direction. The upload modules (figures.py, sections.py, kg.py), the evaluation runs (the baselines of 2.4 and the judge of 2.5) and the tools in ops/ call llm_client.py directly on purpose. Step 1.6 adds a unit test that reads the imports of every module and fails CI if service.py, api.py or a route agent creates a model client or imports the search or a tool directly. It also fails if a harness module imports a route agent, service.py or api.py. Step 7.7 runs it again with all route agents.
 
 ## The run() contract
 
@@ -78,11 +78,11 @@ configs/harness.yaml holds one section per profile (mac, gpu, demo, ci, company)
 
 | Steps | What the harness gains |
 |---|---|
-| 1.6, 1.8, 1.10 | The entry point with a plain chat path: system prompt, history within the budget, limits, streaming, request trace. Chat turns from the chat tables |
+| 1.6, 1.8, 1.10 | The entry point with a plain chat path: system prompt, history within the budget, limits, streaming, request trace and the import test. Chat turns from the chat tables |
 | 5.3, 5.4 | Search and reranking at question time |
 | 6.1 to 6.4 | Cited prompts within the budget, small-file mode, citation and claim check, refusal |
 | 7.1 to 7.6 | Router, LangGraph graph, planner loop, limits and fallbacks, memory, tools and guards |
-| 7.7 | The import test and the part-by-part ablation |
+| 7.7 | The import test again with all route agents and the part-by-part ablation |
 | 8.1 to 8.3, 9A.4, 9B.1 | Web search as a tool and web, graph and note sources |
 | 10.3, 11.2 | The review interrupt for extraction and the code sandbox as a tool |
 | 12.1 to 12.4 | The full rule tests, the optional classifier, masking of trace data and the access filter tests |

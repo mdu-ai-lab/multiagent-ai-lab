@@ -15,7 +15,7 @@ Copied from WORK_PLAN.md section 8.2.
 ```
 multiagent-ai-lab/
 ├── src/mrag/        config.py db.py llm_client.py service.py api.py auth.py ui.py
-│                    jobs.py worker.py parse.py figures.py chunking.py pii.py versioning.py
+│                    jobs.py worker.py parse.py figures.py chunking.py sections.py pii.py injection.py versioning.py
 │                    embed.py index.py qa.py
 │                    ontology.py kg.py graphrag.py notebook.py study.py
 │                    web.py summary.py extract.py calc.py prompts.py

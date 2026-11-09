@@ -15,7 +15,7 @@ Each step in WORK_PLAN.md has a done-when test. These are the acceptance tests. 
 | Phase | Main tests | Datasets |
 |---|---|---|
 | 0 | Model calls, RAM, backup restore | — |
-| 1 | CI fail test, API endpoints, streamed chat through the harness, live site update, health check | — |
+| 1 | CI fail test, API endpoints, streamed chat through the harness and its import test, live site update, health check | — |
 | 2 | Rerun identical, judge agreement | LongDocURL, QASPER, TAT-DQA, CORD, GovReport, SPACE, 2WikiMultihopQA, MuSiQue, speech set |
 | 3 | Parse each type, resume, OCR error rate, versions | CORD, sample files |
 | 4 | Figure descriptions help retrieval | LongDocURL |

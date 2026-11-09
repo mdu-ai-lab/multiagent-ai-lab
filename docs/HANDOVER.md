@@ -2,6 +2,24 @@
 
 Report of the last work session. Read this after docs/WORK_PLAN.md at the start of every session.
 
+## Session 7 to 9 November 2026: agent harness package plan (during step 1.4)
+
+- Plan D43 replaces D38: the agent harness is one package, src/mrag/harness/, with context
+  building, retrieval at question time, memory, tools, the agent loop, limits, guards, answer
+  checks and the request trace totals behind one entry, harness.run(), which streams answer
+  events. service.py calls it from 1.6, so the API, the chat page and the demo never change
+  their call. Indexing and the other model work at upload stay outside the harness.
+- Rule C2 allows this one package. New step 7.7, FR-AGT-005, AT-7.7 and RISK-023. The import
+  test of the harness starts in 1.6. Design note: docs/04-architecture/agent-harness.md.
+- Commits 78ec8f4, e1e681b and the commit that adds this entry. No code, config or test files
+  changed. uv run pytest: 91 passed, 1 skipped, 18 deselected. Verification numbers unchanged.
+- Step 1.4 is in progress: 1.4.1 to 1.4.7 are done (commits c6f1765 to eb8c6f7). The step 1.4
+  entry with its results follows at the end of the step.
+
+### Exact next step
+
+1. Sub-step 1.4.8: a deliberately broken commit on a test branch must fail CI.
+
 ## Session 6 and 7 November 2026: versioning rules (step 1.3)
 
 - Plan D41. Prompts are text files in configs/prompts/ (the first comes in 6.1). prompts.py
@@ -93,6 +111,9 @@ Notes for later steps:
 2. These status changes reach main with the next pull request.
 
 ## Session 5 November 2026: agent harness plan
+
+Replaced on 9 November 2026: D43 makes the harness one package (see the session of 7 to 9
+November).
 
 The agent parts of the plan were checked against current published sources on agent harnesses.
 

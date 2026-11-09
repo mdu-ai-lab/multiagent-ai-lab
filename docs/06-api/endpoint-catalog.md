@@ -4,7 +4,7 @@
 |---|---|
 | Purpose | Planned endpoints by phase |
 | Status | Proposed |
-| Last updated | 2026-11-05 |
+| Last updated | 2026-11-09 |
 | Source of truth | [WORK_PLAN.md](../WORK_PLAN.md) v1.10 |
 | Related documents | [API standards](../06-api/api-standards.md), [Modules](../03-functional-modules/README.md) |
 
@@ -16,7 +16,7 @@ No route exists yet. Only the 4 endpoints in step 1.6 are named in the plan. Pat
 |---|---|---|---|---|---|
 | GET | /v1/health | Service is up | None | 1.6 | Not implemented |
 | GET | /v1/version | Code and pipeline version | None | 1.6 | Not implemented |
-| GET | /v1/models | Models in the active profile | Until 1.10: none. After: login | 1.6 | Not implemented |
+| GET | /v1/models | Models in the active profile, read from configs/models.yaml without a model call | Until 1.10: none. After: login | 1.6 | Not implemented |
 | POST | /v1/chat | Chat and file questions, streamed | Until 1.10: none. After: login | 1.6, 6, 7, 8 | Not implemented |
 
 ## Capabilities planned without fixed paths
