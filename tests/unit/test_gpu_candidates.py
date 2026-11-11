@@ -2,6 +2,7 @@
 # every download is pinned, so the GPU notebooks never fetch an unchecked file.
 
 import re
+import tomllib
 
 import yaml
 
@@ -22,6 +23,19 @@ def test_llama_cpp_build_is_pinned():
 
 def test_vllm_version_is_pinned():
     assert re.fullmatch(r"\d+\.\d+\.\d+", CANDIDATES["servers"]["vllm"]["version"])
+
+
+def test_vllm_lock_matches_the_pinned_version():
+    # The notebooks install vLLM from ops/vllm-server. A new version there needs the same
+    # version here, so it is smoke-tested again before it is used
+    version = CANDIDATES["servers"]["vllm"]["version"]
+    folder = PROJECT_ROOT / "ops" / "vllm-server"
+    project = tomllib.loads((folder / "pyproject.toml").read_text())
+    assert project["project"]["dependencies"] == [f"vllm=={version}"]
+    lock = tomllib.loads((folder / "uv.lock").read_text())
+    assert {package["name"]: package["version"] for package in lock["package"]}["vllm"] == version
+    python = (PROJECT_ROOT / ".python-version").read_text()
+    assert (folder / ".python-version").read_text() == python
 
 
 def test_every_candidate_is_pinned():

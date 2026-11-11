@@ -1,5 +1,5 @@
 # Dependabot opens pull requests to main when a pinned dependency has a newer version: the
-# Python packages in both uv lock files, the GitHub actions in the workflows and the Qdrant
+# Python packages in the three uv lock files, the GitHub actions in the workflows and the Qdrant
 # image in compose.yaml. Every pull request runs the full CI before it can be merged.
 # Security fixes come as soon as they are published, without waiting for this schedule.
 version: 2
@@ -9,6 +9,7 @@ updates:
     directories:
       - "/"
       - "/ops/mlflow-server"
+      - "/ops/vllm-server"
     schedule:
       interval: weekly
       day: monday

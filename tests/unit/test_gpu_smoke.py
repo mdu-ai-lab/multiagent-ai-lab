@@ -5,6 +5,7 @@ import hashlib
 import importlib.util
 import io
 import json
+import shutil
 import socket
 import sys
 import tarfile
@@ -36,6 +37,12 @@ class FakeWeb:
         web = self
 
         class Handler(BaseHTTPRequestHandler):
+            def do_HEAD(self):
+                # A file named missing.gguf does not exist on this server
+                self.send_response(404 if self.path.endswith("missing.gguf") else 200)
+                self.send_header("Content-Length", str(len(DATA)))
+                self.end_headers()
+
             def do_GET(self):
                 web.ranges.append(self.headers.get("Range"))
                 start = int(self.headers["Range"][6:-1]) if self.headers.get("Range") else 0
@@ -107,6 +114,57 @@ def test_a_partial_download_is_resumed(web, tmp_path):
     gpu_smoke.download(f"{web.url}/model.gguf", target, DIGEST)
     assert web.ranges == ["bytes=5000-"]
     assert target.read_bytes() == DATA
+
+
+def test_remote_size_reads_the_size_without_the_file(web):
+    assert gpu_smoke.remote_size(f"{web.url}/model.gguf") == len(DATA)
+    assert web.ranges == []
+    with pytest.raises(gpu_smoke.GpuSmokeError, match=r"size check failed \(404\)"):
+        gpu_smoke.remote_size(f"{web.url}/missing.gguf")
+
+
+def test_disk_check_counts_only_the_missing_bytes(web, tmp_path, monkeypatch):
+    (tmp_path / "done.gguf").write_bytes(DATA)
+    (tmp_path / "half.gguf.part").write_bytes(DATA[:5000])
+    downloads = [
+        (f"{web.url}/done.gguf", tmp_path / "done.gguf"),
+        (f"{web.url}/half.gguf", tmp_path / "half.gguf"),
+        (f"{web.url}/new.gguf", tmp_path / "new.gguf"),
+    ]
+    needed = gpu_smoke.EXTRA_SPACE + (len(DATA) - 5000) + len(DATA)
+
+    def free_space(bytes_free):
+        usage = shutil.disk_usage(tmp_path)
+        return lambda folder: usage._replace(free=bytes_free)
+
+    monkeypatch.setattr(gpu_smoke.shutil, "disk_usage", free_space(needed))
+    assert gpu_smoke.check_disk(downloads, tmp_path) == needed
+    monkeypatch.setattr(gpu_smoke.shutil, "disk_usage", free_space(needed - 1))
+    with pytest.raises(gpu_smoke.GpuSmokeError, match="is free"):
+        gpu_smoke.check_disk(downloads, tmp_path)
+
+
+def test_the_driver_must_be_new_enough_for_the_server():
+    gpu_smoke.check_driver("580.82.07", 580)
+    gpu_smoke.check_driver("570.86.15", None)
+    with pytest.raises(gpu_smoke.GpuSmokeError, match="older than release 580"):
+        gpu_smoke.check_driver("570.86.15", 580)
+    with pytest.raises(gpu_smoke.GpuSmokeError, match="older than release 580"):
+        gpu_smoke.check_driver("none", 580)
+
+
+def test_pinned_downloads_follow_the_candidate(tmp_path):
+    candidate, servers = gpu_smoke.load_candidate("kaggle-llamacpp-9b-16bit")
+    downloads = gpu_smoke.pinned_downloads(candidate, servers, tmp_path)
+    # The model file and both llama.cpp archives, each at its pinned revision or release
+    assert len(downloads) == 1 + len(servers["llama_cpp"]["files"])
+    assert candidate["revision"] in downloads[0][0]
+    assert all(servers["llama_cpp"]["release"] in url for url, _ in downloads[1:])
+
+    candidate, servers = gpu_smoke.load_candidate("kaggle-vllm-9b-16bit")
+    downloads = gpu_smoke.pinned_downloads(candidate, servers, tmp_path)
+    assert [target.name for _, target in downloads] == list(candidate["files"])
+    assert servers["vllm"]["min_driver"] == 580
 
 
 def test_extract_refuses_paths_outside_the_folder(tmp_path):
@@ -221,14 +279,12 @@ def test_the_whole_job_writes_a_bundle(tmp_path, monkeypatch):
     program.chmod(0o755)
     model = tmp_path / "model.gguf"
     model.write_bytes(DATA)
-    # Downloads and nvidia-smi are replaced, everything else runs for real
+    # Downloads, file sizes and nvidia-smi are replaced, everything else runs for real
     monkeypatch.setattr(gpu_smoke, "prepare_model", lambda candidate, work: model)
     monkeypatch.setattr(gpu_smoke, "prepare_llama_cpp", lambda servers, work: (program, []))
-    monkeypatch.setattr(
-        gpu_smoke,
-        "gpu_info",
-        lambda: {"gpu.count": "2", "gpu.names": "T4; T4", "gpu.driver": "1", "gpu.cuda": "1"},
-    )
+    monkeypatch.setattr(gpu_smoke, "remote_size", lambda url: 1)
+    gpus = {"gpu.count": "2", "gpu.names": "T4; T4", "gpu.driver": "580.82.07", "gpu.cuda": "13.0"}
+    monkeypatch.setattr(gpu_smoke, "gpu_info", lambda: gpus)
     with socket.socket() as probe:
         probe.bind(("127.0.0.1", 0))
         port = probe.getsockname()[1]

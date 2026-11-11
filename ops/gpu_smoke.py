@@ -1,5 +1,6 @@
 # Smoke test of one GPU candidate from configs/gpu_candidates.yaml on Kaggle or Colab.
-# Downloads the pinned server build and model files (each checked against its SHA-256),
+# First checks the NVIDIA driver and that the downloads fit on the disk. Then it
+# downloads the pinned server build and model files (each checked against its SHA-256),
 # starts the server, asks a few fixed public questions through llm_client.py and records
 # one MLflow run in a database file inside the work folder. The run is also written as a
 # result bundle, which ops/import_runs.py adds to the Mac's MLflow.
@@ -38,6 +39,9 @@ BUNDLE_FORMAT = "mrag-run-bundle/1"
 CONTEXT_SIZE = 4096
 MAX_ANSWER_TOKENS = 100
 CHUNK = 8 * 1024 * 1024
+# Room beyond the downloads: the unpacked llama.cpp build (1.0 GB for b11960), the small
+# model files, logs and the caches of the servers
+EXTRA_SPACE = 3 * 10**9
 
 # Fixed public questions, each with the word a correct answer must contain
 QUESTIONS = [
@@ -116,10 +120,80 @@ def repo_files(source: str, revision: str) -> list[str]:
         return [item["rfilename"] for item in json.load(response)["siblings"]]
 
 
+def model_folder(candidate: dict[str, Any], work: Path) -> Path:
+    return work / "models" / candidate["source"].replace("/", "--") / candidate["revision"]
+
+
+def llama_cpp_folder(servers: dict[str, Any], work: Path) -> Path:
+    return work / "llama.cpp" / servers["llama_cpp"]["release"]
+
+
+def llama_cpp_url(release: str, name: str) -> str:
+    return f"https://github.com/ggml-org/llama.cpp/releases/download/{release}/{name}"
+
+
+def pinned_downloads(
+    candidate: dict[str, Any], servers: dict[str, Any], work: Path
+) -> list[tuple[str, Path]]:
+    # Address and target of every large pinned file the candidate needs
+    source, revision = candidate["source"], candidate["revision"]
+    folder = model_folder(candidate, work)
+    downloads = [(hf_url(source, revision, name), folder / name) for name in candidate["files"]]
+    if candidate["server"] == "llama_cpp":
+        release = servers["llama_cpp"]["release"]
+        archives = llama_cpp_folder(servers, work) / "archives"
+        downloads += [
+            (llama_cpp_url(release, name), archives / name)
+            for name in servers["llama_cpp"]["files"]
+        ]
+    return downloads
+
+
+def remote_size(url: str) -> int:
+    # The servers report the size of a file without sending it
+    request = urllib.request.Request(url, method="HEAD")
+    try:
+        with urllib.request.urlopen(request, timeout=60) as response:
+            size = response.headers.get("Content-Length")
+    except urllib.error.HTTPError as error:
+        raise GpuSmokeError(f"file size check failed ({error.code}): {url}") from error
+    if size is None:
+        raise GpuSmokeError(f"no file size reported for {url}")
+    return int(size)
+
+
+def check_disk(downloads: list[tuple[str, Path]], folder: Path) -> int:
+    # Stops before any download when the missing files would not fit. Returns the bytes needed
+    needed = EXTRA_SPACE
+    for url, target in downloads:
+        if target.exists():
+            continue
+        part = target.with_name(target.name + ".part")
+        needed += remote_size(url) - (part.stat().st_size if part.exists() else 0)
+    free = shutil.disk_usage(folder).free
+    if needed > free:
+        raise GpuSmokeError(
+            f"the downloads need {needed / 1e9:.1f} GB of free disk in {folder}, "
+            f"only {free / 1e9:.1f} GB is free"
+        )
+    return needed
+
+
+def check_driver(driver: str, minimum: int | None) -> None:
+    # The first number of the driver version is its release, for example 580 in 580.82.07
+    if minimum is None:
+        return
+    release = driver.split(".")[0]
+    if not release.isdigit() or int(release) < minimum:
+        raise GpuSmokeError(
+            f"the NVIDIA driver {driver} is older than release {minimum}, which this server needs"
+        )
+
+
 def prepare_model(candidate: dict[str, Any], work: Path) -> Path:
     # Returns the GGUF file for llama.cpp or the model folder for vLLM
     source, revision = candidate["source"], candidate["revision"]
-    folder = work / "models" / source.replace("/", "--") / revision
+    folder = model_folder(candidate, work)
     for file_name, digest in candidate["files"].items():
         download(hf_url(source, revision, file_name), folder / file_name, digest)
     if candidate["server"] == "llama_cpp":
@@ -144,14 +218,10 @@ def prepare_model(candidate: dict[str, Any], work: Path) -> Path:
 def prepare_llama_cpp(servers: dict[str, Any], work: Path) -> tuple[Path, list[Path]]:
     # Returns the llama-server program and the folders with its CUDA libraries
     release = servers["llama_cpp"]["release"]
-    folder = work / "llama.cpp" / release
+    folder = llama_cpp_folder(servers, work)
     for name, digest in servers["llama_cpp"]["files"].items():
         archive = folder / "archives" / name
-        download(
-            f"https://github.com/ggml-org/llama.cpp/releases/download/{release}/{name}",
-            archive,
-            digest,
-        )
+        download(llama_cpp_url(release, name), archive, digest)
         marker = folder / f".{name}.extracted"
         if not marker.exists():
             extract(archive, folder / "bin")
@@ -289,7 +359,7 @@ def gpu_info() -> dict[str, str]:
 
 
 def package_list(vllm: Path, target: Path) -> Path:
-    # vLLM has no lock file in this project yet, so each run keeps the exact installed packages
+    # The exact installed packages, as proof that the run used the locked vLLM environment
     command = ["uv", "pip", "freeze", "--python", str(vllm.parent / "python")]
     try:
         text = subprocess.run(command, capture_output=True, text=True, check=True).stdout
@@ -350,6 +420,9 @@ def main() -> int:
         raise GpuSmokeError(
             f"{args.candidate} needs {needed} GPUs, this machine has {gpus['gpu.count']}"
         )
+    check_driver(gpus["gpu.driver"], servers[candidate["server"]].get("min_driver"))
+    space = check_disk(pinned_downloads(candidate, servers, work), work)
+    print(f"Disk check passed: {space / 1e9:.1f} GB needed in {work}")
 
     print(f"Downloading and checking the files of {args.candidate}")
     download_start = time.perf_counter()

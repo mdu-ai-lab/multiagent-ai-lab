@@ -1,18 +1,23 @@
 # Model and server candidates for the GPU smoke test on Kaggle (main) and Colab (backup).
 # Every download is pinned: model files by Hugging Face revision and SHA-256, the llama.cpp
-# build by release and SHA-256, vLLM by version. The measured winner moves into the gpu
-# profile of models.yaml. Public files only, so no token is needed.
+# build by release and SHA-256, vLLM by version and the lock in ops/vllm-server. The measured
+# winner moves into the gpu profile of models.yaml. Public files only, so no token is needed.
 
 servers:
   llama_cpp:
     release: b11960
     # Linux CUDA 12.8 build of the same release as the Mac and CI. The cudart archive holds
-    # the CUDA runtime libraries and is used only when the notebook does not provide them
+    # the CUDA runtime libraries. The smoke test always uses them, so a run does not depend
+    # on the CUDA version installed on the machine
     files:
       llama-b11960-bin-ubuntu-cuda-12.8-x64.tar.gz: 64d57beb9abb637c177c6afb313760a0c0782224cac71e74869eed5b8f9a1ea4
       cudart-llama-b11960-bin-ubuntu-cuda-12.8-x64.tar.gz: 7c4d5974bd39649df649649e5d71950688a70e37aaae00bf11afbb656ea2cc56
   vllm:
     version: 0.33.0
+    # vLLM 0.33.0 is built with CUDA 13.0, which needs an NVIDIA driver of release 580 or
+    # newer (vLLM's GPU installation guide). The smoke test stops before any download if
+    # the driver is older
+    min_driver: 580
 
 candidates:
   # Kaggle 2 x T4: Qwen3.5-9B in full 16-bit with each server

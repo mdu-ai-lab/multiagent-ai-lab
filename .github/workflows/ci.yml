@@ -58,8 +58,10 @@ jobs:
         run: |
           uv export --all-groups --no-emit-project --format requirements-txt -o "$RUNNER_TEMP/platform.txt"
           uv export --project ops/mlflow-server --no-emit-project --format requirements-txt -o "$RUNNER_TEMP/mlflow-server.txt"
+          uv export --project ops/vllm-server --no-emit-project --format requirements-txt -o "$RUNNER_TEMP/vllm-server.txt"
           uv run pip-audit --require-hashes --disable-pip -r "$RUNNER_TEMP/platform.txt"
           uv run pip-audit --require-hashes --disable-pip -r "$RUNNER_TEMP/mlflow-server.txt"
+          uv run pip-audit --require-hashes --disable-pip -r "$RUNNER_TEMP/vllm-server.txt"
 
       - name: Unit tests
         run: uv run pytest -q
