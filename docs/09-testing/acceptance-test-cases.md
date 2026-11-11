@@ -25,7 +25,7 @@ Copied from the done-when column of WORK_PLAN.md section 12. The plan stays the 
 | AT-1.2 | MLflow | A test run shows all fields. A trace shows each model call with time and tokens and the request totals. The export creates JSON files. | Passed |
 | AT-1.3 | Versioning rules | Pick one old result and trace it to its exact versions. | Passed |
 | AT-1.4 | CI pipeline | CI is green. A deliberately broken commit fails CI. | Passed |
-| AT-1.5 | Free GPU profile | The smoke test runs on Kaggle and on Colab. The chosen GPU models and the GPU hours per job are recorded. The runs appear in the Mac's MLflow. | Not run |
+| AT-1.5 | Free GPU profile | The smoke test runs on Kaggle and on Colab. The chosen GPU server and models and the GPU hours per job are recorded. The runs appear in the Mac's MLflow. | Not run |
 | AT-1.6 | API-first skeleton | The API runs locally. All endpoint tests pass in CI. A chat answer streams through harness.run(). A unit test shows that the history never goes over the budget in any profile. An import test in CI shows that service.py, api.py and the route agents never create a model client (llm_client.get_client) or import the search or a tool directly and that no harness module imports them. | Not run |
 | AT-1.7 | Live dashboard (CD) | The site URL works. A pushed change appears on it within minutes. Site size stays far below 1 GB. | Not run |
 | AT-1.8 | Live demo (CD) | The Space URL works. A pushed change appears after the Space rebuilds. | Not run |

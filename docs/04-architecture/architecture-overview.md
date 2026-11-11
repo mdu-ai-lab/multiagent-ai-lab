@@ -4,7 +4,7 @@
 |---|---|
 | Purpose | One-page view of the planned architecture |
 | Status | Proposed |
-| Last updated | 2026-11-09 |
+| Last updated | 2026-11-11 |
 | Source of truth | [WORK_PLAN.md](../WORK_PLAN.md) v1.10 |
 | Related documents | [System architecture](../04-architecture/system-architecture.md), [ADRs](../04-architecture/architecture-decision-records/README.md) |
 
@@ -37,7 +37,7 @@ Browser (chat page)  ·  Live demo (ZeroGPU Space)  ·  MCP clients
           ┌──────────────┼──────────────────┬──────────────────┐
        Qdrant      llm_client.py     tools (web.py, calc.py sandbox)   prompts.py · tracing.py (trace totals)
           ▲              │
-          │        llama.cpp + llama-swap (Mac) · vLLM (Colab/Kaggle/company) · Transformers (demo)
+          │        llama.cpp + llama-swap (Mac) · vLLM or llama.cpp (Kaggle/Colab, D44) · vLLM (company) · Transformers (demo)
    worker.py: parse.py (Docling) → figures.py → chunking.py → sections.py → pii.py → embed.py → index.py
    SQLite (users, collections, documents, versions, jobs, chat memory)
    MLflow (experiments, prompts, versions, traces, feedback) → export → results/ → dashboard
