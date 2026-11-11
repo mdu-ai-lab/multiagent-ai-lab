@@ -61,7 +61,14 @@ jobs:
           uv export --project ops/vllm-server --no-emit-project --format requirements-txt -o "$RUNNER_TEMP/vllm-server.txt"
           uv run pip-audit --require-hashes --disable-pip -r "$RUNNER_TEMP/platform.txt"
           uv run pip-audit --require-hashes --disable-pip -r "$RUNNER_TEMP/mlflow-server.txt"
-          uv run pip-audit --require-hashes --disable-pip -r "$RUNNER_TEMP/vllm-server.txt"
+          # vLLM 0.33.0 requires setuptools below 81, so its lock holds setuptools 80.10.2.
+          # Three advisories for it are accepted here and only here, because they cannot affect
+          # this environment: PYSEC-2026-3447 and GHSA-h35f-9h28-mq5c are one hole in making
+          # source packages (sdist). GHSA-xmj3-9gf7-h52w is a hole on Windows only. The vLLM
+          # environment runs on Linux, uv installs it from ready-made wheels and it makes no
+          # source packages. tests/unit/test_gpu_candidates.py fails as soon as the lock has a
+          # setuptools that fixes one of them, so that exception must then be removed
+          uv run pip-audit --require-hashes --disable-pip -r "$RUNNER_TEMP/vllm-server.txt" --ignore-vuln PYSEC-2026-3447 --ignore-vuln GHSA-h35f-9h28-mq5c --ignore-vuln GHSA-xmj3-9gf7-h52w
 
       - name: Unit tests
         run: uv run pytest -q

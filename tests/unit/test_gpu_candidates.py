@@ -10,6 +10,24 @@ from mrag.config import PROJECT_ROOT
 
 CANDIDATES = yaml.safe_load((PROJECT_ROOT / "configs" / "gpu_candidates.yaml").read_text())
 SHA256 = re.compile(r"[0-9a-f]{64}")
+CI = (PROJECT_ROOT / ".github" / "workflows" / "ci.yml").read_text()
+# Setuptools advisories that CI accepts for the vLLM lock (reasons in ci.yml) and the
+# setuptools version that fixes each one (from the advisory data on osv.dev)
+ACCEPTED_SETUPTOOLS = {
+    "PYSEC-2026-3447": (83, 0, 0),
+    "GHSA-h35f-9h28-mq5c": (83, 0, 0),
+    "GHSA-xmj3-9gf7-h52w": (84, 1, 0),
+}
+
+
+def still_needed(setuptools: str | None) -> set[str]:
+    # The advisories that are still open for this setuptools version. None: no setuptools
+    if setuptools is None:
+        return set()
+    parts = re.fullmatch(r"(\d+)\.(\d+)\.(\d+)", setuptools)
+    assert parts, f"unexpected setuptools version {setuptools!r}"
+    version = tuple(int(part) for part in parts.groups())
+    return {advisory for advisory, fixed in ACCEPTED_SETUPTOOLS.items() if version < fixed}
 
 
 def test_llama_cpp_build_is_pinned():
@@ -36,6 +54,29 @@ def test_vllm_lock_matches_the_pinned_version():
     assert {package["name"]: package["version"] for package in lock["package"]}["vllm"] == version
     python = (PROJECT_ROOT / ".python-version").read_text()
     assert (folder / ".python-version").read_text() == python
+
+
+def test_ci_accepts_setuptools_advisories_only_while_they_are_open():
+    # CI may ignore an advisory only on the vLLM audit line and only while the vLLM lock
+    # holds a setuptools older than the version that fixes it
+    lock = tomllib.loads((PROJECT_ROOT / "ops" / "vllm-server" / "uv.lock").read_text())
+    setuptools = {package["name"]: package["version"] for package in lock["package"]}.get(
+        "setuptools"
+    )
+    commands = [
+        line
+        for line in CI.splitlines()
+        if "--ignore-vuln" in line and not line.strip().startswith("#")
+    ]
+    assert set(re.findall(r"--ignore-vuln (\S+)", "\n".join(commands))) == still_needed(setuptools)
+    assert all("vllm-server.txt" in line for line in commands)
+
+
+def test_each_setuptools_exception_ends_with_its_fix():
+    assert still_needed("80.10.2") == set(ACCEPTED_SETUPTOOLS)
+    assert still_needed("83.0.0") == {"GHSA-xmj3-9gf7-h52w"}
+    assert still_needed("84.1.0") == set()
+    assert still_needed(None) == set()
 
 
 def test_every_candidate_is_pinned():
