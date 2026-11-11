@@ -63,8 +63,9 @@ candidates:
     server: vllm
     source: Qwen/Qwen3.5-9B
     revision: c202236235762e1c871ad0ccb60c8ee5ba337b9a
-    # vLLM turns the official weights into 8-bit while it loads them (bitsandbytes)
-    settings: {dtype: float16, gpus: 1, quantization: bitsandbytes}
+    # vLLM turns the official weights into 8-bit fp8 while it loads them. The T4 has no fp8
+    # math, so vLLM runs them as 8-bit weights with 16-bit math (its Marlin kernel)
+    settings: {dtype: float16, gpus: 1, quantization: fp8}
     files:
       model.safetensors-00001-of-00004.safetensors: db6f444b43d318c92f360a13a25561a6a65b10c0631b8ed305a426dbaa6c380e
       model.safetensors-00002-of-00004.safetensors: 31c7d7e2dd5d207840b31cc59083c8f4c4718959149e0358c0364052bb9a0330

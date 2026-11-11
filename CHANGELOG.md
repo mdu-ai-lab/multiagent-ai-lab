@@ -7,6 +7,7 @@ Versions are tagged at the end of each phase (WORK_PLAN.md rule G).
 
 ### Added
 
+- GPU smoke test (ops/gpu_smoke.py) for Kaggle and Colab: downloads one candidate from configs/gpu_candidates.yaml with SHA-256 checks and resume, starts llama.cpp or vLLM, asks five fixed public questions and records correct answers, time to first token, tokens per second, load time and GPU hours as one MLflow run in a database file in the gpu profile. Each answer is saved at once, so a disconnected job continues where it stopped. The run is written as a result bundle, which ops/import_runs.py adds to the Mac's MLflow once (make pull-inbox). The Colab vLLM candidate now loads the official weights as 8-bit fp8 instead of bitsandbytes, which vLLM 0.33.0 no longer has built in.
 - configs/gpu_candidates.yaml: the server builds and model files the GPU smoke test may use on Kaggle and Colab, each pinned by version or revision and SHA-256, with a unit test.
 - GitHub settings: GitHub's secret scanning with push protection, Dependabot security updates and both CI checks required in protect-main, with the branch up to date with main. A deliberately failing test on a short-lived branch turned CI red and its pull request to main was blocked.
 - Dependabot (.github/dependabot.yml): weekly pull requests for newer Python packages in both uv lock files, GitHub actions and the Qdrant image, with a 7-day wait for new releases and minor and patch updates grouped. It starts once the file is on main.

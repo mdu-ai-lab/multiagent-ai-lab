@@ -14,9 +14,11 @@ backup:
 restore-test:
 	uv run python ops/backup.py restore-test $(if $(FULL),--full)
 
-# Copy new files from the Drive inbox (Colab results) to data/inbox. Never overwrites
+# Copy new files from the Drive inbox (Colab results) to data/inbox. Never overwrites.
+# Then add the result bundles in data/inbox to MLflow, each once (needs make mlflow)
 pull-inbox:
 	uv run python ops/backup.py pull-inbox
+	uv run python ops/import_runs.py
 
 # Start the local MLflow server in this terminal (address from MRAG_MLFLOW_TRACKING_URI).
 # Stop it with Ctrl+C. Its data stays in the mlflow folder

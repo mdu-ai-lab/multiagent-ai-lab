@@ -1,7 +1,9 @@
 # Experiment runs and traces in MLflow (D06, D40). Runs and traces go to the local MLflow
-# server only in the mac profile. Every request becomes one trace: a root span with the
-# request totals (tokens in and out, model calls, tool calls, time and the fallback used)
-# and one child span per model call. MLflow adds up the tokens of the model call spans.
+# server in the mac profile. In the gpu profile they go to a database file in the job's work
+# folder and reach the Mac as a result bundle (ops/gpu_smoke.py, ops/import_runs.py).
+# Every request becomes one trace: a root span with the request totals (tokens in and out,
+# model calls, tool calls, time and the fallback used) and one child span per model call.
+# MLflow adds up the tokens of the model call spans.
 
 import hashlib
 import json
@@ -24,7 +26,7 @@ from mlflow.tracking import MlflowClient
 
 from mrag.config import PROJECT_ROOT, Settings, get_settings
 
-TRACED_PROFILES = {"mac"}
+TRACED_PROFILES = {"mac", "gpu"}
 # Runs with this tag set to "true" are exported to results/ and shown on the dashboard
 PUBLISH_TAG = "mrag.publish"
 CONFIG_DIR = PROJECT_ROOT / "configs"
