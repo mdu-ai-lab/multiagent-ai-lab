@@ -4,7 +4,7 @@
 |---|---|
 | Purpose | Where each part runs in each profile |
 | Status | Proposed |
-| Last updated | 2026-11-05 |
+| Last updated | 2026-11-11 |
 | Source of truth | [WORK_PLAN.md](../WORK_PLAN.md) v1.10 |
 | Related documents | [Deployment guide](../10-deployment-and-operations/deployment-guide.md), [Environment configuration](../10-deployment-and-operations/environment-configuration.md) |
 
@@ -18,8 +18,8 @@ flowchart TB
     SQ[(SQLite)]
   end
   subgraph Cloud[Free cloud - public data only]
-    CL[Colab T4: vLLM jobs, public knowledge graphs]
-    KG[Kaggle 2 x T4: 27B tests, load test]
+    CL[Colab T4, backup: jobs that fit 16 GB]
+    KG[Kaggle 2 x T4, main: GPU jobs, public knowledge graphs, 27B tests, load test]
     ZG[ZeroGPU Space: demo]
     GP[GitHub Pages: dashboard]
     GA[GitHub Actions: CI/CD]

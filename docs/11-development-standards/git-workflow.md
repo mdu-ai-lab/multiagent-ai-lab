@@ -4,7 +4,7 @@
 |---|---|
 | Purpose | How work moves through GitHub |
 | Status | Proposed |
-| Last updated | 2026-11-09 |
+| Last updated | 2026-11-11 |
 | Source of truth | [WORK_PLAN.md](../WORK_PLAN.md) v1.10 |
 | Related documents | [Code review](../11-development-standards/code-review.md), [CI/CD pipeline](../10-deployment-and-operations/ci-cd-pipeline.md) |
 
@@ -14,7 +14,7 @@
 |---|---|---|
 | Owner | Repo in a free GitHub organization | D16, 0.1, Q8 |
 | Main branch | Ruleset protect-main for everyone, no bypass: pull request required (0 approvals), CI checks must pass with the branch up to date with main, no deletion, no force push | 1.1, 1.4, D39, D42 |
-| Branches | One per phase (phase-1, phase-2 and so on), kept until the phase ends. remote/YYYY-MM-DD for Colab work | 1.1, D39, section 6.4 |
+| Branches | One per phase (phase-1, phase-2 and so on), kept until the phase ends. remote/YYYY-MM-DD for Kaggle or Colab work | 1.1, D39, section 6.4 |
 | Commits | After every step, on the phase branch | Rule G, 1.1 |
 | Merging | Every change to main goes through a pull request, docs fixes too. Merge commits only. Members always work through pull requests | 1.1, D39 |
 | Tags | Version tag at phase end (v0.1.0, v0.2.0 and so on). First tag v0.0.0 (end of Phase 0). First pull request tag v0.0.1 | 1.1 |

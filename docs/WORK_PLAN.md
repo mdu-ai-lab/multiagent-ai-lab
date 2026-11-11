@@ -46,7 +46,7 @@ This file is the single source of truth for the project. It is stored in the rep
 | R11 | Every technology has a real purpose | Section 9 (why column) | Planned |
 | R12 | Project on the external 2 TB SSD | Section 6.3 | Done |
 | R13 | Full backup of the project on the SSD to Google Drive, restorable to another laptop or SSD | Section 6.4, step 0.6 | Done |
-| R14 | Use both MacBook Air M2 (16 GB) and Google Colab, chosen per task | Section 6.2 | Planned |
+| R14 | Use both MacBook Air M2 (16 GB) and the free cloud GPUs (Kaggle main, Google Colab backup), chosen per task | Section 6.2 | Planned |
 | R15 | Do not limit the design because of the MacBook. Use free cloud GPU when needed | Sections 6.1 and 6.2 | Planned |
 | R16 | Push to GitHub after every step | Rule G | Planned |
 | R17 | Live website that updates automatically after every push, before and after the API exists | Section 11, steps 1.7, 1.8 | Planned |
@@ -84,8 +84,8 @@ This file is the single source of truth for the project. It is stored in the rep
 | D07 | CI on GitHub Actions (public repo, standard runners). CD for dashboard, demo and images | Free and needed because you push after every step | — |
 | D08 | API-first: service.py + FastAPI skeleton in Phase 1. Hardening in Phase 13 | Avoids rework. UI, demo, tests and MCP share one contract | Whole API in Phase 13 |
 | D09 | Live dashboard on GitHub Pages. Live demo on a free Hugging Face ZeroGPU Space (Gradio) | Both free. Pages never sleeps. ZeroGPU gives a free GPU for the demo | Streamlit (not needed). Free CPU Space (no longer free) |
-| D10 | Cloud GPU: Google Colab free is the main cloud GPU. Kaggle free is the backup and the place for jobs needing 2 x T4 (32 GB) | You asked to use Colab. Colab free GPU is not guaranteed, so Kaggle covers gaps | Kaggle as main (last table). Colab premium (rejected: costs money) |
-| D11 | GPU profile model: Qwen3.5-9B at higher precision on a Colab T4. Qwen3.8-27B tested on Kaggle 2 x T4 and used only if it runs well | A single free T4 (16 GB) is too small for the 27B model | 27B on paid Colab |
+| D10 | Cloud GPU: Kaggle free (2 x T4, 32 GB) is the main cloud GPU. Google Colab free (1 x T4, 16 GB) is the backup for jobs that fit 16 GB when Kaggle's weekly quota is used up or Kaggle is unavailable. The smoke test of 1.5 confirms both | Two T4s hold Qwen3.5-9B in full 16-bit (19.31 GB) and Qwen3.8-27B in 4-bit (16.56 GB). One T4 holds neither. Kaggle's GPU is available within its weekly quota. Colab's free GPU is not guaranteed | Colab free as main and Kaggle as backup (until 11 November 2026). Colab premium (rejected: costs money) |
+| D11 | GPU profile model: Qwen3.5-9B in full 16-bit (fp16, because the T4 has no bf16) split over Kaggle's 2 x T4. Qwen3.8-27B in 4-bit tested on Kaggle 2 x T4 and used only if it runs well. On the Colab backup (1 x T4): Qwen3.5-9B in 8-bit. The exact files are chosen and pinned in 1.5 | The full Qwen3.5-9B is 19.31 GB and does not fit one 16 GB T4. The full Qwen3.8-27B is 55.56 GB, so 2 x T4 needs 4-bit | Qwen3.5-9B at higher precision on a Colab T4 (does not fit). 27B on paid Colab |
 | D12 | Code and docs live in Git (GitHub = source of truth). Google Drive holds a one-way backup of the whole project on the SSD (D35) plus a Colab inbox. No two-way folder sync | File-sync tools can break .git folders and databases and create conflicts | Backup of non-Git files only |
 | D13 | Models, public datasets, venvs and indexes are backed up with the whole project (D35). They can also be re-created from pinned versions | A full copy restores faster than downloading and converting again | Not backed up |
 | D14 | Helper model Qwen3.5-2B, speech-to-text (late phase), MCP and an injection classifier are included. Classifier and helper stay only if tests show they help | Speed, audio files, interoperability, safety | — |
@@ -182,8 +182,8 @@ This file is the single source of truth for the project. It is stored in the rep
 | Profile | Hardware | Main model | Used for | Data allowed | Cost |
 |---|---|---|---|---|---|
 | Mac | MacBook Air M2, 16 GB, project on the 2 TB SSD | Qwen3.5-9B (vision, 4-bit GGUF) | Daily building, private documents, local API, UI, MLflow, Qdrant | Private and public | Free |
-| GPU (main) | Google Colab free (T4, 16 GB, not guaranteed) | Qwen3.5-9B at higher precision through vLLM | Heavy evaluation, judge runs, parser and audio comparisons | Public only | Free, dynamic limits |
-| GPU (backup) | Kaggle free (P100 or 2 x T4 = 32 GB) | Qwen3.8-27B if it runs well on 2 x T4 | Jobs needing 32 GB, load tests, backup when Colab has no GPU | Public only | Free, weekly quota |
+| GPU (main) | Kaggle free (2 x T4 = 32 GB) | Qwen3.5-9B in full 16-bit through vLLM. Qwen3.8-27B in 4-bit if it runs well | Heavy evaluation, judge runs, parser and audio comparisons, jobs needing 32 GB, load tests | Public only | Free, weekly quota |
+| GPU (backup) | Google Colab free (T4, 16 GB, not guaranteed) | Qwen3.5-9B in 8-bit | Jobs that fit 16 GB when the Kaggle quota is used up or Kaggle is unavailable | Public only | Free, dynamic limits |
 | Demo | Hugging Face ZeroGPU Space | Qwen3.5-9B through Transformers (tested in 1.8) | Live public demo | Public sample documents only | Free, daily visitor quota |
 | CI | GitHub Actions standard runner (CPU) | Qwen3.5-0.8B for smoke tests | Tests on every push | Public test fixtures only | Free (public repo) |
 | Company server | Company Linux GPU server | Qwen3.8-27B or larger | Future company use | Company data inside their network | Paid by the company |
@@ -195,16 +195,16 @@ This file is the single source of truth for the project. It is stored in the rep
 | Writing code, tests, API, UI | Mac | Full stack runs locally |
 | Anything with private documents | Mac only | Privacy rule V |
 | Small public experiments (dev sets, single route checks) | Mac | Fast enough, no upload needed |
-| Building knowledge graphs for large public corpora | Colab free | Graph extraction calls the model for every chunk |
+| Building knowledge graphs for large public corpora | Kaggle free | Graph extraction calls the model for every chunk |
 | Full test-set runs in the Mac profile | Mac (overnight, resumable jobs) | Measures what the group will really use |
-| GPU-profile evaluation, judge runs, large public corpora | Colab free | GPU speed for public data |
-| Parser and speech model comparisons on many pages or hours | Colab free | GPU speed |
+| GPU-profile evaluation, judge runs, large public corpora | Kaggle free | GPU speed for public data |
+| Parser and speech model comparisons on many pages or hours | Kaggle free | GPU speed |
 | Anything needing more than 16 GB GPU memory (27B test, load test) | Kaggle free (2 x T4) | Only free option with 32 GB |
-| Colab has no GPU available | Kaggle free | Backup |
+| Kaggle quota used up or Kaggle unavailable | Colab free (jobs that fit 16 GB) | Backup |
 | Live demo | ZeroGPU Space | Free GPU for visitors |
-| SSD unavailable | Colab (code and public data only) or a temporary clone on the Mac's internal disk | See section 6.4 |
+| SSD unavailable | Kaggle or Colab (code and public data only) or a temporary clone on the Mac's internal disk | See section 6.4 |
 
-Rule of thumb: private data → Mac. Needs a GPU and the data is public → Colab. Needs more than 16 GB GPU memory → Kaggle.
+Rule of thumb: private data → Mac. Needs a GPU and the data is public → Kaggle. Kaggle quota used up → Colab, for jobs that fit 16 GB.
 
 ### 6.3 Storage layout on the SSD
 
@@ -244,15 +244,15 @@ Rules that prevent lost files and conflicts:
 |---|---|
 | 1 | GitHub is the only source of truth for code and docs. Google Drive never holds a working copy of the repo |
 | 2 | One active machine at a time. Before switching: commit and push. On the other machine: pull first |
-| 3 | Work done in Colab goes to a branch named remote/YYYY-MM-DD. Merge it on the Mac through a pull request so CI checks it |
+| 3 | Work done in Kaggle or Colab goes to a branch named remote/YYYY-MM-DD. Merge it on the Mac through a pull request so CI checks it |
 | 4 | Result files are written once with unique names (run ID + date). They are never edited in two places |
 | 5 | Drive backup is one-way (rclone sync to the copy of each folder. Every changed or deleted file moves to a dated history/ folder). Nothing on Drive is deleted. No two-way sync |
-| 6 | Colab results go to Drive multiagent-ai-lab-backup/inbox/. On the Mac, make pull-inbox copies new files only (never overwrites) and imports them into MLflow |
+| 6 | Colab results go to Drive multiagent-ai-lab-backup/inbox/. Kaggle results are downloaded from the notebook output into data/inbox. On the Mac, make pull-inbox copies new files only (never overwrites) and imports them into MLflow |
 | 7 | Check Drive usage monthly. The owner's Drive has 2 TB |
 | 8 | Restore test (make restore-test) right after each make backup: checksum of every file, restore into a temporary folder, Qdrant snapshot and SQLite checks. From step 1.2 also check that MLflow opens |
-| 9 | Secrets (GitHub token, Hugging Face token) live in GitHub Secrets, Colab Secrets and your password manager. Never in Git or Drive |
+| 9 | Secrets (GitHub token, Hugging Face token) live in GitHub Secrets, Kaggle Secrets, Colab Secrets and your password manager. Never in Git or Drive |
 
-When the SSD is lost or broken, restore the backup to another SSD or laptop (docs/10-deployment-and-operations/backup-and-recovery.md). What you can do when the SSD is unavailable: write and test code, run public-data experiments on Colab and update docs. Private-document work waits until the SSD is back.
+When the SSD is lost or broken, restore the backup to another SSD or laptop (docs/10-deployment-and-operations/backup-and-recovery.md). What you can do when the SSD is unavailable: write and test code, run public-data experiments on Kaggle or Colab and update docs. Private-document work waits until the SSD is back.
 
 Tools: Git (free), rclone (free, open source) on the Mac, the built-in Google Drive mount in Colab. Google Drive for Desktop is not needed.
 
@@ -353,7 +353,7 @@ multiagent-ai-lab/
 | Tool | MLflow | Experiments, versions, traces, feedback | 1 |
 | Tool | GitHub Actions, GitHub Pages, GHCR, Dependabot | CI/CD, dashboard, images, dependency updates | 1, 15 |
 | Tool | Hugging Face ZeroGPU Space | Live demo | 1 |
-| Tool | Colab free, Kaggle free | Free cloud GPU | 1 |
+| Tool | Kaggle free (main), Colab free (backup) | Free cloud GPU | 1 |
 | Tool | rclone, Google Drive | Backup and Colab inbox | 0 |
 | Tool | Docker (Qdrant, code sandbox), uv, pytest, ruff, mypy, pip-audit | Infra and quality | 0, 1 |
 
@@ -427,7 +427,7 @@ weekly: health.yml checks both URLs and opens a GitHub issue if one is down
 | 1.2 MLflow | Run the MLflow server natively on the Mac through uv (D40), started with make mlflow on 127.0.0.1:5001, with its data in mlflow/ on the SSD. Each route gets its own experiment when it logs its first run. Every run logs the git commit, config, model versions, dataset versions, metrics and result files. llm_client.py records every model call as a trace with its time and tokens. LangGraph steps are traced from 7.2. Each request trace also records its totals: tokens in and out, model calls, tool calls, time and the fallback used. export_results.py writes result summaries as JSON into results/ for the dashboard. | One place for all experiments and agent traces, at no cost. | A test run shows all fields. A trace shows each model call with time and tokens and the request totals. The export creates JSON files. | Done |
 | 1.3 Versioning rules | Prompts live as text files in configs/prompts/ and go in the MLflow prompt registry through prompts.py (D41). Each full pipeline setup is logged as a version: a pipeline version ID on every run and trace. Datasets are pinned by Hugging Face revision and file hash (code in 2.1). Models are pinned in models.yaml with their source, revision and file SHA-256, checked by a Mac test. Qdrant is pinned by image digest. Own Docker images are tagged with the release version (15.1). | Any result can be traced to the exact code, prompt, model and data. Companies need this audit trail. | Pick one old result and trace it to its exact versions. | Done |
 | 1.4 CI pipeline | GitHub Actions on every push and pull request, using standard runners only: ruff (style), mypy (types), pytest unit tests, an integration test with a tiny model (Qwen3.5-0.8B on CPU through llama.cpp), pip-audit (package security), GitHub's secret scanning with push protection and an evaluation gate that fails if committed scores drop below their limits. Dependabot proposes security updates. No artifacts are stored. The ruleset protect-main requires the CI checks to pass and the branch to be up to date with main (D42). | Every update is checked automatically, at no cost. | CI is green. A deliberately broken commit fails CI. | Done |
-| 1.5 Free GPU profile | Notebook templates for Colab free (main) and Kaggle free (backup), every cell labelled: clone the repo at a given commit, install with uv, start vLLM with the GPU profile model, run a job, save results with unique run IDs to Drive inbox (Colab) or the notebook output (Kaggle). Tokens come from Colab Secrets or Kaggle Secrets. make pull-inbox imports results into the Mac's MLflow. Jobs save checkpoints so a disconnect loses no work. Test Qwen3.5-9B on a Colab T4 and Qwen3.8-27B on Kaggle 2 x T4. Public data only. | Heavy work gets real GPU power for free, without touching private data. | The smoke test runs on Colab and on Kaggle. The chosen GPU models are recorded. The runs appear in the Mac's MLflow. | Not done |
+| 1.5 Free GPU profile | Notebook templates for Kaggle free (main) and Colab free (backup), every cell labelled: clone the repo at a given commit, install with uv, start vLLM with the GPU profile model, run a job, save results with unique run IDs to Drive inbox (Colab) or the notebook output (Kaggle). Tokens come from Colab Secrets or Kaggle Secrets. make pull-inbox imports results into the Mac's MLflow. Jobs save checkpoints so a disconnect loses no work. Test Qwen3.5-9B in 16-bit and Qwen3.8-27B in 4-bit on Kaggle 2 x T4 and Qwen3.5-9B in 8-bit on a Colab T4. Public data only. | Heavy work gets real GPU power for free, without touching private data. | The smoke test runs on Kaggle and on Colab. The chosen GPU models and the GPU hours per job are recorded. The runs appear in the Mac's MLflow. | Not done |
 | 1.6 API-first skeleton | service.py holds the core functions. api.py (FastAPI) wraps them under /v1 with health, version, models and chat endpoints, marked experimental. API docs are generated automatically. The chat endpoint calls harness.run() (D43), which starts small: a system prompt from configs/prompts/, the chat history within a token budget per profile, a cap on answer tokens, a time limit and streamed answer events. The models endpoint reads the active profile's models from configs/models.yaml with llm_client.load_models(), which only reads the file and creates no model client. How tokens are counted for the budget is chosen and tested here. CI tests the endpoints. | Every later feature plugs into one contract. The UI, demo, tests and MCP use the same functions. The harness grows behind the same call, so the API, the chat page and the demo never change it again. | The API runs locally. All endpoint tests pass in CI. A chat answer streams through harness.run(). A unit test shows that the history never goes over the budget in any profile. An import test in CI shows that service.py, api.py and the route agents never create a model client (llm_client.get_client) or import the search or a tool directly and that no harness module imports them. | Not done |
 | 1.7 Live dashboard (CD) | site_build.py builds a static website from the repo and results/: progress table (done / not done per step from this file), latest scores per route with trend over versions, architecture diagram, changelog and example answers on public documents. pages.yml publishes it to GitHub Pages after CI passes on main. Re-check GitHub limits first. | Anyone in the group sees live progress for free. | The site URL works. A pushed change appears on it within minutes. Site size stays far below 1 GB. | Not done |
 | 1.8 Live demo (CD) | After Q3 is confirmed, create a Gradio Space on ZeroGPU with public sample documents. It starts as a simple chat with the main model through Transformers and calls service.py directly, so the demo runs the same harness.run() as the API with the demo profile of configs/harness.yaml. demo.yml uploads demo/ and src/mrag/ to the Space after CI passes on main. A note tells visitors about the daily GPU quota. Re-check Hugging Face limits first. | A working live demo during the whole project, at no cost. | The Space URL works. A pushed change appears after the Space rebuilds. | Not done |
@@ -467,7 +467,7 @@ weekly: health.yml checks both URLs and opens a GitHub issue if one is down
 | Step | What we will do | Why | Done-when test | Status |
 |---|---|---|---|---|
 | 5.1 Chunking | chunking.py splits by section, with the size chosen by test (starting near 500 tokens). Each chunk starts with its heading path. Tables and figure descriptions stay as single chunks. Each chunk knows its parent section and neighbours. | Chunks keep meaning and context [Chakravorty, Sec 7.4.3, p. 24]. | No table is split. Every chunk has a heading path and a page. | Not done |
-| 5.2 Indexing | embed.py and index.py create meaning vectors for chunks and page images, BM25 word vectors and a keyword index for codes and IDs. All go into Qdrant with collection, file, version, page, type and heading. Vectors are cached by chunk fingerprint. The same code also works with Qdrant's in-process mode, which Colab and the demo use. On GPU we also test a larger embedding model if one is published. Embedding licence confirmed. | Different search types catch different questions. The cache avoids repeated work. | All test files indexed. Re-indexing unchanged files creates 0 new vectors. | Not done |
+| 5.2 Indexing | embed.py and index.py create meaning vectors for chunks and page images, BM25 word vectors and a keyword index for codes and IDs. All go into Qdrant with collection, file, version, page, type and heading. Vectors are cached by chunk fingerprint. The same code also works with Qdrant's in-process mode, which Kaggle, Colab and the demo use. On GPU we also test a larger embedding model if one is published. Embedding licence confirmed. | Different search types catch different questions. The cache avoids repeated work. | All test files indexed. Re-indexing unchanged files creates 0 new vectors. | Not done |
 | 5.3 Hybrid search | harness/retrieval.py (D43) runs meaning, BM25, keyword and page-image search (20 results each) at question time and merges them with RRF. The code always adds filters: the user's allowed collections, latest version and chosen files. Indexing at upload stays in embed.py and index.py. | Hybrid search is the current standard. Filters enforce access control. | The filter test returns only allowed chunks. | Not done |
 | 5.4 Reranking | harness/rerank.py re-scores the top results with Qwen3-VL-Reranker, then adds a small structure score: heading match, same section, neighbours [Chakravorty, App. A, p. 57]. Keep the best 6–8. Add neighbours if space allows. Reranker licence confirmed. | Structural reranking gave the biggest gain in Chakravorty's thesis. | Better than no reranking on dev. | Not done |
 | 5.5 Ablation tests | Add one part at a time on dev: dense only → + BM25 → RRF vs interleaving → + reranker → + structure score → + page images. Neural sparse is tested as an option. Each part is switched on and off in configs/harness.yaml. Final scores on test. Every step is logged in MLflow. | Keep only what really helps. | Best setup beats dense-only on nDCG@10 with CI above 0. Search p50 ≤ 2 s on the Mac. | Not done |
@@ -516,7 +516,7 @@ weekly: health.yml checks both URLs and opens a GitHub issue if one is down
 | Step | What we will do | Why | Done-when test | Status |
 |---|---|---|---|---|
 | 9A.1 Ontology | ontology.py and configs/ontology/. Write the entity and relation types in LinkML (YAML): a general base (person, organization, place, date, concept, document section) plus the first domain ontology (Q9). Generate the Pydantic models and an OWL file from it. Version it in Git. LinkML licence checked. | One fixed, shared definition of what the graph may contain. The OWL file lets other tools read it. | Pydantic models and OWL file generate without errors. Changing the YAML and regenerating updates both. | Not done |
-| 9A.2 Graph extraction | kg.py. A background job (per collection, optional) asks the main model to extract entities and relations from each chunk. Output is forced into the ontology's JSON schema. Every entity and relation keeps its source chunk, file and page. Same entities are merged by name and alias. Public corpora are built on Colab. | The graph is built from your files and every graph fact can be traced back to a page. | Every graph fact has a source page. Extraction precision measured on a hand-checked sample of 50 facts. Time and model calls recorded. | Not done |
+| 9A.2 Graph extraction | kg.py. A background job (per collection, optional) asks the main model to extract entities and relations from each chunk. Output is forced into the ontology's JSON schema. Every entity and relation keeps its source chunk, file and page. Same entities are merged by name and alias. Public corpora are built on Kaggle. | The graph is built from your files and every graph fact can be traced back to a page. | Every graph fact has a source page. Extraction precision measured on a hand-checked sample of 50 facts. Time and model calls recorded. | Not done |
 | 9A.3 Engine choice | Compare LightRAG (MIT, actively maintained, uses our model server and embeddings) against our own ontology-guided graph (NetworkX with community detection). Graph data stays on the SSD. | Choose by evidence, not by name. | Comparison table on 2WikiMultihopQA dev. Winner set in config. | Not done |
 | 9A.4 Graph route | graphrag.py. A new route in the router. Local questions use an entity's neighbourhood. Whole-corpus questions use community summaries. Answers cite the source pages behind each graph fact and go through the same claim check and refusal. The graph facts reach the prompt as a graph source of harness/retrieval.py, which reads them from kg.py with the same collection filter. | Questions about relationships and themes across many documents. | Router sends graph questions to this route. Every answer cites pages. Filter test passes. | Not done |
 | 9A.5 Test | Compare hybrid RAG (Phases 5 and 6), GraphRAG and both together on 2WikiMultihopQA and MuSiQue: answer accuracy, citation precision, unsupported claims, time and model calls per document. | Proves when the graph helps and what it costs. | Results table logged in MLflow. Graph route kept only where it beats hybrid RAG. | Not done |
@@ -615,9 +615,9 @@ weekly: health.yml checks both URLs and opens a GitHub issue if one is down
 | Risk | Impact | Mitigation |
 |---|---|---|
 | A free tier changes (GitHub, Hugging Face, Colab, Kaggle, Google Drive) | Live site, demo or GPU access stops | The full platform always runs on the Mac. Re-check limits in 1.7 and 1.8. Health checks in 1.9 |
-| Colab has no free GPU when needed | Delays | Kaggle backup. Jobs are resumable |
+| Kaggle's weekly GPU quota is used up when needed | Delays | Colab backup for jobs that fit 16 GB. Jobs are resumable |
 | 16 GB RAM pressure on the Mac | Slow or crashes | llama-swap unloading, one large model at a time, measured in 0.4 |
-| Fanless M2 throttling during long jobs | Slow ingestion | Resumable jobs, overnight runs, Colab for public data |
+| Fanless M2 throttling during long jobs | Slow ingestion | Resumable jobs, overnight runs, Kaggle for public data |
 | SSD unavailable or damaged | Lost local work | Git + full Drive backup + restore test (6.4, D35). Models and datasets can also be re-created from pinned versions |
 | Google Drive fills up (2 TB) | Backup and email stop | Monthly usage check |
 | Sync conflicts between SSD, Drive and Colab | Lost or duplicated files | Git as source of truth, one-way backup, unique result names, remote branches (6.4) |
@@ -629,7 +629,7 @@ weekly: health.yml checks both URLs and opens a GitHub issue if one is down
 | Model or package supply chain | Tampered files | Pinned revisions and hashes, uv.lock, pip-audit, Dependabot |
 | Fast-moving tools | Breaking upgrades | Pin everything. Upgrade only through the CI evaluation gate |
 | Scope creep | Never finish | Non-goals list, phase gates |
-| Graph extraction is slow on the Mac and costs many model calls | Long ingestion | Graph is optional per collection. Large public corpora on Colab. Time and calls measured in 9A.5 |
+| Graph extraction is slow on the Mac and costs many model calls | Long ingestion | Graph is optional per collection. Large public corpora on Kaggle. Time and calls measured in 9A.5 |
 | The main model extracts wrong entities or relations | Wrong graph answers | Ontology-constrained JSON output, source citation for every graph fact, claim check, test in 9A.5 |
 | GraphRAG does not beat hybrid RAG | Wasted effort | Kept only where tests show it helps (D17) |
 | Docker Desktop licence in companies | Unexpected cost for a company | Docker Engine on Linux servers (15.5) |

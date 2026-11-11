@@ -4,7 +4,7 @@
 |---|---|
 | Purpose | Fixed limits and open assumptions that shape the design |
 | Status | Proposed |
-| Last updated | 2026-11-09 |
+| Last updated | 2026-11-11 |
 | Source of truth | [WORK_PLAN.md](../WORK_PLAN.md) v1.10 |
 | Related documents | [SRS](../01-requirements/srs.md), [Risk register](../12-project-management/risk-register.md) |
 
@@ -16,7 +16,7 @@
 |---|---|---|
 | CON-001 | Zero cost everywhere | Rule Z |
 | CON-002 | Main machine: MacBook Air M2, 16 GB RAM, project on an external 2 TB SSD | Section 6 |
-| CON-003 | Free cloud GPU only: Colab free (main), Kaggle free (backup) | D10 |
+| CON-003 | Free cloud GPU only: Kaggle free (main), Colab free (backup) | D10 |
 | CON-004 | Private documents stay on the Mac | Rule V |
 | CON-005 | Google Drive: the owner's existing 2 TB plan | Section 7 |
 | CON-006 | ZeroGPU Spaces only on the personal Hugging Face account (organizations need a paid plan) | D16 |

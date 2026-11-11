@@ -4,7 +4,7 @@
 |---|---|
 | Purpose | Central entry point for all project documentation |
 | Status | Proposed |
-| Last updated | 2026-11-09 |
+| Last updated | 2026-11-11 |
 | Source of truth | [WORK_PLAN.md](WORK_PLAN.md) v1.10 |
 | Related documents | [WORK_PLAN.md](WORK_PLAN.md) |
 
@@ -65,7 +65,7 @@ A planned local platform where agents and RAG answer questions over files with p
 
 ## 5. Key architectural decisions
 
-Local llama.cpp runtime (ADR-002), LangGraph plus smolagents (ADR-003), Qdrant (ADR-004), SQLite then Postgres (ADR-005), MLflow (ADR-006), CI/CD on GitHub Actions (ADR-007), API-first (ADR-008), GitHub Pages plus ZeroGPU (ADR-009), Colab main and Kaggle backup (ADR-010), GitHub organization (ADR-016), knowledge graph and GraphRAG chosen by test (ADR-017), LinkML ontology (ADR-018), notebooks without audio overviews (ADR-019), verification loop and verification number (ADR-020), coding assistant with a local rules file and HANDOVER.md (ADR-021), names multiagent-ai-lab and mdu-ai-lab (ADR-022).
+Local llama.cpp runtime (ADR-002), LangGraph plus smolagents (ADR-003), Qdrant (ADR-004), SQLite then Postgres (ADR-005), MLflow (ADR-006), CI/CD on GitHub Actions (ADR-007), API-first (ADR-008), GitHub Pages plus ZeroGPU (ADR-009), Kaggle main and Colab backup (ADR-010), GitHub organization (ADR-016), knowledge graph and GraphRAG chosen by test (ADR-017), LinkML ontology (ADR-018), notebooks without audio overviews (ADR-019), verification loop and verification number (ADR-020), coding assistant with a local rules file and HANDOVER.md (ADR-021), names multiagent-ai-lab and mdu-ai-lab (ADR-022).
 
 ## 6. Main modules
 

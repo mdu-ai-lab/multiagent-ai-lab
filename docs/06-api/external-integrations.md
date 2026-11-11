@@ -4,7 +4,7 @@
 |---|---|
 | Purpose | Every outside service and its limits |
 | Status | Proposed |
-| Last updated | 2026-11-05 |
+| Last updated | 2026-11-11 |
 | Source of truth | [WORK_PLAN.md](../WORK_PLAN.md) v1.10 |
 | Related documents | [Integration architecture](../04-architecture/integration-architecture.md), [Secrets management](../07-security/secrets-management.md) |
 
@@ -17,7 +17,7 @@
 | GitHub (organization) | Code, CI/CD, Pages, container images | Code and public results | CI gates | Free for public repos |
 | Web search (smolagents WebSearchTool) | Opt-in online answers | Rewritten question only | Retry and message (8.1) | Free, rate-limited (to confirm in 8.1) |
 | Google Drive (rclone) | Backup and Colab inbox | The whole project on the SSD (D35) | Restore test | Owner's existing 2 TB plan, no new cost |
-| Google Colab, Kaggle | Free GPU jobs | Public data only | Checkpoints, resumable jobs | Free, limits change |
+| Kaggle (main), Google Colab (backup) | Free GPU jobs | Public data only | Checkpoints, resumable jobs | Free, limits change |
 
 Limits checked on 28 Oct 2026. Details: WORK_PLAN.md section 7.
 

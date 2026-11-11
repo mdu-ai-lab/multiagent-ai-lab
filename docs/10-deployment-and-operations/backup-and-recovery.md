@@ -4,7 +4,7 @@
 |---|---|
 | Purpose | How work is protected and restored |
 | Status | Proposed |
-| Last updated | 2026-11-06 |
+| Last updated | 2026-11-11 |
 | Source of truth | [WORK_PLAN.md](../WORK_PLAN.md) v1.10 |
 | Related documents | [Data privacy](../07-security/data-privacy.md) |
 
@@ -52,15 +52,15 @@ Rules that prevent lost files and conflicts:
 |---|---|
 | 1 | GitHub is the only source of truth for code and docs. Google Drive never holds a working copy of the repo |
 | 2 | One active machine at a time. Before switching: commit and push. On the other machine: pull first |
-| 3 | Work done in Colab goes to a branch named remote/YYYY-MM-DD. Merge it on the Mac through a pull request so CI checks it |
+| 3 | Work done in Kaggle or Colab goes to a branch named remote/YYYY-MM-DD. Merge it on the Mac through a pull request so CI checks it |
 | 4 | Result files are written once with unique names (run ID + date). They are never edited in two places |
 | 5 | Drive backup is one-way (rclone sync to the copy of each folder. Every changed or deleted file moves to a dated history/ folder). Nothing on Drive is deleted. No two-way sync |
-| 6 | Colab results go to Drive multiagent-ai-lab-backup/inbox/. On the Mac, make pull-inbox copies new files only (never overwrites) and imports them into MLflow |
+| 6 | Colab results go to Drive multiagent-ai-lab-backup/inbox/. Kaggle results are downloaded from the notebook output into data/inbox. On the Mac, make pull-inbox copies new files only (never overwrites) and imports them into MLflow |
 | 7 | Check Drive usage monthly. The owner's Drive has 2 TB |
 | 8 | Restore test (make restore-test) right after each make backup: checksum of every file, restore into a temporary folder, Qdrant snapshot and SQLite checks. From step 1.2 also check that MLflow opens |
-| 9 | Secrets (GitHub token, Hugging Face token) live in GitHub Secrets, Colab Secrets and your password manager. Never in Git or Drive |
+| 9 | Secrets (GitHub token, Hugging Face token) live in GitHub Secrets, Kaggle Secrets, Colab Secrets and your password manager. Never in Git or Drive |
 
-When the SSD is lost or broken, restore the backup to another SSD or laptop (docs/10-deployment-and-operations/backup-and-recovery.md). What you can do when the SSD is unavailable: write and test code, run public-data experiments on Colab and update docs. Private-document work waits until the SSD is back.
+When the SSD is lost or broken, restore the backup to another SSD or laptop (docs/10-deployment-and-operations/backup-and-recovery.md). What you can do when the SSD is unavailable: write and test code, run public-data experiments on Kaggle or Colab and update docs. Private-document work waits until the SSD is back.
 
 Tools: Git (free), rclone (free, open source) on the Mac, the built-in Google Drive mount in Colab. Google Drive for Desktop is not needed.
 

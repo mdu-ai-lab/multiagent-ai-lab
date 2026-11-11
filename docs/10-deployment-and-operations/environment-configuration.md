@@ -4,7 +4,7 @@
 |---|---|
 | Purpose | Planned settings and profiles |
 | Status | Proposed |
-| Last updated | 2026-11-05 |
+| Last updated | 2026-11-11 |
 | Source of truth | [WORK_PLAN.md](../WORK_PLAN.md) v1.10 |
 | Related documents | [Secrets management](../07-security/secrets-management.md), [Deployment architecture](../04-architecture/deployment-architecture.md) |
 
@@ -33,8 +33,8 @@ VS Code copies .env into each terminal when the terminal opens. After changing .
 | Profile | Hardware | Main model | Used for | Data allowed | Cost |
 |---|---|---|---|---|---|
 | Mac | MacBook Air M2, 16 GB, project on the 2 TB SSD | Qwen3.5-9B (vision, 4-bit GGUF) | Daily building, private documents, local API, UI, MLflow, Qdrant | Private and public | Free |
-| GPU (main) | Google Colab free (T4, 16 GB, not guaranteed) | Qwen3.5-9B at higher precision through vLLM | Heavy evaluation, judge runs, parser and audio comparisons | Public only | Free, dynamic limits |
-| GPU (backup) | Kaggle free (P100 or 2 x T4 = 32 GB) | Qwen3.8-27B if it runs well on 2 x T4 | Jobs needing 32 GB, load tests, backup when Colab has no GPU | Public only | Free, weekly quota |
+| GPU (main) | Kaggle free (2 x T4 = 32 GB) | Qwen3.5-9B in full 16-bit through vLLM. Qwen3.8-27B in 4-bit if it runs well | Heavy evaluation, judge runs, parser and audio comparisons, jobs needing 32 GB, load tests | Public only | Free, weekly quota |
+| GPU (backup) | Google Colab free (T4, 16 GB, not guaranteed) | Qwen3.5-9B in 8-bit | Jobs that fit 16 GB when the Kaggle quota is used up or Kaggle is unavailable | Public only | Free, dynamic limits |
 | Demo | Hugging Face ZeroGPU Space | Qwen3.5-9B through Transformers (tested in 1.8) | Live public demo | Public sample documents only | Free, daily visitor quota |
 | CI | GitHub Actions standard runner (CPU) | Qwen3.5-0.8B for smoke tests | Tests on every push | Public test fixtures only | Free (public repo) |
 | Company server | Company Linux GPU server | Qwen3.8-27B or larger | Future company use | Company data inside their network | Paid by the company |
@@ -46,13 +46,13 @@ VS Code copies .env into each terminal when the terminal opens. After changing .
 | Writing code, tests, API, UI | Mac | Full stack runs locally |
 | Anything with private documents | Mac only | Privacy rule V |
 | Small public experiments (dev sets, single route checks) | Mac | Fast enough, no upload needed |
-| Building knowledge graphs for large public corpora | Colab free | Graph extraction calls the model for every chunk |
+| Building knowledge graphs for large public corpora | Kaggle free | Graph extraction calls the model for every chunk |
 | Full test-set runs in the Mac profile | Mac (overnight, resumable jobs) | Measures what the group will really use |
-| GPU-profile evaluation, judge runs, large public corpora | Colab free | GPU speed for public data |
-| Parser and speech model comparisons on many pages or hours | Colab free | GPU speed |
+| GPU-profile evaluation, judge runs, large public corpora | Kaggle free | GPU speed for public data |
+| Parser and speech model comparisons on many pages or hours | Kaggle free | GPU speed |
 | Anything needing more than 16 GB GPU memory (27B test, load test) | Kaggle free (2 x T4) | Only free option with 32 GB |
-| Colab has no GPU available | Kaggle free | Backup |
+| Kaggle quota used up or Kaggle unavailable | Colab free (jobs that fit 16 GB) | Backup |
 | Live demo | ZeroGPU Space | Free GPU for visitors |
-| SSD unavailable | Colab (code and public data only) or a temporary clone on the Mac's internal disk | See section 6.4 |
+| SSD unavailable | Kaggle or Colab (code and public data only) or a temporary clone on the Mac's internal disk | See section 6.4 |
 
-Rule of thumb: private data → Mac. Needs a GPU and the data is public → Colab. Needs more than 16 GB GPU memory → Kaggle.
+Rule of thumb: private data → Mac. Needs a GPU and the data is public → Kaggle. Kaggle quota used up → Colab, for jobs that fit 16 GB.
