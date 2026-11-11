@@ -1,0 +1,72 @@
+# Model and server candidates for the GPU smoke test on Kaggle (main) and Colab (backup).
+# Every download is pinned: model files by Hugging Face revision and SHA-256, the llama.cpp
+# build by release and SHA-256, vLLM by version. The measured winner moves into the gpu
+# profile of models.yaml. Public files only, so no token is needed.
+
+servers:
+  llama_cpp:
+    release: b11960
+    # Linux CUDA 12.8 build of the same release as the Mac and CI. The cudart archive holds
+    # the CUDA runtime libraries and is used only when the notebook does not provide them
+    files:
+      llama-b11960-bin-ubuntu-cuda-12.8-x64.tar.gz: 64d57beb9abb637c177c6afb313760a0c0782224cac71e74869eed5b8f9a1ea4
+      cudart-llama-b11960-bin-ubuntu-cuda-12.8-x64.tar.gz: 7c4d5974bd39649df649649e5d71950688a70e37aaae00bf11afbb656ea2cc56
+  vllm:
+    version: 0.33.0
+
+candidates:
+  # Kaggle 2 x T4: Qwen3.5-9B in full 16-bit with each server
+  kaggle-vllm-9b-16bit:
+    platform: kaggle
+    server: vllm
+    source: Qwen/Qwen3.5-9B
+    revision: c202236235762e1c871ad0ccb60c8ee5ba337b9a
+    # The T4 has no bf16 math, so vLLM runs the bf16 weights as fp16
+    settings: {dtype: float16, gpus: 2}
+    files:
+      model.safetensors-00001-of-00004.safetensors: db6f444b43d318c92f360a13a25561a6a65b10c0631b8ed305a426dbaa6c380e
+      model.safetensors-00002-of-00004.safetensors: 31c7d7e2dd5d207840b31cc59083c8f4c4718959149e0358c0364052bb9a0330
+      model.safetensors-00003-of-00004.safetensors: 7ec36ba3a4176a44c3c0876ad80c56a2f70c84bf008d82e9501df642f17dadec
+      model.safetensors-00004-of-00004.safetensors: b62b0c4cd7e44edee103ee8f4fe225f246d5e768e07bfd5f25b63a8aa1fdd0c6
+  kaggle-llamacpp-9b-16bit:
+    platform: kaggle
+    server: llama_cpp
+    source: unsloth/Qwen3.5-9B-GGUF
+    revision: 3885219b6810b007914f3a7950a8d1b469d598a5
+    # No f16 file is published. llama.cpp keeps the bf16 weights and computes in fp32 on the T4
+    settings: {gpus: 2}
+    files:
+      Qwen3.5-9B-BF16.gguf: daebe40eeea7057c1cdf35ac56d13f507d8bf12171bbb7a6b6b0d3f05439159a
+
+  # Kaggle 2 x T4: Qwen3.8-27B in 4-bit, run with the server that wins the 9B test. A vLLM
+  # file is pinned here only if vLLM wins
+  kaggle-llamacpp-27b-4bit:
+    platform: kaggle
+    server: llama_cpp
+    source: unsloth/Qwen3.8-27B-GGUF
+    revision: ce331efc48d5722b4b8041f72793e530eae18d9b
+    settings: {gpus: 2}
+    files:
+      Qwen3.8-27B-UD-Q4_K_M.gguf: 1bce504dfecd84153666928a41d8a66706f0158d3a317bc5196b72819d7dc529
+
+  # Colab 1 x T4 (backup): Qwen3.5-9B in 8-bit with each server
+  colab-llamacpp-9b-8bit:
+    platform: colab
+    server: llama_cpp
+    source: unsloth/Qwen3.5-9B-GGUF
+    revision: 3885219b6810b007914f3a7950a8d1b469d598a5
+    settings: {gpus: 1}
+    files:
+      Qwen3.5-9B-Q8_0.gguf: 809626574d0cb43d4becfa56169980da2bb448f2299270f7be443cb89d0a6ae4
+  colab-vllm-9b-8bit:
+    platform: colab
+    server: vllm
+    source: Qwen/Qwen3.5-9B
+    revision: c202236235762e1c871ad0ccb60c8ee5ba337b9a
+    # vLLM turns the official weights into 8-bit while it loads them (bitsandbytes)
+    settings: {dtype: float16, gpus: 1, quantization: bitsandbytes}
+    files:
+      model.safetensors-00001-of-00004.safetensors: db6f444b43d318c92f360a13a25561a6a65b10c0631b8ed305a426dbaa6c380e
+      model.safetensors-00002-of-00004.safetensors: 31c7d7e2dd5d207840b31cc59083c8f4c4718959149e0358c0364052bb9a0330
+      model.safetensors-00003-of-00004.safetensors: 7ec36ba3a4176a44c3c0876ad80c56a2f70c84bf008d82e9501df642f17dadec
+      model.safetensors-00004-of-00004.safetensors: b62b0c4cd7e44edee103ee8f4fe225f246d5e768e07bfd5f25b63a8aa1fdd0c6
