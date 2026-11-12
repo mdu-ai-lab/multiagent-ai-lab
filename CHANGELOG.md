@@ -31,6 +31,7 @@ Versions are tagged at the end of each phase (WORK_PLAN.md rule G).
 
 ### Changed
 
+- GPU smoke test: both vLLM candidates now allow at most 16 requests at once (max_num_seqs in configs/gpu_candidates.yaml). On Kaggle's 2 x T4, vLLM 0.33.0 refused to start Qwen3.5-9B with its default of 256, because Qwen3.5 needs one state block per running request and only 217 fit. When a server stops or is not ready in time, the error now shows the last 100 lines of its log. The progress lines now appear in the notebook at once.
 - Plan: the GPU profile server and results (D44). The smoke test compares vLLM and llama.cpp b11960 on Kaggle and the measured results decide. GPU jobs save checkpoints and write result bundles, which make pull-inbox imports into the Mac's MLflow through ops/import_runs.py.
 - Plan: Kaggle free (2 x T4, 32 GB) is the main cloud GPU and Google Colab free (1 x T4) the backup for jobs that fit 16 GB (D10). The GPU profile models fit the GPU memory: Qwen3.5-9B in full 16-bit and Qwen3.8-27B in 4-bit on Kaggle, Qwen3.5-9B in 8-bit on the Colab backup (D11). The docs follow the plan.
 - Plan: model work at upload stays outside the agent harness (figures.py, sections.py and kg.py call the model client directly), the injection classifier becomes an engine (injection.py), sections.py makes the section summaries at upload and the import test of the harness starts with the first chat endpoint. The models endpoint reads configs/models.yaml. R35 names every harness part. The handover records the harness redesign.

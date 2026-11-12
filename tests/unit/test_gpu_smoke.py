@@ -194,6 +194,7 @@ def test_server_commands_follow_the_pinned_settings():
     assert command[:3] == ["vllm", "serve", "/m"]
     assert command[command.index("--tensor-parallel-size") + 1] == "2"
     assert command[command.index("--dtype") + 1] == "float16"
+    assert command[command.index("--max-num-seqs") + 1] == "16"
     assert "--quantization" not in command
 
     name = "colab-vllm-9b-8bit"
@@ -201,6 +202,7 @@ def test_server_commands_follow_the_pinned_settings():
     command = gpu_smoke.server_command(name, candidate, model, Path("vllm"), 8080)
     assert command[command.index("--quantization") + 1] == "fp8"
     assert command[command.index("--tensor-parallel-size") + 1] == "1"
+    assert command[command.index("--max-num-seqs") + 1] == "16"
 
 
 def test_unknown_candidate_is_reported():
@@ -316,11 +318,13 @@ def test_the_whole_job_writes_a_bundle(tmp_path, monkeypatch):
 
 
 def test_a_server_that_stops_fails_at_once(tmp_path):
+    # The error shows the end of the server log, which holds the reason
+    log = tmp_path / "server.log"
     server = gpu_smoke.start_server(
-        [sys.executable, "-c", "raise SystemExit(3)"], {}, tmp_path / "server.log"
+        [sys.executable, "-c", "print('no GPU found'); raise SystemExit(3)"], {}, log
     )
-    with pytest.raises(gpu_smoke.GpuSmokeError, match="exit code 3"):
-        gpu_smoke.wait_until_ready("http://127.0.0.1:9/v1", server, timeout=60)
+    with pytest.raises(gpu_smoke.GpuSmokeError, match=r"exit code 3[\s\S]*no GPU found"):
+        gpu_smoke.wait_until_ready("http://127.0.0.1:9/v1", server, timeout=60, log=log)
 
 
 def test_gpu_profile_records_runs_in_a_database_file(tmp_path, monkeypatch):

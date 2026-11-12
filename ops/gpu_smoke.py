@@ -245,7 +245,7 @@ def server_command(
     command = [
         str(program), "serve", str(model), "--served-model-name", name, *common,
         "--dtype", settings["dtype"], "--tensor-parallel-size", str(settings["gpus"]),
-        "--max-model-len", str(CONTEXT_SIZE),
+        "--max-model-len", str(CONTEXT_SIZE), "--max-num-seqs", str(settings["max_num_seqs"]),
     ]  # fmt: skip
     if "quantization" in settings:
         command += ["--quantization", settings["quantization"]]
@@ -257,18 +257,31 @@ def start_server(command: list[str], env: dict[str, str], log: Path) -> subproce
         return subprocess.Popen(command, stdout=out, stderr=subprocess.STDOUT, env=env)
 
 
-def wait_until_ready(base_url: str, server: subprocess.Popen[bytes], timeout: float) -> float:
-    # Returns the seconds the server needed. Fails at once if the server program stops
+def last_lines(log: Path, count: int) -> str:
+    return "\n".join(log.read_text(errors="replace").splitlines()[-count:])
+
+
+def wait_until_ready(
+    base_url: str, server: subprocess.Popen[bytes], timeout: float, log: Path
+) -> float:
+    # Returns the seconds the server needed. Fails at once if the server program stops.
+    # The error ends with the last lines of the server log, which hold the reason
     start = time.perf_counter()
     while time.perf_counter() - start < timeout:
         if server.poll() is not None:
-            raise GpuSmokeError(f"the server stopped with exit code {server.returncode}")
+            raise GpuSmokeError(
+                f"the server stopped with exit code {server.returncode}. "
+                f"The end of its log:\n{last_lines(log, 100)}"
+            )
         try:
             with urllib.request.urlopen(f"{base_url.removesuffix('/v1')}/health", timeout=5):
                 return time.perf_counter() - start
         except OSError:
             time.sleep(5)
-    raise GpuSmokeError(f"the server was not ready after {timeout:.0f} s")
+    raise GpuSmokeError(
+        f"the server was not ready after {timeout:.0f} s. The end of its log:\n"
+        f"{last_lines(log, 100)}"
+    )
 
 
 def stop_server(server: subprocess.Popen[bytes]) -> None:
@@ -422,9 +435,10 @@ def main() -> int:
         )
     check_driver(gpus["gpu.driver"], servers[candidate["server"]].get("min_driver"))
     space = check_disk(pinned_downloads(candidate, servers, work), work)
-    print(f"Disk check passed: {space / 1e9:.1f} GB needed in {work}")
+    # Progress lines are flushed, so a notebook shows each one at once and not only at the end
+    print(f"Disk check passed: {space / 1e9:.1f} GB needed in {work}", flush=True)
 
-    print(f"Downloading and checking the files of {args.candidate}")
+    print(f"Downloading and checking the files of {args.candidate}", flush=True)
     download_start = time.perf_counter()
     model = prepare_model(candidate, work)
     env = dict(os.environ)
@@ -451,12 +465,12 @@ def main() -> int:
 
     log = work / f"server_{args.candidate}.log"
     command = server_command(args.candidate, candidate, model, program, args.port)
-    print("Starting:", " ".join(command))
+    print("Starting:", " ".join(command), flush=True)
     server = start_server(command, env, log)
     try:
         base_url = f"http://127.0.0.1:{args.port}/v1"
-        load_s = wait_until_ready(base_url, server, args.ready_timeout)
-        print(f"Server ready after {load_s:.0f} s. Asking {len(QUESTIONS)} questions")
+        load_s = wait_until_ready(base_url, server, args.ready_timeout, log)
+        print(f"Server ready after {load_s:.0f} s. Asking {len(QUESTIONS)} questions", flush=True)
         client = OpenAIServerClient(base_url, {"main": ModelRef(name=args.candidate)})
         checkpoint = work / f"answers_{args.candidate}.jsonl"
         records = run_questions(client, checkpoint)
@@ -484,7 +498,7 @@ def main() -> int:
         "python": platform.python_version(),
     }
     tail = work / f"server_{args.candidate}_last_lines.log"
-    tail.write_text("\n".join(log.read_text(errors="replace").splitlines()[-200:]) + "\n")
+    tail.write_text(last_lines(log, 200) + "\n")
     files = [checkpoint, tail]
     if candidate["server"] == "vllm":
         files.append(package_list(program, work / f"packages_{args.candidate}.txt"))
