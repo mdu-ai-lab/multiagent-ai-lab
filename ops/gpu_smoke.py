@@ -526,7 +526,8 @@ def main() -> int:
     files = [checkpoint, tail]
     if candidate["server"] == "vllm":
         files.append(package_list(program, work / f"packages_{args.candidate}.txt"))
-    with tracing.run(ROUTE, run_name=args.candidate) as run_id:
+    # The candidate records its own model, which can differ from the gpu profile's model
+    with tracing.run(ROUTE, run_name=args.candidate, profile_models=False) as run_id:
         mlflow.log_params(params)
         tracing.log_results(metrics, files=files)
     bundle = export_bundle(run_id, work / "bundles")

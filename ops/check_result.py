@@ -50,6 +50,32 @@ def file_at_commit(commit: str, path: str) -> bytes | None:
     return done.stdout if done.returncode == 0 else None
 
 
+def candidate_check(
+    candidate: str, params: dict[str, str], read_file: Callable[[str], bytes | None], differs: str
+) -> Check:
+    # A GPU smoke test run records the model of its candidate in configs/gpu_candidates.yaml,
+    # which can differ from the models of its profile
+    content = read_file("configs/gpu_candidates.yaml")
+    candidates = (yaml.safe_load(content) or {}).get("candidates", {}) if content else {}
+    if candidate not in candidates:
+        return Check(FAIL, "candidate model", f"{candidate} not in configs/gpu_candidates.yaml")
+    entry = candidates[candidate]
+    expected = {
+        "model.source": f"{entry['source']}@{entry['revision']}",
+        "model.files": ", ".join(
+            f"{name}={digest[:12]}" for name, digest in sorted(entry["files"].items())
+        ),
+    }
+    wrong = [
+        f"{key} recorded {params.get(key) or 'none'}, pinned {value}"
+        for key, value in expected.items()
+        if params.get(key) != value
+    ]
+    if wrong:
+        return Check(differs, "candidate model", "; ".join(wrong))
+    return Check(OK, "candidate model", f"{expected['model.source']}: {expected['model.files']}")
+
+
 def check_run(
     tags: dict[str, str],
     params: dict[str, str],
@@ -125,7 +151,9 @@ def check_run(
     models_file = read_file("configs/models.yaml")
     profile = params.get("profile", "")
     profiles = yaml.safe_load(models_file) if models_file else {}
-    if profile in (profiles or {}):
+    if "candidate" in params:
+        checks.append(candidate_check(params["candidate"], params, read_file, differs))
+    elif profile in (profiles or {}):
         models = ProfileModels.model_validate(profiles[profile]).models
         for role, ref in sorted(models.items()):
             pinned = ", ".join(

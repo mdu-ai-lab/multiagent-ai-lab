@@ -65,6 +65,14 @@ def test_run_logs_git_commit_config_models_and_datasets(store):
     assert data.metrics == {"f1": 0.5}
 
 
+def test_a_run_can_leave_out_the_profile_models(store):
+    with tracing.run("chat", run_name="test", profile_models=False) as run_id:
+        tracing.log_results({"f1": 0.5})
+    params = mlflow.get_run(run_id).data.params
+    assert params["profile"] == "mac"
+    assert not any(key.startswith("model.") for key in params)
+
+
 def test_tracing_is_off_outside_the_mac_profile():
     assert tracing.setup(Settings(profile="ci")) is False
     with (

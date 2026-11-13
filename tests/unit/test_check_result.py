@@ -89,6 +89,44 @@ def test_prompt_text_that_differs_from_the_file_fails():
     assert statuses(*recorded_run(), prompt_text="Other text")["prompt qa version 1"] == "FAIL"
 
 
+CANDIDATES = (
+    f"candidates:\n  k-vllm:\n    source: s/m\n    revision: {'b' * 40}\n"
+    f"    files:\n        m.safetensors: {DIGEST}\n"
+)
+
+
+def candidate_statuses(changes):
+    # A GPU smoke test run: it records the model of its candidate, not of its profile
+    files = FILES | {"configs/gpu_candidates.yaml": CANDIDATES.encode()}
+    tags, params = recorded_run()
+    params |= {
+        "profile": "gpu",
+        "candidate": "k-vllm",
+        "model.source": f"s/m@{'b' * 40}",
+        "model.files": f"m.safetensors={DIGEST[:12]}",
+    } | changes
+    checks = check_result.check_run(tags, params, True, files.get, lambda name, version: PROMPT)
+    return {check.name: check.status for check in checks}
+
+
+def test_a_gpu_smoke_run_is_checked_against_its_candidate():
+    result = candidate_statuses({})
+    assert result["candidate model"] == "OK"
+    assert "models" not in result
+
+
+@pytest.mark.parametrize(
+    "change",
+    [
+        {"model.files": "m.safetensors=000000000000"},
+        {"model.source": f"s/other@{'b' * 40}"},
+        {"candidate": "unknown"},
+    ],
+)
+def test_a_gpu_smoke_run_with_another_model_fails(change):
+    assert candidate_statuses(change)["candidate model"] == "FAIL"
+
+
 def test_uncommitted_changes_turn_differences_into_warnings():
     tags, params = recorded_run(git_dirty="true", git_changes="123456789abc")
     params["config.models.yaml"] = "000000000000"

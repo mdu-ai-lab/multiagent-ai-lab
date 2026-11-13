@@ -316,6 +316,9 @@ def test_the_whole_job_writes_a_bundle(tmp_path, monkeypatch):
     assert data["metrics"]["gpu_hours"] > 0
     assert data["params"]["server.version"] == "b11960"
     assert data["params"]["gpu.count"] == "2"
+    # The run records the candidate's model, not the models of the gpu profile
+    assert data["params"]["model.source"].startswith("unsloth/Qwen3.5-9B-GGUF@")
+    assert not any(key.startswith("model.main") for key in data["params"])
     files = sorted(path.name for path in (bundle / "files").iterdir())
     assert files == [
         "answers_kaggle-llamacpp-9b-16bit.jsonl",

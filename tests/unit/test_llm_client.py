@@ -117,6 +117,24 @@ def test_ci_model_is_pinned_to_one_file():
     assert len(ref.files) == 1
 
 
+def test_gpu_profile_is_a_pinned_kaggle_candidate():
+    # The gpu profile names the candidate in configs/gpu_candidates.yaml that serves it, with
+    # the same model files, so a GPU job starts exactly the measured server and model
+    path = PROJECT_ROOT / "configs" / "gpu_candidates.yaml"
+    candidates = yaml.safe_load(path.read_text())["candidates"]
+    gpu = llm_client.load_models()["gpu"]
+    assert gpu.backend == "openai_server"
+    assert set(gpu.models) == {"main"}
+    ref = gpu.models["main"]
+    candidate = candidates[ref.name]
+    assert candidate["platform"] == "kaggle"
+    assert (ref.source, ref.revision, ref.files) == (
+        candidate["source"],
+        candidate["revision"],
+        candidate["files"],
+    )
+
+
 def test_llama_swap_loads_exactly_the_pinned_files():
     # The two config files must name the same model files, from the pinned revision
     swap = yaml.safe_load((PROJECT_ROOT / "configs" / "llama-swap.yaml").read_text())

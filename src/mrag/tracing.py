@@ -322,10 +322,12 @@ def run(
     run_name: str | None = None,
     datasets: dict[str, str] | None = None,
     publish: bool = False,
+    profile_models: bool = True,
 ) -> Iterator[str]:
     # One experiment run, for example an evaluation. Yields the run ID. publish=True only
     # for runs on public test sets: their metrics go to GitHub and the dashboard. The run
-    # name is published too, so it must not contain private information
+    # name is published too, so it must not contain private information. profile_models=False
+    # for a run that records its own model, for example a GPU smoke test of a candidate
     if not _enabled:
         raise TracingError("MLflow runs are only logged in the mac profile")
     # Tags and parameters come from the same snapshot as the pipeline version
@@ -338,7 +340,8 @@ def run(
         experiment_id=experiment_id(route), run_name=run_name, tags=tags
     ) as active:
         params = {key: value for key, value in _pipeline_parts.items() if key not in git_parts}
-        params.update(model_params(_profile))
+        if profile_models:
+            params.update(model_params(_profile))
         params.update({f"dataset.{name}": version for name, version in (datasets or {}).items()})
         mlflow.log_params(params)
         yield active.info.run_id
