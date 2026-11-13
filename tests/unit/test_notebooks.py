@@ -5,6 +5,8 @@
 import ast
 import json
 import re
+import subprocess
+import sys
 
 import pytest
 import yaml
@@ -34,6 +36,33 @@ def settings(notebook):
                 except ValueError:
                     pass
     return values
+
+
+def helper(notebook, name):
+    # One function from the settings cell, defined on its own
+    source = "".join(notebook["cells"][1]["source"])
+    (node,) = [
+        node
+        for node in ast.parse(source).body
+        if isinstance(node, ast.FunctionDef) and node.name == name
+    ]
+    namespace = {"subprocess": subprocess}
+    # Runs only this repository's own notebook code, which is what the test checks
+    exec(compile(ast.Module(body=[node], type_ignores=[]), "cell 2", "exec"), namespace)  # noqa: S102
+    return namespace[name]
+
+
+@pytest.mark.parametrize("platform", PLATFORMS)
+def test_run_shows_the_program_output_and_stops_on_a_failure(platform, capsys):
+    # A program writes straight to the output, which Colab did not show. run() must read it
+    # and print it, so it is captured here like any other print of the notebook. Each text
+    # is joined by the program, so the command that run() shows does not contain it
+    run = helper(load(platform), "run")
+    run([sys.executable, "-c", "import os; os.write(1, b'written ' + b'by the program\\n')"])
+    assert "written by the program" in capsys.readouterr().out
+    with pytest.raises(subprocess.CalledProcessError):
+        run([sys.executable, "-c", "import sys; sys.exit('the reason ' + 'it failed')"])
+    assert "the reason it failed" in capsys.readouterr().out
 
 
 @pytest.mark.parametrize("platform", PLATFORMS)

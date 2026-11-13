@@ -287,15 +287,13 @@ def test_the_whole_job_writes_a_bundle(tmp_path, monkeypatch):
     monkeypatch.setattr(gpu_smoke, "remote_size", lambda url: 1)
     gpus = {"gpu.count": "2", "gpu.names": "T4; T4", "gpu.driver": "580.82.07", "gpu.cuda": "13.0"}
     monkeypatch.setattr(gpu_smoke, "gpu_info", lambda: gpus)
-    with socket.socket() as probe:
-        probe.bind(("127.0.0.1", 0))
-        port = probe.getsockname()[1]
     work = tmp_path / "work"
+    # No --port: the server gets a free port, as on Kaggle and Colab
     monkeypatch.setattr(
         sys,
         "argv",
         ["gpu_smoke.py", "--candidate", "kaggle-llamacpp-9b-16bit", "--work-dir", str(work),
-         "--port", str(port), "--ready-timeout", "60"],
+         "--ready-timeout", "60"],
     )  # fmt: skip
     monkeypatch.chdir(tmp_path)
     try:
@@ -315,6 +313,17 @@ def test_the_whole_job_writes_a_bundle(tmp_path, monkeypatch):
         "answers_kaggle-llamacpp-9b-16bit.jsonl",
         "server_kaggle-llamacpp-9b-16bit_last_lines.log",
     ]
+
+
+def test_free_port_skips_a_port_in_use():
+    # A port another program listens on is never chosen. The chosen port can be used at once
+    with socket.socket() as busy:
+        busy.bind(("127.0.0.1", 0))
+        busy.listen()
+        port = gpu_smoke.free_port()
+        assert port != busy.getsockname()[1]
+        with socket.socket() as server:
+            server.bind(("127.0.0.1", port))
 
 
 def test_a_server_that_stops_fails_at_once(tmp_path):

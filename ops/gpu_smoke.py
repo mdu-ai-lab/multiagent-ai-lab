@@ -14,6 +14,7 @@ import os
 import platform
 import re
 import shutil
+import socket
 import statistics
 import subprocess
 import sys
@@ -252,6 +253,14 @@ def server_command(
     return command
 
 
+def free_port() -> int:
+    # A port no other program uses at this moment, chosen by the operating system. A fixed
+    # port can be taken: on Colab another program already listened on 8080
+    with socket.socket() as probe:
+        probe.bind(("127.0.0.1", 0))
+        return int(probe.getsockname()[1])
+
+
 def start_server(command: list[str], env: dict[str, str], log: Path) -> subprocess.Popen[bytes]:
     with log.open("ab") as out:
         return subprocess.Popen(command, stdout=out, stderr=subprocess.STDOUT, env=env)
@@ -415,7 +424,7 @@ def main() -> int:
     parser.add_argument("--candidate", required=True)
     parser.add_argument("--work-dir", type=Path, required=True)
     parser.add_argument("--vllm", default="vllm", help="the vllm program, for vLLM candidates")
-    parser.add_argument("--port", type=int, default=8080)
+    parser.add_argument("--port", type=int, help="the server port. Default: a free port")
     parser.add_argument("--ready-timeout", type=float, default=1800)
     args = parser.parse_args()
 
@@ -464,11 +473,12 @@ def main() -> int:
     download_s = time.perf_counter() - download_start
 
     log = work / f"server_{args.candidate}.log"
-    command = server_command(args.candidate, candidate, model, program, args.port)
+    port = args.port or free_port()
+    command = server_command(args.candidate, candidate, model, program, port)
     print("Starting:", " ".join(command), flush=True)
     server = start_server(command, env, log)
     try:
-        base_url = f"http://127.0.0.1:{args.port}/v1"
+        base_url = f"http://127.0.0.1:{port}/v1"
         load_s = wait_until_ready(base_url, server, args.ready_timeout, log)
         print(f"Server ready after {load_s:.0f} s. Asking {len(QUESTIONS)} questions", flush=True)
         client = OpenAIServerClient(base_url, {"main": ModelRef(name=args.candidate)})
