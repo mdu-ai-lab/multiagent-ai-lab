@@ -272,16 +272,28 @@ def last_lines(log: Path, count: int) -> str:
     return "\n".join(log.read_text(errors="replace").splitlines()[-count:])
 
 
+# A line that names a Python error, for example "FileNotFoundError: ...". With 2 GPUs vLLM
+# runs one worker per GPU. A worker's error can come long before the end of the log, which
+# then only says that a worker failed
+ERROR_LINE = re.compile(r"\w*(?:Error|Exception): ")
+
+
+def first_errors(log: Path, count: int) -> str:
+    lines = log.read_text(errors="replace").splitlines()
+    return "\n".join([line for line in lines if ERROR_LINE.search(line)][:count]) or "none"
+
+
 def wait_until_ready(
     base_url: str, server: subprocess.Popen[bytes], timeout: float, log: Path
 ) -> float:
     # Returns the seconds the server needed. Fails at once if the server program stops.
-    # The error ends with the last lines of the server log, which hold the reason
+    # The error shows the first error lines and the end of the server log, which hold the reason
     start = time.perf_counter()
     while time.perf_counter() - start < timeout:
         if server.poll() is not None:
             raise GpuSmokeError(
                 f"the server stopped with exit code {server.returncode}. "
+                f"The first errors in its log:\n{first_errors(log, 5)}\n"
                 f"The end of its log:\n{last_lines(log, 100)}"
             )
         try:
@@ -290,8 +302,8 @@ def wait_until_ready(
         except OSError:
             time.sleep(5)
     raise GpuSmokeError(
-        f"the server was not ready after {timeout:.0f} s. The end of its log:\n"
-        f"{last_lines(log, 100)}"
+        f"the server was not ready after {timeout:.0f} s. The first errors in its log:\n"
+        f"{first_errors(log, 5)}\nThe end of its log:\n{last_lines(log, 100)}"
     )
 
 

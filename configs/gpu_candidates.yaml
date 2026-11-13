@@ -64,11 +64,13 @@ candidates:
     # Red Hat's 4-bit weights of the official model (W4A16 in groups of 128, made with LLM
     # Compressor). vLLM runs them with its Marlin kernel, which supports the T4. The model
     # asks for an 8-bit fp8 cache of the attention keys and values, which vLLM 0.33.0 allows
-    # only on newer GPUs than the T4, so the cache stays 16-bit. model_mtp.safetensors is
-    # left out: it holds extra layers for guessing tokens ahead, which the test does not use
+    # only on newer GPUs than the T4, so the cache stays 16-bit. vLLM 0.33.0 needs every file
+    # named in the model's weight index, so model_mtp.safetensors (extra layers for guessing
+    # tokens ahead) is pinned too, although vLLM does not use its layers here
     settings: {dtype: float16, gpus: 2, max_num_seqs: 16, kv_cache_dtype: float16}
     files:
       model.safetensors: fd5c287e3a03f30b0e53fd5fe66ec90ab5fdd94807f7f8df699cca3ae9534910
+      model_mtp.safetensors: 1d8268aa85ace093a561e3e7b63b9d390dac1cd55a90cd55b5ec509c3c9da9fe
 
   # Colab 1 x T4 (backup): Qwen3.5-9B in 8-bit with each server
   colab-llamacpp-9b-8bit:

@@ -344,6 +344,20 @@ def test_a_server_that_stops_fails_at_once(tmp_path):
         gpu_smoke.wait_until_ready("http://127.0.0.1:9/v1", server, timeout=60, log=log)
 
 
+def test_a_stopped_server_shows_the_first_error_of_a_long_log(tmp_path):
+    # With 2 GPUs a vLLM worker's error can come long before the end of the log, which then
+    # only says that a worker failed. The first error lines are shown as well
+    log = tmp_path / "server.log"
+    program = (
+        "print('FileNotFoundError: ' + 'weights missing'); "
+        "[print('worker', n) for n in range(150)]; raise SystemExit(1)"
+    )
+    server = gpu_smoke.start_server([sys.executable, "-c", program], {}, log)
+    with pytest.raises(gpu_smoke.GpuSmokeError) as error:
+        gpu_smoke.wait_until_ready("http://127.0.0.1:9/v1", server, timeout=60, log=log)
+    assert "FileNotFoundError: weights missing" in str(error.value)
+
+
 def test_gpu_profile_records_runs_in_a_database_file(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
     settings = Settings(profile="gpu", mlflow_tracking_uri=f"sqlite:///{tmp_path}/mlflow.db")
