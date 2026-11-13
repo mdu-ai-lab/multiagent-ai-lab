@@ -4,7 +4,7 @@
 |---|---|
 | Purpose | Planned security controls |
 | Status | Proposed |
-| Last updated | 2026-11-09 |
+| Last updated | 2026-11-13 |
 | Source of truth | [WORK_PLAN.md](../WORK_PLAN.md) v1.10 |
 | Related documents | [Threat model](../07-security/threat-model.md), [Non-functional requirements](../01-requirements/non-functional-requirements.md) |
 
@@ -18,7 +18,7 @@
 | Code sandbox | NFR-SEC-002 | 11.2 | Not implemented |
 | Access per collection (including graph route and notebooks) | NFR-SEC-003, BR-ACC-001 | 5.3, 12.4, 9A.4, 9B.1 | Not implemented |
 | Input limits and rate limits | NFR-SEC-004 | 12.4, 13.1 | Not implemented |
-| Secrets handling | NFR-SEC-005 | 0.1, 1.5 | Partially implemented (.env ignored by Git, login token files left out of the backup. Notebook secrets in step 1.5) |
+| Secrets handling | NFR-SEC-005 | 0.1, 1.5 | Partially implemented (.env ignored by Git, login token files left out of the backup. The GPU notebooks need no token because the repo and the models are public. A token that is ever needed comes from Kaggle Secrets or Colab Secrets) |
 | Personal data masking | NFR-SEC-006 | 12.3 | Not implemented |
 | Dependency and secret scanning | NFR-SEC-007 | 1.4 | Implemented (pip-audit on the three lock files in CI. Three setuptools advisories that cannot affect the vLLM environment are accepted for its lock only, with the reasons in ci.yml. A unit test fails once the lock has the setuptools that fixes one of them, so that exception must then be removed. GitHub's secret scanning with push protection, Dependabot alerts and security updates. Push protection not tested with a real secret) |
 | Login and tokens | FR-ADM-002, FR-API-002 | 1.10, 13.1 | Not implemented |

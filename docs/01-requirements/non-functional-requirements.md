@@ -4,7 +4,7 @@
 |---|---|
 | Purpose | Quality, security, cost and portability requirements with unique IDs |
 | Status | Proposed |
-| Last updated | 2026-11-09 |
+| Last updated | 2026-11-13 |
 | Source of truth | [WORK_PLAN.md](../WORK_PLAN.md) v1.10 |
 | Related documents | [SRS](../01-requirements/srs.md), [Security requirements](../07-security/security-requirements.md), [Performance testing](../09-testing/performance-testing.md) |
 
@@ -33,7 +33,7 @@ Numbers come from the done-when tests in WORK_PLAN.md v1.10. They are starting t
 | NFR-SEC-002 | Code runs only in a sandbox without network and with resource limits | 11.2 | Not implemented |
 | NFR-SEC-003 | Zero cross-user access leaks | 12.4 | Not implemented |
 | NFR-SEC-004 | Input limits: 50 MB per file, 1,000 pages, type checked by content, question length, request rate | 12.4 | Not implemented |
-| NFR-SEC-005 | Secrets never in Git or Google Drive | Section 6.4 | Partially implemented (.env ignored by Git, login token files left out of the backup. Notebook secrets in step 1.5) |
+| NFR-SEC-005 | Secrets never in Git or Google Drive | Section 6.4 | Partially implemented (.env ignored by Git, login token files left out of the backup. The GPU notebooks need no token because the repo and the models are public. A token that is ever needed comes from Kaggle Secrets or Colab Secrets) |
 | NFR-SEC-006 | Personal data masked in traces, logs, MLflow and exports | 12.3 | Not implemented |
 | NFR-SEC-007 | Dependency and secret scanning on every push | 1.4 | Implemented (pip-audit on the three lock files in CI. Three setuptools advisories that cannot affect the vLLM environment are accepted for its lock only, with the reasons in ci.yml. A unit test fails once the lock has the setuptools that fixes one of them, so that exception must then be removed. GitHub's secret scanning with push protection, Dependabot alerts and security updates. Push protection not tested with a real secret) |
 | NFR-REPRO-001 | Models, datasets and packages pinned by version or hash | 1.3 | Partially implemented (models, packages and the Qdrant image pinned. Datasets from 2.1) |

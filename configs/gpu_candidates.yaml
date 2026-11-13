@@ -89,6 +89,8 @@ candidates:
     # vLLM turns the official weights into 8-bit fp8 while it loads them. The T4 has no fp8
     # math, so vLLM runs them as 8-bit weights with 16-bit math (its Marlin kernel). The same
     # cap of 16 requests at once as the Kaggle vLLM candidate
+    # Measured on one T4: vLLM stopped with no memory left for its cache, so Colab jobs use
+    # llama.cpp. Kept so the comparison can be repeated with a newer vLLM
     settings: {dtype: float16, gpus: 1, quantization: fp8, max_num_seqs: 16}
     files:
       model.safetensors-00001-of-00004.safetensors: db6f444b43d318c92f360a13a25561a6a65b10c0631b8ed305a426dbaa6c380e

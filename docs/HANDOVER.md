@@ -2,6 +2,83 @@
 
 Report of the last work session. Read this after docs/WORK_PLAN.md at the start of every session.
 
+## Session 11 to 13 November 2026: free GPU profile (step 1.5)
+
+- Plan: Kaggle is the main free GPU and Colab the backup (D10, D11, 2e167e3). vLLM 0.33.0 and
+  llama.cpp b11960 are compared and GPU results travel as result bundles (D44, 44a4fa4).
+- configs/gpu_candidates.yaml pins the server builds and the model files of every candidate by
+  version, revision and SHA-256, with a unit test (3e9cf08).
+- ops/gpu_smoke.py checks the GPUs, the driver and the disk, downloads one candidate with SHA-256
+  checks, starts its server, asks five fixed public questions, saves each answer at once and
+  writes one result bundle. ops/import_runs.py adds each bundle once to the Mac's MLflow
+  (make pull-inbox) (e16339e).
+- notebooks/kaggle_gpu.ipynb and notebooks/colab_gpu.ipynb run the smoke test at a chosen commit.
+  vLLM 0.33.0 has its own locked Linux environment in ops/vllm-server (019e02c). CI's pip-audit
+  accepts three setuptools advisories for that lock only, with a test that forces each exception
+  out once its fix is in the lock (b612ea8).
+- Fixes found by the real runs:
+  - vLLM's default of 256 requests at once needed more Mamba cache blocks than 2 x T4 leave
+    (217). The cap is 16. A server that does not start shows the end of its log (7c024a4).
+  - On Colab another program already listens on port 8080 (llama-server: "couldn't bind HTTP
+    server socket"). Colab also did not show what a child program writes. The server now gets a
+    free port. The notebooks print the output of every program they run (bd17610).
+  - The 27B vLLM candidate uses RedHatAI/Qwen3.8-27B-INT4 (revision e45c27e8). The model asks for
+    an fp8 cache, which vLLM 0.33.0 allows only from compute capability 8.9, so the cache stays
+    16-bit on the T4 (b70c32a).
+  - vLLM 0.33.0 needs every file named in the weight index, so model_mtp.safetensors is pinned
+    too. With 2 GPUs the worker error came long before the last 100 log lines, so an error now
+    starts with the first error lines of the log (f2a15b5).
+  - The gpu profile names kaggle-vllm-9b-16bit. Smoke test runs record only the model of their
+    candidate. ops/check_result.py checks them against configs/gpu_candidates.yaml. Before, every
+    smoke test run failed that check with "profile gpu not in configs/models.yaml". Now all 6
+    imported runs pass every check (c989d94).
+- Results (5 fixed public questions, medians, one question at a time):
+
+| Run | Commit | GPUs | Correct | First token (s) | Tokens per s | Answer (s) | Server start (s) | Session (s) | GPU hours |
+|---|---|---|---|---|---|---|---|---|---|
+| kaggle-llamacpp-9b-16bit | b612ea8 | 2 x T4 | 5/5 | 0.555 | 23.39 | 0.691 | 135.0 | 424.2 | 0.2357 |
+| kaggle-vllm-9b-16bit | 7c024a4 | 2 x T4 | 5/5 | 0.116 | 39.37 | 0.199 | 710.1 | 1176.4 | 0.6535 |
+| kaggle-llamacpp-27b-4bit (2 runs, the second imported) | 7c024a4 | 2 x T4 | 5/5 | 0.678 | 17.51 | 0.849 | 135.0 | 502.0 | 0.2789 (first run 0.2598) |
+| kaggle-vllm-27b-4bit | f2a15b5 | 2 x T4 | 5/5 | 0.197 | 36.27 | 0.289 | 725.1 | 831.1 | 0.4617 |
+| colab-llamacpp-9b-8bit | bd17610 | 1 x T4 | 5/5 | 0.202 | 35.75 | 0.321 | 105.1 | 208.2 | 0.0578 |
+| colab-vllm-9b-8bit | bd17610 | 1 x T4 | Stopped twice: no memory left for the cache (-0.07 GiB) | | | | | | Not measured |
+
+- GPU hours are the smoke test time multiplied by the number of GPUs. Install time, idle time
+  and failed tries are not included. Measured: 1.8896 on Kaggle (both 27B llama.cpp runs counted)
+  and 0.0578 on Colab. Not measured: the first Kaggle vLLM 9B try (b612ea8), the first Kaggle
+  vLLM 27B try (b70c32a), two Colab llama.cpp tries that failed on port 8080 and two Colab vLLM
+  tries of about 20 minutes each. Kaggle's own quota display after the last run on 13 November
+  2026: 03:32 of 30 hours used. It is Kaggle's count and is higher than the smoke test time
+  above. What it includes and which days its week covers were not checked.
+- Not comparable: the Colab llama.cpp run and the Kaggle vLLM 27B run reused model files already
+  on disk from a failed try, so their download time and GPU hours are too low.
+- Memory per T4 on Kaggle: vLLM 9B 8.83 GiB for the model and 85,430 tokens of cache (20.9 full
+  requests of 4,096 tokens at once). vLLM 27B 8.89 GiB and 30,037 tokens (7.3 requests). vLLM's
+  profiling run took 397 s of the 27B start.
+- Tests: 133 unit tests passed on the Mac and in CI (run 43518202012), 2 CI model tests passed in
+  CI, 16 Mac tests passed (uv run pytest -m mac: 16 passed, 1 skipped, 135 deselected).
+  Verification numbers of all 34 Python files checked.
+
+Notes for later steps:
+- make pull-inbox is now tested with real bundles from the Drive inbox and from Kaggle. Finder
+  adds .DS_Store files to data/inbox. The import uploads every file inside a bundle's files/
+  folder, so delete them first: find data/inbox -name .DS_Store -print -delete.
+- Run each measured candidate in a fresh Kaggle or Colab session. A reused session skips
+  downloads and lowers the measured time.
+- vLLM logs "Cannot use FA version 2" as an error on the T4. It is harmless: vLLM uses another
+  attention method.
+- The vLLM lock in ops/vllm-server can be audited only on Linux or with its platform markers
+  removed.
+- Dependabot may show the three accepted setuptools advisories once the vLLM lock is on main.
+- rclone prints that its shared Google Drive client_id is retired during 2026. make backup and
+  make pull-inbox need an own client_id before then.
+- Push protection is still not tested with a real secret.
+- Before the next pull request to main, merge origin/main into phase-1.
+
+### Exact next step
+
+1. Step 1.6 (API-first skeleton), shown to the owner for approval first.
+
 ## Session 7 to 9 November 2026: CI pipeline (step 1.4)
 
 - Plan D42 (c6f1765). Code checks pinned in the dev group (b102773): ruff 0.17.3 with its default

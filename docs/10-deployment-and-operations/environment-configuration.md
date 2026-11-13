@@ -4,7 +4,7 @@
 |---|---|
 | Purpose | Planned settings and profiles |
 | Status | Proposed |
-| Last updated | 2026-11-11 |
+| Last updated | 2026-11-13 |
 | Source of truth | [WORK_PLAN.md](../WORK_PLAN.md) v1.10 |
 | Related documents | [Secrets management](../07-security/secrets-management.md), [Deployment architecture](../04-architecture/deployment-architecture.md) |
 
@@ -33,8 +33,8 @@ VS Code copies .env into each terminal when the terminal opens. After changing .
 | Profile | Hardware | Main model | Used for | Data allowed | Cost |
 |---|---|---|---|---|---|
 | Mac | MacBook Air M2, 16 GB, project on the 2 TB SSD | Qwen3.5-9B (vision, 4-bit GGUF) | Daily building, private documents, local API, UI, MLflow, Qdrant | Private and public | Free |
-| GPU (main) | Kaggle free (2 x T4 = 32 GB) | Qwen3.5-9B in full 16-bit through the server chosen in 1.5 (D44). Qwen3.8-27B in 4-bit if it runs well | Heavy evaluation, judge runs, parser and audio comparisons, jobs needing 32 GB, load tests | Public only | Free, weekly quota |
-| GPU (backup) | Google Colab free (T4, 16 GB, not guaranteed) | Qwen3.5-9B in 8-bit | Jobs that fit 16 GB when the Kaggle quota is used up or Kaggle is unavailable | Public only | Free, dynamic limits |
+| GPU (main) | Kaggle free (2 x T4 = 32 GB) | Qwen3.5-9B in full 16-bit through vLLM 0.33.0 (chosen in 1.5, D44). Qwen3.8-27B in 4-bit tested and kept outside the profile until an evaluation shows it is needed (D44) | Heavy evaluation, judge runs, parser and audio comparisons, jobs needing 32 GB, load tests | Public only | Free, weekly quota |
+| GPU (backup) | Google Colab free (T4, 16 GB, not guaranteed) | Qwen3.5-9B in 8-bit through llama.cpp b11960 (vLLM did not fit one T4, D44) | Jobs that fit 16 GB when the Kaggle quota is used up or Kaggle is unavailable | Public only | Free, dynamic limits |
 | Demo | Hugging Face ZeroGPU Space | Qwen3.5-9B through Transformers (tested in 1.8) | Live public demo | Public sample documents only | Free, daily visitor quota |
 | CI | GitHub Actions standard runner (CPU) | Qwen3.5-0.8B for smoke tests | Tests on every push | Public test fixtures only | Free (public repo) |
 | Company server | Company Linux GPU server | Qwen3.8-27B or larger | Future company use | Company data inside their network | Paid by the company |
