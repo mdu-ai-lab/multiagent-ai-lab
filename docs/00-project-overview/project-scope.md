@@ -47,7 +47,7 @@
 
 | Item | Detail |
 |---|---|
-| Goal | A chat and document question-answering assistant that runs locally. Specialised agents and RAG work together so one platform can chat, answer questions over any supported file with page citations, search the web on request, summarise, extract JSON, calculate and plot from tables, and later transcribe audio |
+| Goal | A chat and document question-answering assistant that runs locally. Specialised agents and RAG work together so one platform can chat, answer questions over any supported file with page citations, search the web on request, summarise, extract JSON, calculate and plot from tables and later transcribe audio |
 | Users | The MDU university group first. Designed so companies that avoid cloud AI (for example Volvo) could run it inside their own network later |
 | Why | The 4 MDU research works showed useful ideas but none released a usable public pipeline, API or frontend |
 | Sources | Billah thesis (DVA504), Billah et al. journal article (Array), Chakravorty thesis (SAF-RAG), Wahab thesis (DVA429). Ideas are reused only where useful and cited as [Paper, Sec, page] |

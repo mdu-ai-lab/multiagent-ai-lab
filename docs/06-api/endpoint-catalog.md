@@ -4,13 +4,13 @@
 |---|---|
 | Purpose | Planned endpoints by phase |
 | Status | Proposed |
-| Last updated | 2026-11-09 |
+| Last updated | 2026-11-13 |
 | Source of truth | [WORK_PLAN.md](../WORK_PLAN.md) v1.10 |
 | Related documents | [API standards](../06-api/api-standards.md), [Modules](../03-functional-modules/README.md) |
 
 > Implementation status: Phase 0 done (project setup, search database, Mac model server, model client and backup). Later features are planned and not built yet. Test results are in docs/HANDOVER.md.
 
-No route exists yet. Only the 4 endpoints in step 1.6 are named in the plan. Paths are proposals.
+No route exists yet. The 4 endpoints of step 1.6 and their paths are decided in WORK_PLAN.md D45.
 
 | Method | Path (proposed) | Purpose | Auth | Phase | Status |
 |---|---|---|---|---|---|

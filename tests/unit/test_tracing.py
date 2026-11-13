@@ -80,7 +80,7 @@ def test_tracing_is_off_outside_the_mac_profile():
         tracing.model_call("main", "qwen3.5-9b", {}) as call,
     ):
         call.input_tokens, call.output_tokens = 2, 1
-    # Totals are still counted, but nothing goes to MLflow
+    # Totals are still counted. Nothing goes to MLflow
     assert (totals.model_calls, totals.input_tokens, totals.output_tokens) == (1, 2, 1)
     with pytest.raises(tracing.TracingError), tracing.run("chat"):
         pass

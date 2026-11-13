@@ -1,7 +1,7 @@
 # Prompts live as text files in configs/prompts/<name>.txt, so they are reviewed and backed
 # up with the code. In the mac profile every text is also a version in the MLflow prompt
 # registry: a changed file becomes a new version the first time it is loaded. Without MLflow
-# (other profiles, or the server is off) the version is the file's fingerprint.
+# (other profiles or the server off) the version is the file's fingerprint.
 # Placeholders are written {{name}}, as in MLflow.
 
 import hashlib
@@ -31,7 +31,7 @@ def fingerprint(text: str) -> str:
 class Prompt:
     name: str
     template: str
-    # MLflow version number, or "file-<fingerprint>" when MLflow is not used
+    # MLflow version number or "file-<fingerprint>" when MLflow is not used
     version: str
 
     @property

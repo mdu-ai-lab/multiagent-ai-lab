@@ -1,6 +1,6 @@
 # Writes a JSON summary of every published MLflow run into results/, for the dashboard.
-# Only runs marked with tracing.run(..., publish=True) are exported, and only their numbers
-# and versions: metrics, parameters, git commit and time. Never traces, texts or files.
+# Only runs marked with tracing.run(..., publish=True) are exported. Only their numbers
+# and versions go out: metrics, parameters, git commit and time. Never traces, texts or files.
 # Each run is written once as results/<route>/<date>_<run id>.json and never overwritten.
 # Run with: uv run python -m mrag.export_results (needs the MLflow server: make mlflow)
 
