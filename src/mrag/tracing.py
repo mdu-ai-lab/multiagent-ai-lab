@@ -90,15 +90,16 @@ _experiment_ids: dict[str, str] = {}
 _current: ContextVar[RequestTotals | None] = ContextVar("mrag_request_totals", default=None)
 
 
-def setup(settings: Settings | None = None) -> bool:
-    # Safe to call more than once. Returns True when runs and traces go to MLflow
+def setup(settings: Settings | None = None, trace: bool = True) -> bool:
+    # Safe to call more than once. Returns True when runs and traces go to MLflow.
+    # trace=False keeps the profile but sends nothing, for example while MLflow is down
     global _enabled, _profile, _tracking_uri, _pipeline_parts, _pipeline_version
     settings = settings or get_settings()
     # No usage statistics are sent to the MLflow developers
     os.environ["MLFLOW_DISABLE_TELEMETRY"] = "true"
     _profile = settings.profile
     _tracking_uri = settings.mlflow_tracking_uri
-    _enabled = settings.profile in TRACED_PROFILES
+    _enabled = trace and settings.profile in TRACED_PROFILES
     _experiment_ids.clear()
     if _enabled:
         # A running program keeps the code, configs and prompts it loaded at start, so the

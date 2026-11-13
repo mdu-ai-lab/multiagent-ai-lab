@@ -10,14 +10,14 @@
 
 > Implementation status: Phase 0 done (project setup, search database, Mac model server, model client and backup). Later features are planned and not built yet. Test results are in docs/HANDOVER.md.
 
-No route exists yet. The 4 endpoints of step 1.6 and their paths are decided in WORK_PLAN.md D45.
+The 4 endpoints of step 1.6 exist in src/mrag/api.py (WORK_PLAN.md D45). They are experimental until Phase 13 freezes the API.
 
-| Method | Path (proposed) | Purpose | Auth | Phase | Status |
+| Method | Path | Purpose | Auth | Phase | Status |
 |---|---|---|---|---|---|
-| GET | /v1/health | Service is up | None | 1.6 | Not implemented |
-| GET | /v1/version | Code and pipeline version | None | 1.6 | Not implemented |
-| GET | /v1/models | Models in the active profile, read from configs/models.yaml without a model call | Until 1.10: none. After: login | 1.6 | Not implemented |
-| POST | /v1/chat | Chat and file questions, streamed | Until 1.10: none. After: login | 1.6, 6, 7, 8 | Not implemented |
+| GET | /v1/health | Service is up | None | 1.6 | Implemented (experimental) |
+| GET | /v1/version | Code and pipeline version | None | 1.6 | Implemented (experimental) |
+| GET | /v1/models | Models in the active profile, read from configs/models.yaml without a model call | Until 1.10: none. After: login | 1.6 | Implemented (experimental) |
+| POST | /v1/chat | Chat and file questions, streamed | Until 1.10: none. After: login | 1.6, 6, 7, 8 | Implemented (experimental) |
 
 ## Capabilities planned without fixed paths
 

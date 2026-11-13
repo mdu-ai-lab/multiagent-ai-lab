@@ -2,7 +2,7 @@
 # The backup copies the whole project on the SSD to Google Drive with rclone.
 # Details: docs/10-deployment-and-operations/backup-and-recovery.md
 
-.PHONY: backup restore-test pull-inbox mlflow
+.PHONY: backup restore-test pull-inbox mlflow api
 
 # Copy the repo folder and multiagent-ai-lab-local to Drive, plus a Qdrant snapshot
 # and clean SQLite copies of the app and MLflow databases. Changed or deleted files are kept in a dated history folder
@@ -24,3 +24,8 @@ pull-inbox:
 # Stop it with Ctrl+C. Its data stays in the mlflow folder
 mlflow:
 	uv run python ops/mlflow_server.py
+
+# Start the API on this Mac only (127.0.0.1:8000), documentation at http://127.0.0.1:8000/docs.
+# Chat answers need the model server. Stop it with Ctrl+C
+api:
+	uv run uvicorn mrag.api:app --host 127.0.0.1 --port 8000
