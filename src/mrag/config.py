@@ -12,6 +12,8 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 # src/mrag/config.py -> the repo root is two folders up from src/mrag
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 
+Profile = Literal["mac", "gpu", "demo", "ci", "company"]
+
 
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(
@@ -21,7 +23,7 @@ class Settings(BaseSettings):
     )
 
     # Which machine we run on. Model backend and storage are chosen from this later
-    profile: Literal["mac", "gpu", "demo", "ci", "company"] = "mac"
+    profile: Profile = "mac"
 
     # Holds private/, public/, annotations/ and the SQLite file. A relative path is
     # read from the repo root, so commands work from any folder

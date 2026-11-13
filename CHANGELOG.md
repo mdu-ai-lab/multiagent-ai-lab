@@ -7,6 +7,7 @@ Versions are tagged at the end of each phase (WORK_PLAN.md rule G).
 
 ### Added
 
+- Agent harness settings per profile (configs/harness.yaml) and context building (src/mrag/harness/): the system prompt, the new message and as many of the newest earlier turns as fit the token budget of the profile, counted exactly with the pinned Qwen3.5 tokenizer. CI downloads the tokenizer and checks its SHA-256. fastapi, uvicorn and tokenizers are direct dependencies.
 - Plan for the API-first skeleton (D45): FastAPI under /v1 with health, version, models and a chat endpoint that streams Server-Sent Events from harness.run(), the chat history within a token budget per profile counted exactly with the pinned Qwen3.5 tokenizer and settings per profile in configs/harness.yaml.
 - Plan and docs: the free GPU profile is done. vLLM serves the gpu profile on Kaggle and llama.cpp runs on Colab, chosen from the measured smoke test results. Qwen3.8-27B in 4-bit is tested and kept outside the profile. The results, failed tries and GPU hours are in docs/HANDOVER.md.
 - gpu profile in configs/models.yaml: Qwen3.5-9B in 16-bit served by vLLM 0.33.0 on Kaggle's 2 x T4, the candidate chosen from the GPU smoke test results. A unit test keeps it in line with configs/gpu_candidates.yaml. GPU smoke test runs now record only the model of their candidate. ops/check_result.py checks such a run against its candidate in configs/gpu_candidates.yaml instead of the profile.

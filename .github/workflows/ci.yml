@@ -1,7 +1,7 @@
 # Checks every push and every pull request to main: code style, formatting, types, known
 # security holes in the pinned packages, the unit tests, the evaluation gate and one real
 # model test.
-# Free: standard GitHub-hosted runners in a public repository, and nothing is stored after a run.
+# Free: standard GitHub-hosted runners in a public repository. Nothing is stored after a run.
 name: CI
 
 on:
@@ -44,6 +44,10 @@ jobs:
 
       - name: Install the project and its dev tools from uv.lock
         run: uv sync
+
+      # The token budget counts with this pinned file, checked against its SHA-256
+      - name: Download the pinned tokenizer
+        run: uv run python -m mrag.harness.context
 
       - name: Style and common mistakes (ruff)
         run: uv run ruff check --output-format github
