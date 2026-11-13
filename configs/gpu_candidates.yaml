@@ -46,8 +46,8 @@ candidates:
     files:
       Qwen3.5-9B-BF16.gguf: daebe40eeea7057c1cdf35ac56d13f507d8bf12171bbb7a6b6b0d3f05439159a
 
-  # Kaggle 2 x T4: Qwen3.8-27B in 4-bit, run with the server that wins the 9B test. A vLLM
-  # file is pinned here only if vLLM wins
+  # Kaggle 2 x T4: Qwen3.8-27B in 4-bit. llama.cpp ran it first. vLLM won the 9B test, so
+  # the 27B also runs with vLLM
   kaggle-llamacpp-27b-4bit:
     platform: kaggle
     server: llama_cpp
@@ -56,6 +56,19 @@ candidates:
     settings: {gpus: 2}
     files:
       Qwen3.8-27B-UD-Q4_K_M.gguf: 1bce504dfecd84153666928a41d8a66706f0158d3a317bc5196b72819d7dc529
+  kaggle-vllm-27b-4bit:
+    platform: kaggle
+    server: vllm
+    source: RedHatAI/Qwen3.8-27B-INT4
+    revision: e45c27e8f463817db788d141a73a3c235a0a7c0c
+    # Red Hat's 4-bit weights of the official model (W4A16 in groups of 128, made with LLM
+    # Compressor). vLLM runs them with its Marlin kernel, which supports the T4. The model
+    # asks for an 8-bit fp8 cache of the attention keys and values, which vLLM 0.33.0 allows
+    # only on newer GPUs than the T4, so the cache stays 16-bit. model_mtp.safetensors is
+    # left out: it holds extra layers for guessing tokens ahead, which the test does not use
+    settings: {dtype: float16, gpus: 2, max_num_seqs: 16, kv_cache_dtype: float16}
+    files:
+      model.safetensors: fd5c287e3a03f30b0e53fd5fe66ec90ab5fdd94807f7f8df699cca3ae9534910
 
   # Colab 1 x T4 (backup): Qwen3.5-9B in 8-bit with each server
   colab-llamacpp-9b-8bit:

@@ -196,6 +196,7 @@ def test_server_commands_follow_the_pinned_settings():
     assert command[command.index("--dtype") + 1] == "float16"
     assert command[command.index("--max-num-seqs") + 1] == "16"
     assert "--quantization" not in command
+    assert "--kv-cache-dtype" not in command
 
     name = "colab-vllm-9b-8bit"
     candidate, _ = gpu_smoke.load_candidate(name)
@@ -203,6 +204,13 @@ def test_server_commands_follow_the_pinned_settings():
     assert command[command.index("--quantization") + 1] == "fp8"
     assert command[command.index("--tensor-parallel-size") + 1] == "1"
     assert command[command.index("--max-num-seqs") + 1] == "16"
+
+    name = "kaggle-vllm-27b-4bit"
+    candidate, _ = gpu_smoke.load_candidate(name)
+    command = gpu_smoke.server_command(name, candidate, model, Path("vllm"), 8080)
+    assert command[command.index("--kv-cache-dtype") + 1] == "float16"
+    assert command[command.index("--tensor-parallel-size") + 1] == "2"
+    assert "--quantization" not in command
 
 
 def test_unknown_candidate_is_reported():

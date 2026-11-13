@@ -250,6 +250,8 @@ def server_command(
     ]  # fmt: skip
     if "quantization" in settings:
         command += ["--quantization", settings["quantization"]]
+    if "kv_cache_dtype" in settings:
+        command += ["--kv-cache-dtype", settings["kv_cache_dtype"]]
     return command
 
 
