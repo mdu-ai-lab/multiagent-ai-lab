@@ -4,11 +4,13 @@
 
 import json
 import re
+import time
 
+import anyio
 import pytest
 from fastapi.testclient import TestClient
 
-from mrag import prompts, service, tracing
+from mrag import api, prompts, service, tracing
 from mrag.api import app
 from mrag.config import Settings
 from mrag.harness import loop
@@ -115,6 +117,45 @@ def test_the_documentation_lists_the_experimental_endpoints():
     spec = client.get("/openapi.json").json()
     assert sorted(spec["paths"]) == ["/v1/chat", "/v1/health", "/v1/models", "/v1/version"]
     assert "Experimental" in spec["info"]["description"]
+
+
+class SlowClient:
+    # Writes many pieces slowly and records whether its stream was closed before the end
+    def __init__(self):
+        self.finished = self.closed = False
+
+    def chat_stream(self, messages, role="main", **options):
+        try:
+            for number in range(200):
+                time.sleep(0.02)
+                yield f"{number}\n"
+            self.finished = True
+        finally:
+            self.closed = True
+
+
+def test_a_closed_connection_closes_the_answer_at_once(monkeypatch):
+    # Runs the endpoint's response the way the web server does. The client goes away after
+    # the first answer piece
+    model = SlowClient()
+    monkeypatch.setattr(loop, "get_client", lambda: model)
+    sent = []
+
+    async def send(message):
+        sent.append(message)
+
+    async def receive():
+        while not any(b"event: delta" in message.get("body", b"") for message in sent):
+            await anyio.sleep(0.01)
+        return {"type": "http.disconnect"}
+
+    async def serve():
+        response = await api.chat(api.ChatRequest(message="Count to 200"))
+        scope = {"type": "http", "asgi": {"spec_version": "2.3"}}
+        await response(scope, receive, send)
+
+    anyio.run(serve)
+    assert model.closed and not model.finished
 
 
 def test_start_without_mlflow_turns_tracing_off(monkeypatch, caplog):
