@@ -2,6 +2,51 @@
 
 Report of the last work session. Read this after docs/WORK_PLAN.md at the start of every session.
 
+## Session 13 to 14 November 2026: API-first skeleton (step 1.6)
+
+- Plan D45 (c602718).
+- Harness settings and context building (8577855): configs/harness.yaml per profile (context
+  tokens mac 8192, gpu 4096, ci 4096, a unit test compares them with the model servers. 1024
+  answer tokens. 120 s). Tokens are counted exactly with the pinned Qwen3.5 tokenizer: one
+  tokenizer.json (SHA-256 5f9e4d49...) for Qwen3.5-9B, 2B and 0.8B, chat format included. The
+  newest earlier turns are kept within the budget. fastapi, uvicorn and tokenizers are direct
+  dependencies. CI downloads the tokenizer and checks it.
+- harness.run() (e72a2e8): events delta, done and error, the answer cap, the time limit and the
+  request trace. Found before it caused harm: FastAPI runs each step of a streamed answer in a
+  worker thread with a fresh copy of the context. A test showed the request totals were lost
+  and closing the trace crashed ("was created in a different Context"). run() keeps every step
+  in one context.
+- API (2f83650): service.py and api.py with /v1/health, /v1/version, /v1/models and /v1/chat,
+  make api on 127.0.0.1:8000. Tracing turns off with a warning when the MLflow server does not
+  answer at start, because the MLflow client retries for minutes. The import test keeps the
+  layers apart and was checked against two deliberately wrong imports.
+- Disconnect fix (4ede663): with FastAPI's own event streaming a closed connection never reached
+  our code. After Ctrl+C the model kept writing (to 117 of 200) and the trace lasted 417 s. The
+  endpoint now builds its own stream and closes the answer when the connection closes: the trace
+  lasted 3.9 s with mrag.stopped_early true. Checked first on a separate test server (closed
+  0.04 s after the disconnect), then through the real API on the Mac.
+- Real checks on the Mac: llama.cpp counted 71 prompt tokens for a chat request and our count
+  was 71. A Mac test with Swedish, an emoji, extra spaces and earlier turns gives the same count
+  as llama.cpp. The early-stop check records its trace in the integration-test experiment.
+- Tests: 165 unit tests passed on the Mac and in CI (run 43534236718), 2 CI model tests passed
+  in CI, 19 Mac tests passed (uv run pytest -m mac: 19 passed, 1 skipped). Verification numbers
+  of all 47 Python files checked.
+
+Notes for later steps:
+- Not measured yet: the answer cap of 1024 tokens (the model client's default) and the time
+  limit of 120 s (docs/06-api/error-handling.md). Steps 6.1 and 7.4 measure them.
+- No input size limit beyond the token budget (12.4). No login until 1.10: the API listens on
+  127.0.0.1 only.
+- The stream sends no keep-alive comments. That matters only behind a proxy.
+- Several chats at the same time are not tested (15.4). What happens when MLflow stops while the
+  API runs is not checked.
+- A new computer downloads the tokenizer once: uv run python -m mrag.harness.context.
+- Before the next pull request to main, merge origin/main into phase-1.
+
+### Exact next step
+
+1. Step 1.7 (live dashboard), shown to the owner for approval first.
+
 ## Session 11 to 13 November 2026: free GPU profile (step 1.5)
 
 - Plan: Kaggle is the main free GPU and Colab the backup (D10, D11, 2e167e3). vLLM 0.33.0 and

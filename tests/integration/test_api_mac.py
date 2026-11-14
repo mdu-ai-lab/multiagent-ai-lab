@@ -16,6 +16,8 @@ from mrag.llm_client import get_client
 
 SETTINGS = get_settings()
 QUESTION = "What is the capital of Sweden? Answer in one short sentence."
+# Checks go to their own experiment, apart from the real chats
+ROUTE = "integration-test"
 
 
 def reachable(url):
@@ -79,7 +81,10 @@ def test_the_api_streams_a_real_answer():
 def test_closing_the_stream_stops_the_model_call():
     assert tracing.setup(SETTINGS)
     try:
-        events = service.chat("Count slowly from 1 to 200, one number per line.", [])
+        events = harness.run(
+            harness.Request("Count slowly from 1 to 200, one number per line.", route=ROUTE),
+            {ROUTE: service.chat_route},
+        )
         assert isinstance(next(events), harness.Delta)
         events.close()
         trace_id = mlflow.get_last_active_trace_id()

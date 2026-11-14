@@ -4,7 +4,7 @@
 |---|---|
 | Purpose | Links from each requirement to module, test and status |
 | Status | Proposed |
-| Last updated | 2026-11-13 |
+| Last updated | 2026-11-14 |
 | Source of truth | [WORK_PLAN.md](../WORK_PLAN.md) v1.10 |
 | Related documents | [Functional requirements](../01-requirements/functional-requirements.md), [Acceptance test cases](../09-testing/acceptance-test-cases.md) |
 
@@ -97,7 +97,7 @@ Components, entities and APIs per requirement are listed in each module document
 | R15 | Do not limit the design because of the MacBook. Use free cloud GPU when needed | Sections 6.1 and 6.2 | Planned |
 | R16 | Push to GitHub after every step | Rule G | Planned |
 | R17 | Live website that updates automatically after every push, before and after the API exists | Section 11, steps 1.7, 1.8 | Planned |
-| R18 | API at the best stage, without rework | Step 1.6 (API-first), Phase 13 hardening | Planned |
+| R18 | API at the best stage, without rework | Step 1.6 (API-first), Phase 13 hardening | Partly done (API-first skeleton in 1.6, hardening in Phase 13) |
 | R19 | CI/CD and MLOps where they have a purpose | Phase 1 | Partly done (MLflow in 1.2 and 1.3, CI in 1.4. CD for the dashboard and the demo in 1.7 and 1.8) |
 | R20 | MLflow for experiments, traces and versioning | 1.2, 1.3 | Done |
 | R21 | Testing, monitoring, documentation, version control, data management, security | 1.4, 1.9, 13.4, 16.2, section 6, Phase 12 | Partly done (version control in 1.1, CI tests and security checks in 1.4) |

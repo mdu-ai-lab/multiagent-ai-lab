@@ -1,4 +1,4 @@
-# Experiment runs and traces in MLflow (D06, D40). Runs and traces go to the local MLflow
+# Experiment runs and traces in MLflow. Runs and traces go to the local MLflow
 # server in the mac profile. In the gpu profile they go to a database file in the job's work
 # folder and reach the Mac as a result bundle (ops/gpu_smoke.py, ops/import_runs.py).
 # Every request becomes one trace: a root span with the request totals (tokens in and out,

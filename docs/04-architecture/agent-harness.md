@@ -4,7 +4,7 @@
 |---|---|
 | Purpose | Design of the agent harness package: its parts, boundaries, entry point and tests |
 | Status | Proposed |
-| Last updated | 2026-11-09 |
+| Last updated | 2026-11-14 |
 | Source of truth | [WORK_PLAN.md](../WORK_PLAN.md) v1.10 (D43, R35, steps 1.6 to 13.3) |
 | Related documents | [Backend architecture](../04-architecture/backend-architecture.md), [System architecture](../04-architecture/system-architecture.md), [Agents and memory](../03-functional-modules/agents-and-memory.md) |
 
@@ -68,7 +68,7 @@ The harness never imports a route agent, service.py or api.py. loop.py receives 
 | Done | The final answer and the request totals | 1.6 |
 | Error | The kind of error and a short message | 1.6 |
 
-FastAPI streams a normal generator (Starlette runs it in a thread pool) and the Gradio demo reads generators as well, so the API, the chat page and the demo share one call. From 7.2 the model node writes answer pieces with LangGraph's stream writer and loop.py reads the graph in its custom stream mode, which works with model clients that are not LangChain chat models. When the browser closes the stream, the generator closes, the model call stops and the trace records that it stopped early. Whether answers stream before the claim check or wait for it is decided by test in 6.3.
+The API reads the generator one event at a time in a worker thread and closes it when the connection closes. The Gradio demo reads generators as well, so the API, the chat page and the demo share one call. run() keeps every step in one context, because each step can run in another thread. From 7.2 the model node writes answer pieces with LangGraph's stream writer and loop.py reads the graph in its custom stream mode, which works with model clients that are not LangChain chat models. When the browser closes the stream, the generator closes, the model call stops and the trace records that it stopped early. Whether answers stream before the claim check or wait for it is decided by test in 6.3.
 
 ## Settings
 
