@@ -7,6 +7,7 @@ Versions are tagged at the end of each phase (WORK_PLAN.md rule G).
 
 ### Added
 
+- Plan for the chat web page (D49): Argon2id passwords, sessions on the server, a token against forged requests from other sites, a strict Content Security Policy and Markdown answers rendered on the server. Guest mode and sign-up stay off until an admin turns them on.
 - Plan and docs: the weekly health check is done. A deliberately wrong address opened one issue, a second failure added a comment to it and a normal run passed. The demo code is ready. Its Space follows once the Hugging Face account is older than 30 days.
 - Dependabot skips minor and major updates of torch and torchvision, which are pinned for ZeroGPU. The transformers tests run only when asked for, because they download a model.
 - Weekly health check workflow (.github/workflows/health.yml): every Monday at 06:00 UTC and on demand with one extra address. A failure opens one issue titled "Live site health check failed" with the report. While that issue is open, a new failure adds a comment to it.
