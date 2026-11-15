@@ -7,6 +7,7 @@ Versions are tagged at the end of each phase (WORK_PLAN.md rule G).
 
 ### Added
 
+- GitHub Pages workflow (.github/workflows/pages.yml): after CI passed on a push to main in this repository, it builds the dashboard from exactly the tested commit and publishes it. Only the publish job gets the Pages permissions.
 - Live dashboard generator (src/mrag/site_build.py): one static page with the progress per phase and step from docs/WORK_PLAN.md, the newest published results per route, profile and dataset with their trend, the architecture diagram and the changelog. Every value is HTML-escaped and the page uses no JavaScript and no files from other sites. CI builds it on every push.
 - Plan for the live dashboard (D46): a static site built from the plan, the changelog and the published results, published to GitHub Pages after CI passes on main. The status note of every document points to the current state in docs/WORK_PLAN.md instead of naming a phase.
 - Plan and docs: the API-first skeleton is done. The results, the two streaming findings and the known limits are in docs/HANDOVER.md. The Mac check of the early stop records its trace in the integration-test experiment instead of chat.
