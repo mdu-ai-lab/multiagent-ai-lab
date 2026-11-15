@@ -7,6 +7,7 @@ Versions are tagged at the end of each phase (WORK_PLAN.md rule G).
 
 ### Added
 
+- App database tables (src/mrag/db.py) with their first Alembic migration: users, browser sessions (also for guests), saved chats and their messages, feedback, app settings, the admin activity log and guest messages per day. The database itself checks that every chat has exactly one owner and that roles and states have allowed values. Deleting a user deletes their sessions and chats. All times are stored in UTC. The tests build the tables on an empty database and check that the code and the migration match.
 - Plan for the chat web page (D49): Argon2id passwords, sessions on the server, a token against forged requests from other sites, a strict Content Security Policy and Markdown answers rendered on the server. Guest mode and sign-up stay off until an admin turns them on.
 - Plan and docs: the weekly health check is done. A deliberately wrong address opened one issue, a second failure added a comment to it and a normal run passed. The demo code is ready. Its Space follows once the Hugging Face account is older than 30 days.
 - Dependabot skips minor and major updates of torch and torchvision, which are pinned for ZeroGPU. The transformers tests run only when asked for, because they download a model.
