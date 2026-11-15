@@ -33,11 +33,17 @@ Report of the last work session. Read this after docs/WORK_PLAN.md at the start 
 
 Notes for later steps:
 - Dependabot started once its settings reached main. Pull request #4 (7 Python packages, CI
-  green) is open and not merged: it raises mlflow-skinny from 3.17.2 to 3.18.0, which D40 pins.
-  Check it on the Mac before a merge.
+  green) was closed without merging: it raised mlflow and mlflow-skinny from 3.17.2 to 3.18.0,
+  whose release notes ask for mlflow db upgrade on the database. Dependabot now skips minor and
+  major MLflow updates. The upgrade comes as its own planned change: make backup, mlflow db
+  upgrade, the Mac tests and D40. The other 5 updates come back in the next weekly group pull
+  request. Dependabot's comment on #4 says that closing a group pull request does not ignore its
+  versions, so 3.18.0 can come again until the ignore rule is on main.
 - Dependabot opens its pull requests against main. After merging one, run git merge
-  origin/main on phase-1. Whether security updates always go to the default branch is not
-  checked.
+  origin/main on phase-1. Security updates always go to the default branch (GitHub's Dependabot
+  options reference). An ignore entry also stops security pull requests for that package, so
+  MLflow is ignored only for minor and major versions. The ignore rule takes effect once
+  .github/dependabot.yml reaches main.
 - The dashboard changes only with a merge to main (rule L).
 - Before the next pull request to main, merge origin/main into phase-1.
 
