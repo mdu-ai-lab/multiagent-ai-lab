@@ -2,7 +2,8 @@
 # frozen: paths and fields may still change. Start it with: make api
 # The functions live in service.py. This file only turns HTTP into calls and back.
 # Chats need a login or a guest session while an admin allows guest mode. Every changing
-# request needs the token of its session (auth.check_request_origin)
+# request needs the token of its session (auth.check_request_origin). The same app serves the
+# chat page (ui.py) and its files in /static
 
 import json
 import uuid
@@ -13,11 +14,12 @@ from importlib.metadata import version
 from typing import Annotated
 
 import anyio
-from fastapi import Depends, FastAPI, HTTPException, Response
+from fastapi import Depends, FastAPI, HTTPException, Request, Response
 from fastapi.sse import EventSourceResponse, format_sse_event
+from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field, StringConstraints
 
-from mrag import admin, auth, db, harness, service
+from mrag import admin, auth, db, harness, service, ui
 from mrag.harness.context import Turn
 
 # The name of each streamed event
@@ -43,6 +45,9 @@ app = FastAPI(
     description="Experimental: paths and fields under /v1 may still change.",
     lifespan=lifespan,
 )
+app.add_middleware(ui.SecurityHeaders)
+app.mount("/static", StaticFiles(directory=ui.STATIC), name="static")
+app.include_router(ui.router)
 
 
 def chat_owner(
@@ -77,6 +82,28 @@ class Deleted(BaseModel):
     deleted: int
 
 
+class LoginRequest(BaseModel):
+    email: str = Field(max_length=254)
+    password: str = Field(max_length=1024)
+    remember: bool = False
+
+
+class SignupRequest(BaseModel):
+    name: str = Field(max_length=100)
+    email: str = Field(max_length=254)
+    password: str = Field(max_length=1024)
+
+
+class UserInfo(BaseModel):
+    name: str
+    email: str
+    role: str
+
+    @classmethod
+    def of(cls, user: db.User) -> "UserInfo":
+        return cls(name=user.name, email=user.email, role=user.role)
+
+
 @app.get("/v1/health")
 def health() -> service.Health:
     return service.health()
@@ -85,6 +112,58 @@ def health() -> service.Health:
 @app.get("/v1/version")
 def get_version() -> service.VersionInfo:
     return service.version()
+
+
+@app.post("/v1/auth/login", dependencies=SAME_SITE_ONLY)
+def log_in(
+    body: LoginRequest,
+    request: Request,
+    response: Response,
+    s: auth.DbSession,
+    browser: auth.SessionRow,
+) -> UserInfo:
+    # A new session replaces this browser's session. Every failed login gives the same answer
+    try:
+        token, user = auth.log_in(s, body.email, body.password, body.remember, browser)
+    except auth.LoginFailed:
+        raise HTTPException(401, "login_failed") from None
+    s.commit()
+    auth.set_session_cookie(response, request, token, body.remember)
+    return UserInfo.of(user)
+
+
+@app.post("/v1/auth/signup", dependencies=SAME_SITE_ONLY)
+def sign_up(
+    body: SignupRequest,
+    request: Request,
+    response: Response,
+    s: auth.DbSession,
+    browser: auth.SessionRow,
+) -> UserInfo:
+    # Only while an admin allows sign-up. The new account is logged in at once
+    if not admin.settings(s)["signup_open"]:
+        raise HTTPException(403, "signup_closed")
+    try:
+        user = auth.create_user(s, body.email, body.name, body.password)
+    except auth.AccountError as error:
+        raise HTTPException(400, error.code) from None
+    if browser is not None:
+        s.delete(browser)
+    user.last_login_at = db.utcnow()
+    token, _ = auth.start_session(s, user)
+    s.commit()
+    auth.set_session_cookie(response, request, token, remember=False)
+    return UserInfo.of(user)
+
+
+@app.post("/v1/auth/logout", dependencies=SAME_SITE_ONLY, status_code=204)
+def log_out(request: Request, s: auth.DbSession, browser: auth.SessionRow) -> Response:
+    if browser is not None:
+        s.delete(browser)
+        s.commit()
+    response = Response(status_code=204)
+    auth.clear_session_cookie(response, request)
+    return response
 
 
 @app.get("/v1/models", dependencies=LOGGED_IN)

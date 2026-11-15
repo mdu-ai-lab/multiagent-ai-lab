@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{# The start page. The chat itself is added to this page next #}
+{% block title %}{{ t.welcome }}{% endblock %}
+{% block body_class %}auth-body{% endblock %}
+{% block body %}
+<main class="auth-main">
+  <div class="auth-card">
+    <h1>{{ t.welcome }}</h1>
+    {% if user %}
+    <p class="auth-sub">{{ tr("logged_in_as", name=user.name) }}</p>
+    <button class="btn-ghost btn-block" type="button" data-logout>{{ t.log_out }}</button>
+    {% else %}
+    <a class="btn-primary btn-block btn-large" href="/login">{{ t.log_in }}</a>
+    {% if options.signup_open %}
+    <p class="auth-switch"><a href="/signup">{{ t.sign_up }}</a></p>
+    {% endif %}
+    {% endif %}
+  </div>
+</main>
+{% endblock %}
+{% block scripts %}<script src="{{ asset('auth.js') }}"></script>{% endblock %}

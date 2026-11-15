@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="{{ lang }}" data-theme="{{ theme }}">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}{% endblock %} - {{ app_name }}</title>
+  <link rel="stylesheet" href="{{ asset('style.css') }}">
+</head>
+<body class="{% block body_class %}{% endblock %}">
+{% block body %}{% endblock %}
+{# Page settings for the scripts: JSON data, which the browser never runs as code #}
+<script type="application/json" id="page-config">{{ config | tojson }}</script>
+{% block scripts %}{% endblock %}
+</body>
+</html>

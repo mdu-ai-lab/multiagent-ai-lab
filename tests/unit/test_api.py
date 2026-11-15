@@ -144,6 +144,9 @@ def test_an_empty_message_is_rejected(member):
 def test_the_documentation_lists_the_experimental_endpoints():
     spec = client.get("/openapi.json").json()
     assert sorted(spec["paths"]) == [
+        "/v1/auth/login",
+        "/v1/auth/logout",
+        "/v1/auth/signup",
         "/v1/chat",
         "/v1/chats",
         "/v1/chats/{chat_id}",

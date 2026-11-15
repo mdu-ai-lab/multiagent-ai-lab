@@ -1,0 +1,46 @@
+{% extends "auth.html" %}
+{% block title %}{{ t.sign_up }}{% endblock %}
+{% block form %}
+<h1>{{ t.signup_title }}</h1>
+<p class="auth-sub">{{ t.signup_sub }}</p>
+
+{% if not options.signup_open %}
+<div class="alert" role="alert">{{ t.signup_closed }}</div>
+<a class="btn-primary btn-block btn-large" href="/login">{{ t.log_in }}</a>
+{% else %}
+<div class="alert" role="alert" hidden></div>
+
+<form class="form" id="signup-form" novalidate>
+  <label class="field">
+    <span>{{ t.name }}</span>
+    <input type="text" name="name" autocomplete="name" maxlength="100" required autofocus>
+  </label>
+  <label class="field">
+    <span>{{ t.email }}</span>
+    <input type="email" name="email" autocomplete="email" maxlength="254" required>
+  </label>
+  <label class="field">
+    <span>{{ t.password }}</span>
+    <div class="password">
+      <input type="password" name="password" autocomplete="new-password" minlength="15" maxlength="128" required>
+      <button class="toggle-pw" type="button">{{ t.show }}</button>
+    </div>
+    <small>{{ t.password_hint }}</small>
+  </label>
+  <label class="field">
+    <span>{{ t.confirm_password_label }}</span>
+    <div class="password">
+      <input type="password" name="confirm" autocomplete="new-password" minlength="15" maxlength="128" required>
+      <button class="toggle-pw" type="button">{{ t.show }}</button>
+    </div>
+  </label>
+  <button class="btn-primary btn-block btn-large" type="submit">{{ t.create_account }}</button>
+</form>
+
+<p class="auth-switch">{{ t.have_account }} <a href="/login">{{ t.log_in }}</a></p>
+{% endif %}
+{% if options.guest_mode %}
+<div class="auth-divider"><span>{{ t.or }}</span></div>
+<a class="btn-ghost btn-block" href="/">{{ t.continue_guest }}</a>
+{% endif %}
+{% endblock %}
