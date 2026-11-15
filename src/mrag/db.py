@@ -8,6 +8,9 @@ from functools import lru_cache
 from pathlib import Path
 from typing import Any
 
+from alembic.config import Config
+from alembic.runtime.migration import MigrationContext
+from alembic.script import ScriptDirectory
 from sqlalchemy import (
     JSON,
     CheckConstraint,
@@ -26,7 +29,7 @@ from sqlalchemy import (
 from sqlalchemy.engine import make_url
 from sqlalchemy.orm import DeclarativeBase, Mapped, Session, mapped_column, sessionmaker
 
-from mrag.config import get_settings
+from mrag.config import PROJECT_ROOT, get_settings
 
 # Fixed names for keys, indexes and checks, so later migrations can find them on every database
 NAMING = {
@@ -214,3 +217,13 @@ def get_engine() -> Engine:
 @lru_cache
 def get_sessionmaker() -> sessionmaker[Session]:
     return sessionmaker(bind=get_engine())
+
+
+def schema_is_current() -> bool:
+    # True when the database has every migration in migrations/. Reading the migration files
+    # does not run them
+    config = Config(toml_file=PROJECT_ROOT / "pyproject.toml")
+    heads = set(ScriptDirectory.from_config(config).get_heads())
+    with get_engine().connect() as connection:
+        current = set(MigrationContext.configure(connection).get_current_heads())
+    return current == heads

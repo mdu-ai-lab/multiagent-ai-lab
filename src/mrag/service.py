@@ -1,15 +1,22 @@
 # Core functions of the platform, shared by the API, the chat page, the demo and the tests.
 # Questions go to the agent harness through harness.run() with the route table below.
-# service.py never creates a model client or calls the search or a tool itself
+# service.py never creates a model client or calls the search or a tool itself.
+# Saved chats: every turn is saved in the chat tables, which harness/memory.py reads back
 
 import logging
+import uuid
 from collections.abc import Iterator
 from dataclasses import dataclass
+from datetime import datetime
 from functools import lru_cache
 from importlib.metadata import version as package_version
 
-from mrag import harness, tracing
+from sqlalchemy import ColumnElement, delete, select
+from sqlalchemy.orm import Session
+
+from mrag import admin, auth, db, harness, tracing
 from mrag.config import get_settings
+from mrag.harness import memory
 from mrag.harness.context import Turn
 from mrag.harness.loop import Events
 from mrag.llm_client import load_models
@@ -100,3 +107,165 @@ def models() -> ProfileModels:
 
 def chat(message: str, history: list[Turn]) -> Events:
     return harness.run(harness.Request(message, history), ROUTES)
+
+
+# Saved chats
+
+
+TITLE_LENGTH = 80
+
+
+class ChatNotFound(Exception):
+    # Also for a chat of someone else, so the IDs of other chats are never confirmed
+    pass
+
+
+class GuestLimitReached(Exception):
+    pass
+
+
+@dataclass(frozen=True)
+class Owner:
+    # Whose chats a request may use: a user's or a guest session's. Exactly one is set
+    user_id: int | None = None
+    session_id: int | None = None
+
+    def __post_init__(self) -> None:
+        if (self.user_id is None) == (self.session_id is None):
+            raise ValueError("an owner is a user or a guest session")
+
+    def owns(self) -> ColumnElement[bool]:
+        if self.user_id is not None:
+            return db.Chat.user_id == self.user_id
+        return db.Chat.session_id == self.session_id
+
+
+@dataclass(frozen=True)
+class ChatSummary:
+    id: uuid.UUID
+    title: str
+    updated_at: datetime
+
+
+@dataclass(frozen=True)
+class ChatMessage:
+    id: int
+    role: str
+    content: str
+    status: str
+    created_at: datetime
+
+
+@dataclass(frozen=True)
+class ChatDetail:
+    id: uuid.UUID
+    title: str
+    updated_at: datetime
+    messages: list[ChatMessage]
+
+
+def open_database() -> None:
+    # Called when the API starts: a database without the latest migration stops the start.
+    # Sessions past their time limits are removed
+    if not db.schema_is_current():
+        raise RuntimeError("The app database is not up to date. Run: uv run alembic upgrade head")
+    with db.get_sessionmaker()() as s:
+        removed = auth.remove_expired_sessions(s)
+        s.commit()
+    log.info("Removed %d ended sessions", removed)
+
+
+def title_from(message: str) -> str:
+    # The first line of the first message
+    line = next((line.strip() for line in message.splitlines() if line.strip()), "")
+    if len(line) > TITLE_LENGTH:
+        return line[: TITLE_LENGTH - 1].rstrip() + "…"
+    return line or "New chat"
+
+
+def summary(chat: db.Chat) -> ChatSummary:
+    return ChatSummary(chat.id, chat.title, chat.updated_at)
+
+
+def list_chats(s: Session, owner: Owner) -> list[ChatSummary]:
+    query = select(db.Chat).where(owner.owns()).order_by(db.Chat.updated_at.desc(), db.Chat.id)
+    return [summary(chat) for chat in s.scalars(query)]
+
+
+def find_chat(s: Session, owner: Owner, chat_id: uuid.UUID) -> db.Chat:
+    chat = s.scalar(select(db.Chat).where(db.Chat.id == chat_id, owner.owns()))
+    if chat is None:
+        raise ChatNotFound
+    return chat
+
+
+def get_chat(s: Session, owner: Owner, chat_id: uuid.UUID) -> ChatDetail:
+    chat = find_chat(s, owner, chat_id)
+    query = select(db.Message).where(db.Message.chat_id == chat.id).order_by(db.Message.id)
+    messages = [
+        ChatMessage(row.id, row.role, row.content, row.status, row.created_at)
+        for row in s.scalars(query)
+    ]
+    return ChatDetail(chat.id, chat.title, chat.updated_at, messages)
+
+
+def rename_chat(s: Session, owner: Owner, chat_id: uuid.UUID, title: str) -> ChatSummary:
+    chat = find_chat(s, owner, chat_id)
+    chat.title = title
+    return summary(chat)
+
+
+def delete_chat(s: Session, owner: Owner, chat_id: uuid.UUID) -> None:
+    # Its messages go with it (the database deletes them)
+    s.delete(find_chat(s, owner, chat_id))
+
+
+def delete_all_chats(s: Session, owner: Owner) -> int:
+    result = s.execute(delete(db.Chat).where(owner.owns()))
+    return int(getattr(result, "rowcount", 0) or 0)
+
+
+def count_guest_message(s: Session, browser: db.BrowserSession) -> None:
+    # A guest has a limited number of messages per session. The day counts are for the admins
+    if browser.guest_messages >= admin.settings(s)["guest_limit"]:
+        raise GuestLimitReached
+    browser.guest_messages += 1
+    today = db.utcnow().date()
+    day = s.get(db.GuestDay, today)
+    if day is None:
+        s.add(db.GuestDay(day=today, messages=1))
+    else:
+        day.messages += 1
+
+
+def start_turn(
+    s: Session, owner: Owner, chat_id: uuid.UUID | None, message: str
+) -> tuple[uuid.UUID, str, list[Turn]]:
+    # Opens the chat (a new one without an ID), reads its earlier turns and saves the message.
+    # Returns the chat's ID and title and the earlier turns for the harness
+    if chat_id is None:
+        chat = db.Chat(
+            user_id=owner.user_id, session_id=owner.session_id, title=title_from(message)
+        )
+        s.add(chat)
+        s.flush()
+        history: list[Turn] = []
+    else:
+        chat = find_chat(s, owner, chat_id)
+        history = memory.history(s, chat.id)
+    memory.save_turn(s, chat.id, "user", message)
+    chat.updated_at = db.utcnow()
+    return chat.id, chat.title, history
+
+
+def finish_turn(chat_id: uuid.UUID, answer: str, status: str) -> None:
+    # Saves the answer when its stream ends: done, stopped early or failed. It has its own
+    # database session, because the request's session is closed by then
+    with db.get_sessionmaker()() as s:
+        chat = s.get(db.Chat, chat_id)
+        if chat is None:
+            # Deleted while the answer was streaming
+            return
+        memory.save_turn(s, chat_id, "assistant", answer, status)
+        chat.updated_at = db.utcnow()
+        s.commit()

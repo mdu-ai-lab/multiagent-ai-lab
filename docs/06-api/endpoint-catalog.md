@@ -10,14 +10,21 @@
 
 > Implementation status: see docs/WORK_PLAN.md, section 1 (current state). Test results are in docs/HANDOVER.md.
 
-The 4 endpoints of step 1.6 exist in src/mrag/api.py (WORK_PLAN.md D45). They are experimental until Phase 13 freezes the API.
+The endpoints below exist in src/mrag/api.py (WORK_PLAN.md D45, D49). They are experimental until Phase 13 freezes the API. "Token" means the header X-CSRF-Token with the token of the caller's session.
 
 | Method | Path | Purpose | Auth | Phase | Status |
 |---|---|---|---|---|---|
 | GET | /v1/health | Service is up | None | 1.6 | Implemented (experimental) |
 | GET | /v1/version | Code and pipeline version | None | 1.6 | Implemented (experimental) |
-| GET | /v1/models | Models in the active profile, read from configs/models.yaml without a model call | Until 1.10: none. After: login | 1.6 | Implemented (experimental) |
-| POST | /v1/chat | Chat and file questions, streamed | Until 1.10: none. After: login. Guests too while guest mode is on (D49) | 1.6, 6, 7, 8 | Implemented (experimental) |
+| GET | /v1/models | Models in the active profile, read from configs/models.yaml without a model call | Login | 1.6, 1.10 | Implemented (experimental) |
+| POST | /v1/chat | Chat and file questions, streamed. Starts a saved chat or continues one (chat_id). Events: chat, delta, then done or error | Login or a guest session while guest mode is on. Token | 1.6, 1.10, 6, 7, 8 | Implemented (experimental) |
+| GET | /v1/chats | The caller's chats, newest first | Login or a guest session while guest mode is on | 1.10 | Implemented (experimental) |
+| GET | /v1/chats/{chat_id} | One chat with its messages | Login or a guest session while guest mode is on | 1.10 | Implemented (experimental) |
+| PATCH | /v1/chats/{chat_id} | New title of 1 to 80 characters | Login or a guest session while guest mode is on. Token | 1.10 | Implemented (experimental) |
+| DELETE | /v1/chats/{chat_id} | Delete one chat with its messages | Login or a guest session while guest mode is on. Token | 1.10 | Implemented (experimental) |
+| DELETE | /v1/chats | Delete all chats of the caller | Login or a guest session while guest mode is on. Token | 1.10 | Implemented (experimental) |
+
+A chat of someone else answers 404 like a chat that does not exist, so no chat ID is ever confirmed.
 
 ## Capabilities planned without fixed paths
 

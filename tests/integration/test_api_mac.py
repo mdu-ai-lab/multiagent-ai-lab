@@ -8,7 +8,7 @@ import mlflow
 import pytest
 from fastapi.testclient import TestClient
 
-from mrag import harness, prompts, service, tracing
+from mrag import auth, db, harness, prompts, service, tracing
 from mrag.api import app
 from mrag.config import get_settings
 from mrag.harness import context, settings
@@ -57,15 +57,27 @@ def test_the_token_count_equals_the_model_servers_count():
     assert result.usage.prompt_tokens == context.prompt_tokens(messages)
 
 
-def test_the_api_streams_a_real_answer():
-    response = TestClient(app).post("/v1/chat", json={"message": QUESTION})
+def test_the_api_streams_a_real_answer_and_saves_it(database):
+    # A logged-in member on a new app database, so the real one is never touched
+    with db.get_sessionmaker()() as s:
+        user = auth.create_user(s, "ada@example.org", "Ada", "correct horse battery staple")
+        token, row = auth.start_session(s, user)
+        headers = {auth.CSRF_HEADER: row.csrf_token}
+        s.commit()
+    client = TestClient(app)
+    client.cookies.set(auth.COOKIE, token)
+    response = client.post("/v1/chat", json={"message": QUESTION}, headers=headers)
     found = [
         dict(line.split(": ", 1) for line in block.splitlines())
         for block in response.text.strip().split("\n\n")
     ]
     names = [event["event"] for event in found]
-    assert names[-1] == "done" and set(names[:-1]) == {"delta"}
+    assert names[0] == "chat" and names[-1] == "done" and set(names[1:-1]) == {"delta"}
     done = json.loads(found[-1]["data"])
+    chat_id = json.loads(found[0]["data"])["chat_id"]
+    saved = client.get(f"/v1/chats/{chat_id}").json()["messages"]
+    assert [(m["role"], m["status"]) for m in saved] == [("user", "done"), ("assistant", "done")]
+    assert saved[1]["content"] == done["answer"]
     assert "Stockholm" in done["answer"]
     # The model server counted exactly the prompt the harness built
     system = prompts.load("chat_system").format()
