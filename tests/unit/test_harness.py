@@ -56,7 +56,7 @@ def test_invalid_settings_are_rejected(tmp_path):
 
 def test_unknown_profile_is_reported():
     with pytest.raises(settings.HarnessError, match="no harness settings"):
-        settings.for_profile("demo")
+        settings.for_profile("company")
 
 
 def test_counting_turn_by_turn_equals_the_whole_prompt():

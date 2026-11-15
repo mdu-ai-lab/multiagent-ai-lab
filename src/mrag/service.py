@@ -65,6 +65,8 @@ def start() -> None:
             settings.mlflow_tracking_uri,
         )
     version()
+    # A profile that runs its model inside the process (the demo) loads it now
+    harness.prepare()
 
 
 def health() -> Health:

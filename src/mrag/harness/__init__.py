@@ -2,6 +2,6 @@
 # entry, run(). Settings per profile come from configs/harness.yaml
 
 from mrag.harness.handle import Delta, Done, Error, Event, Harness, Request, Route
-from mrag.harness.loop import run
+from mrag.harness.loop import prepare, run
 
-__all__ = ["Delta", "Done", "Error", "Event", "Harness", "Request", "Route", "run"]
+__all__ = ["Delta", "Done", "Error", "Event", "Harness", "Request", "Route", "prepare", "run"]
