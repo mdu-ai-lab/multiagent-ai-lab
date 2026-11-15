@@ -8,6 +8,7 @@ import threading
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 
 import pytest
+import yaml
 
 from mrag.config import PROJECT_ROOT
 
@@ -121,3 +122,29 @@ def test_the_report_is_also_written_to_a_file(site, monkeypatch, capsys, tmp_pat
     assert code == 1
     assert report.read_text() == out
     assert out.startswith("1 of 1 checks failed")
+
+
+def workflow():
+    text = (PROJECT_ROOT / ".github" / "workflows" / "health.yml").read_text()
+    return text, yaml.safe_load(text)
+
+
+def test_the_workflow_runs_every_monday_and_on_demand():
+    _, data = workflow()
+    # PyYAML reads the key "on" as True
+    triggers = data[True]
+    assert triggers["schedule"] == [{"cron": "0 6 * * 1"}]
+    assert "extra_url" in triggers["workflow_dispatch"]["inputs"]
+
+
+def test_only_the_check_job_may_write_issues():
+    _, data = workflow()
+    assert data["permissions"] == {"contents": "read"}
+    assert data["jobs"]["check"]["permissions"] == {"contents": "read", "issues": "write"}
+
+
+def test_the_workflow_reports_through_the_health_check():
+    text, _ = workflow()
+    assert 'python3 ops/health_check.py --dashboard "$DASHBOARD_URL"' in text
+    assert '--report "$RUNNER_TEMP/report.md"' in text
+    assert '--body-file "$RUNNER_TEMP/report.md"' in text
