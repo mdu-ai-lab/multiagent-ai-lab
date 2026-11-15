@@ -5,6 +5,8 @@ Versions are tagged at the end of each phase (WORK_PLAN.md rule G).
 
 ## [Unreleased]
 
+## [0.0.2] - 2026-11-15
+
 ### Added
 
 - GitHub Pages workflow (.github/workflows/pages.yml): after CI passed on a push to main in this repository, it builds the dashboard from exactly the tested commit and publishes it. Only the publish job gets the Pages permissions.
