@@ -89,7 +89,7 @@ class LoginRequest(BaseModel):
 
 
 class SignupRequest(BaseModel):
-    name: str = Field(max_length=100)
+    name: str = Field(max_length=60)
     email: str = Field(max_length=254)
     password: str = Field(max_length=1024)
 

@@ -14,8 +14,9 @@ from sqlalchemy.orm import Session
 from mrag import auth, db
 from mrag.translations import TEXT
 
-# Used while an admin has not changed a setting: guest mode starts off and sign-up starts on
-DEFAULTS: dict[str, Any] = {"guest_mode": False, "guest_limit": 5, "signup_open": True}
+# Used while an admin has not changed a setting: guest mode and sign-up start on, as in the
+# chat page preview
+DEFAULTS: dict[str, Any] = {"guest_mode": True, "guest_limit": 5, "signup_open": True}
 # The name the activity log shows for actions done in Terminal
 TERMINAL = "Terminal"
 

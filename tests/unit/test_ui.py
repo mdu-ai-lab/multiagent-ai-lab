@@ -88,12 +88,13 @@ def test_the_api_documentation_keeps_working_without_the_csp(client):
     assert response.headers["x-content-type-options"] == "nosniff"
 
 
-def test_the_start_page_sends_guests_to_the_login_while_guest_mode_is_off(client):
+def test_guests_see_the_start_page_until_an_admin_turns_guest_mode_off(client):
+    assert client.get("/").status_code == 200
+    assert '<a class="btn-ghost btn-block" href="/">' in client.get("/login").text
+    set_option("guest_mode", False)
     response = client.get("/", follow_redirects=False)
     assert (response.status_code, response.headers["location"]) == (303, "/login")
-    set_option("guest_mode", True)
-    assert client.get("/").status_code == 200
-    assert "Continue as guest" in client.get("/login").text
+    assert '<a class="btn-ghost btn-block" href="/">' not in client.get("/login").text
 
 
 def test_the_css_and_scripts_load_with_a_fingerprint(client):
@@ -204,7 +205,7 @@ def test_logout_ends_the_session(client):
     headers = {auth.CSRF_HEADER: page_config(client.get("/"))["csrf"]}
     assert client.post("/v1/auth/logout", headers=headers).status_code == 204
     assert sessions() == []
-    assert client.get("/", follow_redirects=False).headers["location"] == "/login"
+    assert page_config(client.get("/"))["user"] is None
 
 
 def test_a_blocked_user_starts_again_as_a_guest(client):
@@ -217,7 +218,8 @@ def test_a_blocked_user_starts_again_as_a_guest(client):
     with db.get_sessionmaker()() as s:
         s.scalars(select(db.User)).one().blocked = True
         s.commit()
-    assert client.get("/", follow_redirects=False).headers["location"] == "/login"
+    page = client.get("/")
+    assert "Logged in as Ada" not in page.text and page_config(page)["user"] is None
     assert sessions() == [False]
 
 

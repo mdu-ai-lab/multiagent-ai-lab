@@ -105,7 +105,7 @@ def create_user(s: Session, email: str, name: str, password: str, role: str = "m
     name = name.strip()
     if len(email) > 254 or " " in email or "@" not in email.strip("@"):
         raise AccountError("email_invalid")
-    if not 1 <= len(name) <= 100:
+    if not 1 <= len(name) <= 60:
         raise AccountError("name_invalid")
     if role not in ("member", "admin"):
         raise AccountError("role_invalid")

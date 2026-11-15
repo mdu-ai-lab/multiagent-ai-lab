@@ -158,6 +158,7 @@ def test_changing_a_chat_needs_the_session_token():
 
 
 def test_guests_cannot_chat_while_guest_mode_is_off():
+    set_guest_mode(False)
     guest = browser()
     assert send(guest, "Hi").json() == {"detail": "login_required"}
     assert guest.get("/v1/chats").json() == {"detail": "login_required"}

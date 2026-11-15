@@ -145,8 +145,8 @@ def test_only_the_hash_of_the_session_token_is_stored(session):
     [
         (False, timedelta(minutes=29), False),
         (False, timedelta(minutes=31), True),
-        (True, timedelta(days=6), False),
-        (True, timedelta(days=8), True),
+        (True, timedelta(days=29), False),
+        (True, timedelta(days=31), True),
     ],
 )
 def test_a_session_ends_after_its_time_without_use(session, remember, unused, ends):
@@ -201,7 +201,7 @@ def test_expired_sessions_are_removed(session):
     _, unused = auth.start_session(session, user, remember=True)
     keep_token, _ = auth.start_session(session, user)
     old.expires_at = db.utcnow() - timedelta(minutes=1)
-    unused.last_seen_at = db.utcnow() - timedelta(days=8)
+    unused.last_seen_at = db.utcnow() - timedelta(days=31)
     assert auth.remove_expired_sessions(session) == 2
     assert auth.find_session(session, keep_token) is not None
 
