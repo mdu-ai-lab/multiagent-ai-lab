@@ -1,0 +1,67 @@
+# Uploads the live demo to its Hugging Face Space after CI passed on main, built from exactly
+# the commit that CI tested. It runs only once the repository variable DEMO_SPACE names the
+# Space, so it cannot create a Space by mistake. GitHub starts this workflow only from main
+name: Demo
+
+on:
+  workflow_run:
+    workflows: [CI]
+    types: [completed]
+    branches: [main]
+
+permissions:
+  contents: read
+
+# One upload at a time. A newer one waits instead of cancelling an upload in progress
+concurrency:
+  group: demo
+  cancel-in-progress: false
+
+env:
+  UV_FROZEN: "1"
+  MLFLOW_DISABLE_AGENT_HINT: "1"
+
+jobs:
+  upload:
+    name: Upload the demo to its Space
+    # Only a passed CI run of a push to main in this repository. A pull request from a fork
+    # can come from a branch that is also named main, so the branch name alone is not enough
+    if: >-
+      vars.DEMO_SPACE != '' &&
+      github.event.workflow_run.conclusion == 'success' &&
+      github.event.workflow_run.event == 'push' &&
+      github.event.workflow_run.head_branch == 'main' &&
+      github.event.workflow_run.head_repository.full_name == github.repository
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - name: Get the commit that CI tested
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.event.workflow_run.head_sha }}
+          persist-credentials: false
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@68559e99cc807c1eb7e9238fd43a15bba460eec2 # v10.3.3
+        with:
+          version: "0.13.7"
+          enable-cache: true
+          cache-dependency-glob: "uv.lock"
+
+      # The platform without the dev tools. The hf upload command comes with it
+      - name: Install the project from uv.lock
+        run: uv sync --no-dev
+
+      - name: Build the files of the Space from their fixed list
+        run: uv run python ops/space_files.py "$RUNNER_TEMP/space"
+
+      # The token can write to this Space only. --delete "*" removes files that are no
+      # longer in the list, so the Space matches the repo exactly
+      - name: Upload to the Space
+        env:
+          HF_TOKEN: ${{ secrets.HF_TOKEN }}
+          DEMO_SPACE: ${{ vars.DEMO_SPACE }}
+          COMMIT: ${{ github.event.workflow_run.head_sha }}
+        run: >-
+          uv run hf upload "$DEMO_SPACE" "$RUNNER_TEMP/space" . --repo-type space
+          --delete "*" --commit-message "Commit $COMMIT of mdu-ai-lab/multiagent-ai-lab"

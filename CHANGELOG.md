@@ -7,6 +7,7 @@ Versions are tagged at the end of each phase (WORK_PLAN.md rule G).
 
 ### Added
 
+- Demo Space upload: ops/space_files.py builds the folder for the Space (the app and its Space card, src/mrag/, the configs the code reads and requirements.txt with the exact versions of uv.lock). .github/workflows/demo.yml uploads it after CI passed on a push to main, only once the repository variable DEMO_SPACE is set.
 - Live demo app (demo/app.py with Gradio, demo/chat.py): a streamed chat that sends every message to service.chat(), so it runs the same agent harness as the API, with a note about the daily GPU time on the Space. harness.prepare() loads the model at start for the Transformers backend. The demo profile has a context of 8192 tokens, an answer cap of 1024 and a time limit of 60 s. make demo runs the page on the Mac with llama-swap. The demo group pins torch 2.13.0, the newest version on the ZeroGPU list. The git state of a run reads as unknown where Git is missing.
 - Plan for the live demo (D47): a Gradio app on a ZeroGPU Space that sends every message to service.chat(), so it runs the same harness.run() as the API with the demo profile. It is uploaded after CI passed on main. The Hugging Face account meets the free ZeroGPU rule from about 20 November 2026 (Q3).
 - Dependabot skips minor and major updates of mlflow and mlflow-skinny, which are pinned on purpose: a new minor version can need a database upgrade of the local MLflow store, so it is updated in its own planned change. Patch versions still come.
