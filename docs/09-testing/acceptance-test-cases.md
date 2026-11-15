@@ -29,7 +29,7 @@ Copied from the done-when column of WORK_PLAN.md section 12. The plan stays the 
 | AT-1.6 | API-first skeleton | The API runs locally. All endpoint tests pass in CI. A chat answer streams through harness.run(). A unit test shows that the history never goes over the budget in any profile. An import test in CI shows that service.py, api.py and the route agents never create a model client (llm_client.get_client) or import the search or a tool directly and that no harness module imports them. | Passed |
 | AT-1.7 | Live dashboard (CD) | The site URL works. A pushed change appears on it within minutes. Site size stays far below 1 GB. | Passed |
 | AT-1.8 | Live demo (CD) | The Space URL works. A pushed change appears after the Space rebuilds. | Not run |
-| AT-1.9 | Health checks | A deliberately wrong URL creates an issue. | Not run |
+| AT-1.9 | Health checks | A deliberately wrong URL creates an issue. | Passed |
 | AT-1.10 | Chat web page | pytest tests for pages, sign-up, login, roles, chat and admin pass in CI. A streamed answer from the main model appears in the browser. A member cannot open another user's chat or the admin panel. | Not run |
 | AT-2.1 | Datasets | All datasets on the SSD. Every data card complete. | Not run |
 | AT-2.2 | Test sets | A manifest lists counts and file hashes. | Not run |

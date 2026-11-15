@@ -13,7 +13,7 @@
 | State | Content |
 |---|---|
 | Existing functionality | Project setup (step 0.1): settings, database layer, Alembic. Qdrant in Docker (step 0.2). Local model server with 4 models (step 0.3). Mac measurements (step 0.4). Model client (step 0.5). Backup to Google Drive (step 0.6) |
-| Work in progress | Phase 1 (steps 1.1 to 1.7 done) |
+| Work in progress | Phase 1 (steps 1.1 to 1.7 and 1.9 done. Step 1.8 waits for the demo Space) |
 | Planned | Phases 0 to 16 (below) |
 | Future possibilities | SSO, multi-server scaling, fine-tuning, more languages (not in v1) |
 

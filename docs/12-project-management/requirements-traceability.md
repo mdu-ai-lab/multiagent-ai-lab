@@ -67,7 +67,7 @@ Components, entities and APIs per requirement are listed in each module document
 | FR-FBK-001 | [api-ui-mcp](../03-functional-modules/api-ui-mcp.md) | AT-13.4 | Not implemented |
 | FR-OPS-001 | [delivery-and-operations](../03-functional-modules/delivery-and-operations.md) | AT-1.7 | Implemented (https://mdu-ai-lab.github.io/multiagent-ai-lab/) |
 | FR-OPS-002 | [delivery-and-operations](../03-functional-modules/delivery-and-operations.md) | AT-1.8 | Not implemented |
-| FR-OPS-003 | [delivery-and-operations](../03-functional-modules/delivery-and-operations.md) | AT-1.9 | Not implemented |
+| FR-OPS-003 | [delivery-and-operations](../03-functional-modules/delivery-and-operations.md) | AT-1.9 | Implemented (.github/workflows/health.yml) |
 | FR-OPS-004 | [delivery-and-operations](../03-functional-modules/delivery-and-operations.md) | AT-0.6 | Implemented verification incomplete (make pull-inbox not tested yet) |
 | FR-OPS-005 | [delivery-and-operations](../03-functional-modules/delivery-and-operations.md) | AT-13.4 | Not implemented |
 | FR-EVAL-001 | [evaluation](../03-functional-modules/evaluation.md) | AT-2.3 | Not implemented |
@@ -100,7 +100,7 @@ Components, entities and APIs per requirement are listed in each module document
 | R18 | API at the best stage, without rework | Step 1.6 (API-first), Phase 13 hardening | Partly done (API-first skeleton in 1.6, hardening in Phase 13) |
 | R19 | CI/CD and MLOps where they have a purpose | Phase 1 | Partly done (MLflow in 1.2 and 1.3, CI in 1.4. CD for the dashboard and the demo in 1.7 and 1.8) |
 | R20 | MLflow for experiments, traces and versioning | 1.2, 1.3 | Done |
-| R21 | Testing, monitoring, documentation, version control, data management, security | 1.4, 1.9, 13.4, 16.2, section 6, Phase 12 | Partly done (version control in 1.1, CI tests and security checks in 1.4) |
+| R21 | Testing, monitoring, documentation, version control, data management, security | 1.4, 1.9, 13.4, 16.2, section 6, Phase 12 | Partly done (version control in 1.1, CI tests and security checks in 1.4, health checks of the live sites in 1.9) |
 | R22 | Future company use (on-prem, audit trail, versioned releases) | Phase 15 | Planned |
 | R23 | A self-contained handover | Sections 1 and 15 | Planned |
 | R24 | Easy English, step by step, why for each step | Rule C1 | Planned |

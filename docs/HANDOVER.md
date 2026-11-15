@@ -2,6 +2,69 @@
 
 Report of the last work session. Read this after docs/WORK_PLAN.md at the start of every session.
 
+## Session 15 November 2026: live demo code and health checks (steps 1.8 and 1.9)
+
+- Plan D47 for the live demo (e7b8fa9). Q3 answered: the Hugging Face email is verified and the
+  account was created about 20 October 2026. Hugging Face's ZeroGPU page (checked 15 November
+  2026) allows free accounts older than 30 days with a verified email, so the Space can be
+  created from about 20 November 2026.
+- Demo app (d82a882): demo/app.py (Gradio 6.32.0, spaces 0.52.0) and demo/chat.py send every
+  message to service.chat(), the same agent harness as the API. harness.prepare() loads the model
+  at start for the Transformers backend only. Demo profile in configs/harness.yaml: 8192 context
+  tokens, 1024 answer tokens and 60 s. The demo group pins torch 2.13.0 and torchvision 0.28.0.
+  make demo runs the page on the Mac with llama-swap. The git state reads as unknown where Git is
+  missing.
+- Checked in the code of the packages before writing: Gradio 6.32.0 hands each earlier turn as a
+  list of content blocks, so demo/chat.py reads their text. The spaces decorator returns the
+  function unchanged outside ZeroGPU and supports generator functions, so the answer streams.
+- uv add --group demo also installed the demo packages here. mypy then read the real types of
+  transformers and failed on code that had passed before, so the torch and transformers rule in
+  pyproject.toml now has follow_imports = "skip": the result no longer depends on what is
+  installed.
+- Space files and upload (dc14814): ops/space_files.py builds the 24 files of the Space from a
+  fixed list (the app, its card demo/README.md, src/mrag/, the configs the code reads and
+  requirements.txt exported from uv.lock). .github/workflows/demo.yml uploads them after CI passed
+  on a push to main, only once the repository variable DEMO_SPACE is set. Until then the run is
+  skipped.
+- Health check (896a400): ops/health_check.py checks the dashboard, every link on it and, once
+  DEMO_SPACE is set, the state of the demo Space through the Hugging Face API, with 3 tries for
+  network problems. A missing or private Space answers HTTP 401.
+- Weekly workflow (190e205): .github/workflows/health.yml runs every Monday at 06:00 UTC and on
+  demand. A failure opens one issue or adds a comment while it is open.
+- Merge: origin/main merged into phase-1 (3d4d2ca). Pull request #7 merged as 1bc1685. No tag.
+- Real checks: make demo on the Mac answered "The capital of Sweden is Stockholm." and the
+  follow-up "And of Norway?" with "The capital of Norway is Oslo.", so the history reaches the
+  model. Done-when of 1.9: a run with a wrong address opened issue #8 with the report (HTTP 404),
+  a second one added one comment to it and a normal run passed without an issue. Issue #8 was
+  then closed.
+- Dependabot: after the merge its run on main was red. It tried to raise torch to 2.15.0, which
+  the pin of torchvision 0.28.0 does not allow. Its pull request #6 kept torch at 2.13.0. Torch
+  and torchvision are now skipped for minor and major updates, like MLflow.
+- Tests: 199 unit tests passed on the Mac and in CI (run 43752764057 on main). Verification
+  numbers checked for the 54 Python files the verification command lists and for the 2 in
+  demo/, which that command does not list yet.
+
+Notes for later steps:
+- Step 1.8 ends on the Space, from about 20 November 2026: the owner creates the Space
+  hossain007bhuiyan/multiagent-ai-lab-demo with the Gradio SDK and ZeroGPU hardware, a
+  fine-grained Hugging Face token that can write only to that Space, the GitHub secret HF_TOKEN
+  and the repository variable DEMO_SPACE. Then a merge to main uploads it.
+- Checked only on the Space: whether torch 2.13.0 and the streamed answer run on ZeroGPU,
+  whether Gradio in requirements.txt as well as in sdk_version matters and whether --delete "*"
+  also removes the Space's .gitattributes.
+- Pull request #6 (fastapi, openai, sqlalchemy, transformers, ruff, CI green) is open. Run the
+  Mac tests before merging it, mainly for openai 3.46.0.
+- make demo installs the demo group into the project environment and a plain uv run does not
+  remove it. The transformers tests download Qwen3.5-0.8B, so they run only with
+  uv run --group demo pytest -m transformers. They last ran on 1 November 2026 with torch 2.15.0.
+- The torch ignore rule takes effect once .github/dependabot.yml reaches main.
+- Before the next pull request to main, merge origin/main into phase-1.
+
+### Exact next step
+
+1. Step 1.10 (chat web page), shown to the owner for approval first.
+2. Step 1.8 on the Space from about 20 November 2026.
+
 ## Session 15 November 2026: live dashboard (step 1.7)
 
 - Review of the whole project before the step: ruff, mypy, 165 unit tests, pip-audit (0 known

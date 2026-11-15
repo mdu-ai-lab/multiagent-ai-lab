@@ -67,7 +67,7 @@ All requirements come from WORK_PLAN.md v1.10. They are proposed until the group
 | FR-FBK-001 | Thumbs up or down with optional comment on every answer, saved to its trace | 13.4 | Not implemented |
 | FR-OPS-001 | Live dashboard on GitHub Pages rebuilt after CI passes on main | 1.7 | Implemented (https://mdu-ai-lab.github.io/multiagent-ai-lab/) |
 | FR-OPS-002 | Live demo on a ZeroGPU Space redeployed after CI passes on main | 1.8 | Not implemented |
-| FR-OPS-003 | Weekly health check that opens a GitHub issue on failure | 1.9 | Not implemented |
+| FR-OPS-003 | Weekly health check that opens a GitHub issue on failure | 1.9 | Implemented (.github/workflows/health.yml) |
 | FR-OPS-004 | One-way backup to Google Drive, inbox import and restore test | 0.6 | Implemented verification incomplete (make pull-inbox not tested yet) |
 | FR-OPS-005 | Local monitoring view of latency, errors, fallbacks and low-rated answers | 13.4 | Not implemented |
 | FR-EVAL-001 | Evaluation scripts with metrics per route, logged to MLflow | 2.3 | Not implemented |

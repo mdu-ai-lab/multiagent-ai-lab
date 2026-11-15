@@ -26,6 +26,12 @@ updates:
         update-types: ["version-update:semver-minor", "version-update:semver-major"]
       - dependency-name: "mlflow-skinny"
         update-types: ["version-update:semver-minor", "version-update:semver-major"]
+      # torch is pinned on purpose (WORK_PLAN D47): the ZeroGPU list of PyTorch versions ends at
+      # 2.13.0. torchvision must match the torch version
+      - dependency-name: "torch"
+        update-types: ["version-update:semver-minor", "version-update:semver-major"]
+      - dependency-name: "torchvision"
+        update-types: ["version-update:semver-minor", "version-update:semver-major"]
     # Minor and patch updates come together in one pull request per lock file. Major
     # updates come one by one, because they can change how a package works
     groups:
