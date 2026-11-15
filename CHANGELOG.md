@@ -5,6 +5,11 @@ Versions are tagged at the end of each phase (WORK_PLAN.md rule G).
 
 ## [Unreleased]
 
+### Added
+
+- Dependabot skips minor and major updates of mlflow and mlflow-skinny, which are pinned on purpose: a new minor version can need a database upgrade of the local MLflow store, so it is updated in its own planned change. Patch versions still come.
+- Plan and docs: the live dashboard is done and online at https://mdu-ai-lab.github.io/multiagent-ai-lab/ (version 0.0.2). The results and the notes for later steps are in docs/HANDOVER.md.
+
 ## [0.0.2] - 2026-11-15
 
 ### Added

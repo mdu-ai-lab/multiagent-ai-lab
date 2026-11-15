@@ -19,6 +19,13 @@ updates:
     # usually found and pulled by then
     cooldown:
       default-days: 7
+    # MLflow is pinned on purpose (WORK_PLAN D40): a new minor version can need a database
+    # upgrade of the local MLflow store, so it is updated in its own planned change
+    ignore:
+      - dependency-name: "mlflow"
+        update-types: ["version-update:semver-minor", "version-update:semver-major"]
+      - dependency-name: "mlflow-skinny"
+        update-types: ["version-update:semver-minor", "version-update:semver-major"]
     # Minor and patch updates come together in one pull request per lock file. Major
     # updates come one by one, because they can change how a package works
     groups:
