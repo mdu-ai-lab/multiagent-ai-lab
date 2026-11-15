@@ -4,24 +4,24 @@
 |---|---|
 | Purpose | Tests per phase |
 | Status | Proposed |
-| Last updated | 2026-11-05 |
+| Last updated | 2026-11-09 |
 | Source of truth | [WORK_PLAN.md](../WORK_PLAN.md) v1.10 |
 | Related documents | [Acceptance test cases](../09-testing/acceptance-test-cases.md), [Testing status](../09-testing/testing-status.md) |
 
-> Implementation status: Phase 0 done (project setup, search database, Mac model server, model client and backup). Later features are planned and not built yet. Test results are in docs/HANDOVER.md.
+> Implementation status: see docs/WORK_PLAN.md, section 1 (current state). Test results are in docs/HANDOVER.md.
 
 Each step in WORK_PLAN.md has a done-when test. These are the acceptance tests. Each phase also adds unit tests for its modules and keeps CI green.
 
 | Phase | Main tests | Datasets |
 |---|---|---|
 | 0 | Model calls, RAM, backup restore | — |
-| 1 | CI fail test, API endpoints, live site update, health check | — |
+| 1 | CI fail test, API endpoints, streamed chat through the harness and its import test, live site update, health check | — |
 | 2 | Rerun identical, judge agreement | LongDocURL, QASPER, TAT-DQA, CORD, GovReport, SPACE, 2WikiMultihopQA, MuSiQue, speech set |
 | 3 | Parse each type, resume, OCR error rate, versions | CORD, sample files |
 | 4 | Figure descriptions help retrieval | LongDocURL |
 | 5 | Ablation, filters, latency | LongDocURL, QASPER |
 | 6 | Citations, claim check, refusal | QASPER |
-| 7 | Routing, loops, fallbacks, memory, tool access and tool calls | Mixed test set, BFCL |
+| 7 | Routing, loops, fallbacks, memory, tool access, tool calls, the harness import test and the part-by-part ablation | Mixed test set, BFCL |
 | 8 | Toggle, leak test | — |
 | 9 | Coverage vs top-k RAG | GovReport, SPACE |
 | 9A | Ontology generation, extraction precision, engine comparison, filter, hybrid vs GraphRAG | 2WikiMultihopQA, MuSiQue |

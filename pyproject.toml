@@ -8,14 +8,19 @@ license-files = ["LICENSE"]
 requires-python = ">=3.12,<3.13"
 dependencies = [
     "alembic>=1.20.1",
+    "fastapi>=0.162.0",
+    "jinja2>=3.1.6",
+    "mlflow-skinny==3.17.2",
     "openai>=3.42.0",
     "pydantic-settings>=2.16.2",
     "pyyaml>=6.0.3",
     "sqlalchemy>=2.1.6",
+    "tokenizers>=0.23.3",
+    "uvicorn>=0.54.0",
 ]
 
 [build-system]
-requires = ["uv_build>=0.12.19,<0.13.0"]
+requires = ["uv_build>=0.13.7,<0.14.0"]
 build-backend = "uv_build"
 
 # The package folder is src/mrag, not src/multiagent_ai_lab
@@ -35,12 +40,64 @@ demo = [
     "transformers>=5.22.1",
 ]
 dev = [
+    "mypy==2.4.1",
+    "pip-audit==2.10.1",
     "pytest>=9.2.0",
+    "ruff==0.17.3",
+    "types-PyYAML==6.0.12.20261103",
 ]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+# Tests that need a running model server run only when asked for: uv run pytest -m mac
+# on this Mac and uv run pytest -m ci_model in CI
+addopts = "-m 'not mac and not ci_model'"
 markers = [
-    "mac: real calls to the Mac model server (llama-swap must be running)",
+    "mac: needs this Mac's model files or servers (run with: uv run pytest -m mac)",
+    "ci_model: needs llama-server with the small CI model (run with: uv run pytest -m ci_model)",
     "transformers: real calls through the transformers backend (needs --group demo)",
 ]
+
+# Style and common mistakes: ruff's own default rules plus a line length of 100
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+
+[tool.ruff.lint]
+extend-select = ["E501"]
+
+# mlflow/ in the project folder holds MLflow's data, not code. Without this setting the
+# import sorting would treat the mlflow package as project code
+[tool.ruff.lint.isort]
+known-first-party = ["mrag"]
+known-third-party = ["mlflow"]
+
+# Types: the checks of mypy's strict mode for the platform package, normal checks for the
+# tools in ops/ and benchmarks/. Strict mode itself cannot be set for one package only, so
+# its checks are listed one by one
+[tool.mypy]
+python_version = "3.12"
+files = ["src", "ops", "benchmarks"]
+mypy_path = "src"
+warn_unused_configs = true
+warn_unused_ignores = true
+warn_redundant_casts = true
+no_implicit_reexport = true
+
+[[tool.mypy.overrides]]
+module = ["mrag.*"]
+disallow_any_generics = true
+disallow_subclassing_any = true
+disallow_untyped_calls = true
+disallow_untyped_defs = true
+disallow_incomplete_defs = true
+check_untyped_defs = true
+disallow_untyped_decorators = true
+warn_return_any = true
+strict_equality = true
+extra_checks = true
+
+# The demo packages ship no type information
+[[tool.mypy.overrides]]
+module = ["torch", "transformers"]
+ignore_missing_imports = true

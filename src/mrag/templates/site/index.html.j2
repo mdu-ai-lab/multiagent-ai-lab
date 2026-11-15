@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>multiagent-ai-lab dashboard</title>
+<meta name="description" content="Progress, results and changes of the multiagent-ai-lab project">
+<style>
+:root {
+  --bg: #f7f7f5; --panel: #ffffff; --text: #1d1d1b; --muted: #5f5f5a; --line: #deded8;
+  --accent: #2f6f4f; --accent-soft: #e2efe7; --todo: #8a8a82; --todo-soft: #ecece7;
+  color-scheme: light dark;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #161715; --panel: #1f201e; --text: #ecece7; --muted: #a3a39c; --line: #343531;
+    --accent: #7cc49c; --accent-soft: #23342a; --todo: #8f8f88; --todo-soft: #2a2b28;
+  }
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0; background: var(--bg); color: var(--text);
+  font: 16px/1.55 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+main { max-width: 1040px; margin: 0 auto; padding: 32px 16px 64px; }
+header p { color: var(--muted); margin: 4px 0 0; }
+h1 { font-size: 1.75rem; margin: 0; }
+h2 { font-size: 1.2rem; margin: 40px 0 12px; }
+h3 { font-size: 1rem; margin: 0; }
+a { color: var(--accent); }
+.panel { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 16px 20px; }
+.facts { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; margin-top: 20px; }
+.facts .panel span { display: block; color: var(--muted); font-size: 0.85rem; }
+.facts .panel strong { font-size: 1.05rem; font-weight: 600; }
+.bar { height: 8px; background: var(--todo-soft); border-radius: 4px; overflow: hidden; margin: 8px 0 4px; }
+.bar i { display: block; height: 100%; background: var(--accent); }
+details.phase { border-top: 1px solid var(--line); padding: 10px 0; }
+details.phase summary { cursor: pointer; display: flex; justify-content: space-between; gap: 12px; }
+details.phase summary span { color: var(--muted); white-space: nowrap; }
+ul.steps { list-style: none; padding: 0; margin: 10px 0 0; }
+ul.steps li { display: flex; gap: 10px; padding: 3px 0; }
+.badge { flex: none; font-size: 0.75rem; padding: 1px 8px; border-radius: 10px; height: fit-content; }
+.badge.done { background: var(--accent-soft); color: var(--accent); }
+.badge.todo { background: var(--todo-soft); color: var(--todo); }
+table { width: 100%; border-collapse: collapse; font-size: 0.95rem; }
+th, td { text-align: left; padding: 6px 8px; border-bottom: 1px solid var(--line); vertical-align: top; }
+th { color: var(--muted); font-weight: 600; }
+.scroll { overflow-x: auto; }
+pre { margin: 0; overflow-x: auto; font: 13px/1.45 ui-monospace, SFMono-Regular, Menlo, monospace; }
+svg polyline { fill: none; stroke: var(--accent); stroke-width: 2; }
+.muted { color: var(--muted); }
+footer { margin-top: 48px; color: var(--muted); font-size: 0.85rem; }
+</style>
+</head>
+<body>
+<main>
+<header>
+  <h1>multiagent-ai-lab</h1>
+  <p>A chat and document question-answering platform that runs locally. This page is built from the repository after every change on main.</p>
+</header>
+
+<section class="facts" aria-label="Current state">
+  <div class="panel"><span>Plan status</span><strong>{{ state.get("Plan status", "unknown") }}</strong></div>
+  <div class="panel"><span>Last completed step</span><strong>{{ state.get("Last completed step", "unknown") }}</strong></div>
+  <div class="panel"><span>Steps done</span><strong>{{ done }} of {{ total }}</strong>
+    <div class="bar" role="img" aria-label="{{ done }} of {{ total }} steps done"><i style="width: {{ (100 * done / total) | round(1) }}%"></i></div>
+  </div>
+  <div class="panel"><span>Latest version tag</span><strong>{{ state.get("Latest version tag", "unknown") }}</strong></div>
+</section>
+
+<h2>Progress</h2>
+<div class="panel">
+{% for phase in phases %}
+  <details class="phase"{% if 0 < phase.done < phase.steps | length or (loop.first and phase.done == 0) %} open{% endif %}>
+    <summary><h3>{{ phase.name }}: {{ phase.title }}</h3><span>{{ phase.done }} of {{ phase.steps | length }} done</span></summary>
+    <div class="bar" role="img" aria-label="{{ phase.done }} of {{ phase.steps | length }} steps done"><i style="width: {{ (100 * phase.done / phase.steps | length) | round(1) }}%"></i></div>
+    <ul class="steps">
+    {% for step in phase.steps %}
+      <li><span class="badge {{ 'done' if step.done else 'todo' }}">{{ "Done" if step.done else "Not done" }}</span><span>{{ step.id }} {{ step.title }}</span></li>
+    {% endfor %}
+    </ul>
+  </details>
+{% endfor %}
+</div>
+
+<h2>Results</h2>
+<div class="panel">
+{% if series %}
+  <div class="scroll"><table>
+    <caption class="muted" style="text-align: left; padding-bottom: 8px">The newest published run of each route, profile and dataset, with its trend over all published runs</caption>
+    <thead><tr><th>Route</th><th>Profile</th><th>Datasets</th><th>Metric</th><th>Newest</th><th>Trend</th><th>Runs</th><th>Pipeline version</th></tr></thead>
+    <tbody>
+    {% for item in series %}
+      {% for metric, value in item.latest.metrics.items() %}
+      <tr>
+        <td>{{ item.route }}</td><td>{{ item.profile }}</td><td>{{ item.datasets }}</td><td>{{ metric }}</td>
+        <td>{{ "%.4g" | format(value) }}</td>
+        <td>{% set points = trend_points(item.trend(metric)) %}{% if points %}<svg width="120" height="28" viewBox="-2 -2 124 32" role="img" aria-label="Trend of {{ metric }}"><polyline points="{{ points }}"/></svg>{% else %}<span class="muted">one run</span>{% endif %}</td>
+        <td>{{ item.runs | length }}</td>
+        <td>{{ item.latest.tags.get("mrag.pipeline_version", "unknown") }}</td>
+      </tr>
+      {% endfor %}
+    {% endfor %}
+    </tbody>
+  </table></div>
+{% else %}
+  <p class="muted">No published results yet. Results of runs on public test sets appear here once the evaluations of Phase 2 publish them.</p>
+{% endif %}
+</div>
+
+<h2>Example answers</h2>
+<div class="panel"><p class="muted">None yet. Cited example answers on public documents are added with the grounded answers of Phase 6.</p></div>
+
+<h2>Architecture</h2>
+<div class="panel"><pre>{{ architecture }}</pre></div>
+
+<h2>Changes</h2>
+<div class="panel">
+{% for release in releases %}
+  <details class="phase"{% if loop.first %} open{% endif %}>
+    <summary><h3>{{ release.title }}</h3></summary>
+    {% if not release.sections %}
+    <p class="muted">No changes since the last version yet.</p>
+    {% endif %}
+    {% for name, items in release.sections.items() %}
+    <p class="muted">{{ name }}</p>
+    <ul>{% for item in items %}<li>{{ item }}</li>{% endfor %}</ul>
+    {% endfor %}
+  </details>
+{% endfor %}
+</div>
+
+<footer>
+  Built {{ built }} from commit <a href="{{ repo_url }}/commit/{{ commit }}">{{ commit[:7] }}</a>.
+  Source: <a href="{{ repo_url }}">{{ repo_url }}</a>. The plan and its decisions are in docs/WORK_PLAN.md.
+</footer>
+</main>
+</body>
+</html>

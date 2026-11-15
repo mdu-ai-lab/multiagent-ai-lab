@@ -4,11 +4,11 @@
 |---|---|
 | Purpose | Specification of the grounded answers module |
 | Status | Proposed |
-| Last updated | 2026-11-05 |
+| Last updated | 2026-11-09 |
 | Source of truth | [WORK_PLAN.md](../WORK_PLAN.md) v1.10 |
 | Related documents | [Modules index](../03-functional-modules/README.md), [Traceability](../12-project-management/requirements-traceability.md) |
 
-> Implementation status: Phase 0 done (project setup, search database, Mac model server, model client and backup). Later features are planned and not built yet. Test results are in docs/HANDOVER.md.
+> Implementation status: see docs/WORK_PLAN.md, section 1 (current state). Test results are in docs/HANDOVER.md.
 
 | Item | Detail |
 |---|---|
@@ -16,7 +16,7 @@
 | Actors | Member |
 | Functional requirements | FR-QA-001 to FR-QA-005, FR-CHAT-002 |
 | Business rules | BR-GND-001 |
-| Planned files | qa.py, grounding.py, harness.py (prompt budget) |
+| Planned files | qa.py, harness/context.py (prompt budget), harness/verify.py (citations, claim check, refusal) |
 | Models and tools | Main model |
 | Data entities | — |
 | API endpoints | Chat endpoint |

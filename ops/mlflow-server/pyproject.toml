@@ -1,0 +1,14 @@
+# Separate environment for the local MLflow tracking server. It is kept apart from the
+# platform environment because the full mlflow package and the mlflow-skinny client
+# install the same files.
+[project]
+name = "mrag-mlflow-server"
+version = "0.0.1"
+requires-python = ">=3.12,<3.13"
+dependencies = [
+    "mlflow==3.17.2",
+]
+
+# Only an environment for the server program, not a package to build
+[tool.uv]
+package = false

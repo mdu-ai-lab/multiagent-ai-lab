@@ -4,6 +4,7 @@
 
 from functools import lru_cache
 from pathlib import Path
+from typing import Any
 
 from sqlalchemy import Engine, create_engine, event
 from sqlalchemy.engine import make_url
@@ -16,7 +17,7 @@ class Base(DeclarativeBase):
     pass
 
 
-def _set_sqlite_pragmas(dbapi_connection, connection_record):
+def _set_sqlite_pragmas(dbapi_connection: Any, connection_record: Any) -> None:
     # SQLite turns foreign keys off by default. WAL mode lets the API read
     # while the background worker writes
     cursor = dbapi_connection.cursor()

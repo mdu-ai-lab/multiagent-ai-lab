@@ -8,11 +8,11 @@
 | Source of truth | [WORK_PLAN.md](../WORK_PLAN.md) v1.10 |
 | Related documents | [Incident response](../10-deployment-and-operations/incident-response.md) |
 
-> Implementation status: Phase 0 done (project setup, search database, Mac model server, model client and backup). Later features are planned and not built yet. Test results are in docs/HANDOVER.md.
+> Implementation status: see docs/WORK_PLAN.md, section 1 (current state). Test results are in docs/HANDOVER.md.
 
 | What | Tool | Step |
 |---|---|---|
-| Every agent step and model call with time and tokens | MLflow tracing | 1.2 |
+| Every agent step and model call with time and tokens | MLflow tracing | 1.2, 7.2 |
 | Request totals: tokens in and out, model calls, tool calls, time and the fallback used | MLflow tracing | 1.2 |
 | Fallbacks | Logged in the trace | 7.4 |
 | Latency, errors, fallbacks, low-rated answers | Local monitoring view | 13.4 |

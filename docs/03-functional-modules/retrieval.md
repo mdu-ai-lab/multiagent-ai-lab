@@ -4,11 +4,11 @@
 |---|---|
 | Purpose | Specification of the retrieval module |
 | Status | Proposed |
-| Last updated | 2026-11-05 |
+| Last updated | 2026-11-09 |
 | Source of truth | [WORK_PLAN.md](../WORK_PLAN.md) v1.10 |
 | Related documents | [Modules index](../03-functional-modules/README.md), [Traceability](../12-project-management/requirements-traceability.md) |
 
-> Implementation status: Phase 0 done (project setup, search database, Mac model server, model client and backup). Later features are planned and not built yet. Test results are in docs/HANDOVER.md.
+> Implementation status: see docs/WORK_PLAN.md, section 1 (current state). Test results are in docs/HANDOVER.md.
 
 | Item | Detail |
 |---|---|
@@ -16,7 +16,7 @@
 | Actors | Q&A, summary, compare agents |
 | Functional requirements | FR-RET-001 to FR-RET-004 |
 | Business rules | BR-ACC-001, BR-VER-001 |
-| Planned files | chunking.py, embed.py, index.py, retrieve.py, rerank.py |
+| Planned files | chunking.py, embed.py, index.py (upload), harness/retrieval.py, harness/rerank.py (question time, D43) |
 | Models and tools | Qdrant, Qwen3-VL-Embedding-2B, Qwen3-VL-Reranker-2B |
 | Data entities | Chunk (Qdrant point) |
 | API endpoints | Internal only |

@@ -1,0 +1,25 @@
+# Settings of the agent harness per profile, read by src/mrag/harness/settings.py.
+# context_tokens: the context size of the profile's model server (a unit test compares them).
+# answer_tokens: the cap on answer tokens, kept free in the context. time_limit_s: a request
+# stops after this time. A profile gets its entry when its model server is set up
+
+# Counts tokens exactly for the token budget. Qwen3.5-9B, 2B and 0.8B have the same file
+tokenizer:
+  source: Qwen/Qwen3.5-9B
+  revision: c202236235762e1c871ad0ccb60c8ee5ba337b9a
+  file: tokenizer.json
+  sha256: 5f9e4d4901a92b997e463c1f46055088b6cca5ca61a6522d1b9f64c4bb81cb42
+
+profiles:
+  mac:
+    context_tokens: 8192
+    answer_tokens: 1024
+    time_limit_s: 120
+  gpu:
+    context_tokens: 4096
+    answer_tokens: 1024
+    time_limit_s: 120
+  ci:
+    context_tokens: 4096
+    answer_tokens: 1024
+    time_limit_s: 120

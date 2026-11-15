@@ -1,0 +1,16 @@
+# Separate environment for the vLLM model server in the GPU smoke test on Kaggle and Colab.
+# vLLM installs only on Linux with an NVIDIA GPU, so the lock covers Linux x86_64 only.
+# The version must match servers.vllm.version in configs/gpu_candidates.yaml (a unit test
+# checks it). Install on the GPU machine: uv sync --frozen --project ops/vllm-server
+[project]
+name = "mrag-vllm-server"
+version = "0.0.1"
+requires-python = ">=3.12,<3.13"
+dependencies = [
+    "vllm==0.33.0",
+]
+
+# Only an environment for the server program, not a package to build
+[tool.uv]
+package = false
+environments = ["sys_platform == 'linux' and platform_machine == 'x86_64'"]

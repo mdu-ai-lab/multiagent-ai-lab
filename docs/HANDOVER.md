@@ -2,7 +2,284 @@
 
 Report of the last work session. Read this after docs/WORK_PLAN.md at the start of every session.
 
+## Session 13 to 14 November 2026: API-first skeleton (step 1.6)
+
+- Plan D45 (c602718).
+- Harness settings and context building (8577855): configs/harness.yaml per profile (context
+  tokens mac 8192, gpu 4096, ci 4096, a unit test compares them with the model servers. 1024
+  answer tokens. 120 s). Tokens are counted exactly with the pinned Qwen3.5 tokenizer: one
+  tokenizer.json (SHA-256 5f9e4d49...) for Qwen3.5-9B, 2B and 0.8B, chat format included. The
+  newest earlier turns are kept within the budget. fastapi, uvicorn and tokenizers are direct
+  dependencies. CI downloads the tokenizer and checks it.
+- harness.run() (e72a2e8): events delta, done and error, the answer cap, the time limit and the
+  request trace. Found before it caused harm: FastAPI runs each step of a streamed answer in a
+  worker thread with a fresh copy of the context. A test showed the request totals were lost
+  and closing the trace crashed ("was created in a different Context"). run() keeps every step
+  in one context.
+- API (2f83650): service.py and api.py with /v1/health, /v1/version, /v1/models and /v1/chat,
+  make api on 127.0.0.1:8000. Tracing turns off with a warning when the MLflow server does not
+  answer at start, because the MLflow client retries for minutes. The import test keeps the
+  layers apart and was checked against two deliberately wrong imports.
+- Disconnect fix (4ede663): with FastAPI's own event streaming a closed connection never reached
+  our code. After Ctrl+C the model kept writing (to 117 of 200) and the trace lasted 417 s. The
+  endpoint now builds its own stream and closes the answer when the connection closes: the trace
+  lasted 3.9 s with mrag.stopped_early true. Checked first on a separate test server (closed
+  0.04 s after the disconnect), then through the real API on the Mac.
+- Real checks on the Mac: llama.cpp counted 71 prompt tokens for a chat request and our count
+  was 71. A Mac test with Swedish, an emoji, extra spaces and earlier turns gives the same count
+  as llama.cpp. The early-stop check records its trace in the integration-test experiment.
+- Tests: 165 unit tests passed on the Mac and in CI (run 43534236718), 2 CI model tests passed
+  in CI, 19 Mac tests passed (uv run pytest -m mac: 19 passed, 1 skipped). Verification numbers
+  of all 47 Python files checked.
+
+Notes for later steps:
+- Not measured yet: the answer cap of 1024 tokens (the model client's default) and the time
+  limit of 120 s (docs/06-api/error-handling.md). Steps 6.1 and 7.4 measure them.
+- No input size limit beyond the token budget (12.4). No login until 1.10: the API listens on
+  127.0.0.1 only.
+- The stream sends no keep-alive comments. That matters only behind a proxy.
+- Several chats at the same time are not tested (15.4). What happens when MLflow stops while the
+  API runs is not checked.
+- A new computer downloads the tokenizer once: uv run python -m mrag.harness.context.
+- Before the next pull request to main, merge origin/main into phase-1.
+
+### Exact next step
+
+1. Step 1.7 (live dashboard), shown to the owner for approval first.
+
+## Session 11 to 13 November 2026: free GPU profile (step 1.5)
+
+- Plan: Kaggle is the main free GPU and Colab the backup (D10, D11, 2e167e3). vLLM 0.33.0 and
+  llama.cpp b11960 are compared and GPU results travel as result bundles (D44, 44a4fa4).
+- configs/gpu_candidates.yaml pins the server builds and the model files of every candidate by
+  version, revision and SHA-256, with a unit test (3e9cf08).
+- ops/gpu_smoke.py checks the GPUs, the driver and the disk, downloads one candidate with SHA-256
+  checks, starts its server, asks five fixed public questions, saves each answer at once and
+  writes one result bundle. ops/import_runs.py adds each bundle once to the Mac's MLflow
+  (make pull-inbox) (e16339e).
+- notebooks/kaggle_gpu.ipynb and notebooks/colab_gpu.ipynb run the smoke test at a chosen commit.
+  vLLM 0.33.0 has its own locked Linux environment in ops/vllm-server (019e02c). CI's pip-audit
+  accepts three setuptools advisories for that lock only, with a test that forces each exception
+  out once its fix is in the lock (b612ea8).
+- Fixes found by the real runs:
+  - vLLM's default of 256 requests at once needed more Mamba cache blocks than 2 x T4 leave
+    (217). The cap is 16. A server that does not start shows the end of its log (7c024a4).
+  - On Colab another program already listens on port 8080 (llama-server: "couldn't bind HTTP
+    server socket"). Colab also did not show what a child program writes. The server now gets a
+    free port. The notebooks print the output of every program they run (bd17610).
+  - The 27B vLLM candidate uses RedHatAI/Qwen3.8-27B-INT4 (revision e45c27e8). The model asks for
+    an fp8 cache, which vLLM 0.33.0 allows only from compute capability 8.9, so the cache stays
+    16-bit on the T4 (b70c32a).
+  - vLLM 0.33.0 needs every file named in the weight index, so model_mtp.safetensors is pinned
+    too. With 2 GPUs the worker error came long before the last 100 log lines, so an error now
+    starts with the first error lines of the log (f2a15b5).
+  - The gpu profile names kaggle-vllm-9b-16bit. Smoke test runs record only the model of their
+    candidate. ops/check_result.py checks them against configs/gpu_candidates.yaml. Before, every
+    smoke test run failed that check with "profile gpu not in configs/models.yaml". Now all 6
+    imported runs pass every check (c989d94).
+- Results (5 fixed public questions, medians, one question at a time):
+
+| Run | Commit | GPUs | Correct | First token (s) | Tokens per s | Answer (s) | Server start (s) | Session (s) | GPU hours |
+|---|---|---|---|---|---|---|---|---|---|
+| kaggle-llamacpp-9b-16bit | b612ea8 | 2 x T4 | 5/5 | 0.555 | 23.39 | 0.691 | 135.0 | 424.2 | 0.2357 |
+| kaggle-vllm-9b-16bit | 7c024a4 | 2 x T4 | 5/5 | 0.116 | 39.37 | 0.199 | 710.1 | 1176.4 | 0.6535 |
+| kaggle-llamacpp-27b-4bit (2 runs, the second imported) | 7c024a4 | 2 x T4 | 5/5 | 0.678 | 17.51 | 0.849 | 135.0 | 502.0 | 0.2789 (first run 0.2598) |
+| kaggle-vllm-27b-4bit | f2a15b5 | 2 x T4 | 5/5 | 0.197 | 36.27 | 0.289 | 725.1 | 831.1 | 0.4617 |
+| colab-llamacpp-9b-8bit | bd17610 | 1 x T4 | 5/5 | 0.202 | 35.75 | 0.321 | 105.1 | 208.2 | 0.0578 |
+| colab-vllm-9b-8bit | bd17610 | 1 x T4 | Stopped twice: no memory left for the cache (-0.07 GiB) | | | | | | Not measured |
+
+- GPU hours are the smoke test time multiplied by the number of GPUs. Install time, idle time
+  and failed tries are not included. Measured: 1.8896 on Kaggle (both 27B llama.cpp runs counted)
+  and 0.0578 on Colab. Not measured: the first Kaggle vLLM 9B try (b612ea8), the first Kaggle
+  vLLM 27B try (b70c32a), two Colab llama.cpp tries that failed on port 8080 and two Colab vLLM
+  tries of about 20 minutes each. Kaggle's own quota display after the last run on 13 November
+  2026: 03:32 of 30 hours used. It is Kaggle's count and is higher than the smoke test time
+  above. What it includes and which days its week covers were not checked.
+- Not comparable: the Colab llama.cpp run and the Kaggle vLLM 27B run reused model files already
+  on disk from a failed try, so their download time and GPU hours are too low.
+- Memory per T4 on Kaggle: vLLM 9B 8.83 GiB for the model and 85,430 tokens of cache (20.9 full
+  requests of 4,096 tokens at once). vLLM 27B 8.89 GiB and 30,037 tokens (7.3 requests). vLLM's
+  profiling run took 397 s of the 27B start.
+- Tests: 133 unit tests passed on the Mac and in CI (run 43518202012), 2 CI model tests passed in
+  CI, 16 Mac tests passed (uv run pytest -m mac: 16 passed, 1 skipped, 135 deselected).
+  Verification numbers of all 34 Python files checked.
+
+Notes for later steps:
+- make pull-inbox is now tested with real bundles from the Drive inbox and from Kaggle. Finder
+  adds .DS_Store files to data/inbox. The import uploads every file inside a bundle's files/
+  folder, so delete them first: find data/inbox -name .DS_Store -print -delete.
+- Run each measured candidate in a fresh Kaggle or Colab session. A reused session skips
+  downloads and lowers the measured time.
+- vLLM logs "Cannot use FA version 2" as an error on the T4. It is harmless: vLLM uses another
+  attention method.
+- The vLLM lock in ops/vllm-server can be audited only on Linux or with its platform markers
+  removed.
+- Dependabot may show the three accepted setuptools advisories once the vLLM lock is on main.
+- rclone prints that its shared Google Drive client_id is retired during 2026. make backup and
+  make pull-inbox need an own client_id before then.
+- Push protection is still not tested with a real secret.
+- Before the next pull request to main, merge origin/main into phase-1.
+
+### Exact next step
+
+1. Step 1.6 (API-first skeleton), shown to the owner for approval first.
+
+## Session 7 to 9 November 2026: CI pipeline (step 1.4)
+
+- Plan D42 (c6f1765). Code checks pinned in the dev group (b102773): ruff 0.17.3 with its default
+  rules and a line length of 100, ruff format, mypy 2.4.1 (the strict checks for mrag, normal
+  checks for ops/ and benchmarks/) and pip-audit 2.10.1. ruff format changed only the layout of 14
+  Python files (verification numbers unchanged). Fixes the checks found: tracing records a stop
+  such as Ctrl+C as text, check_result.py catches only MLflow errors, 9 points in measure_mac.py.
+- .github/workflows/ci.yml (c392f99): job "Code checks and unit tests" on ubuntu-24.04 with ruff,
+  formatting, mypy, pip-audit on both lock files, the unit tests and the evaluation gate. Read-only
+  token, actions pinned to commit SHAs (checkout v7.0.1, setup-uv v10.3.3, cache v6.1.0), no
+  stored artifacts. Python pinned to 3.12.16 for the platform and the MLflow server (1845968). The
+  uv_build range and an unused mypy setting fixed (974a559).
+- Job "Real model test" (6f4bb3d): llama.cpp b11960 ubuntu-x64 serves Qwen3.5-0.8B Q4_K_M from the
+  new ci profile of configs/models.yaml. Both downloads are checked against their SHA-256 on every
+  run and cached (517 MiB). 2 tests: a plain and a streamed answer.
+- Evaluation gate ops/eval_gate.py with configs/eval/limits.yaml, no limits yet (79b8dfe).
+  Dependabot (eb8c6f7): weekly, a 7-day wait for new releases, minor and patch updates grouped.
+- GitHub settings (owner): secret scanning with push protection, Dependabot security updates and
+  protect-main requiring both CI checks and a branch up to date with main. First secret scan: 0
+  alerts.
+- Done-when: CI green on phase-1 (run 42652265120, commit 8ee3d16). A deliberately failing test on
+  the branch ci-must-fail turned CI red (run 42656989310, only that test failed). Its pull request
+  #2 to main was BLOCKED with no conflict and 0 commits behind main. Closed without merging and
+  the branch deleted.
+- Tests: 91 unit tests passed on the Mac and in CI, 2 CI model tests passed in CI, 16 Mac tests
+  passed with both servers (uv run pytest -m mac: 16 passed, 1 skipped, 93 deselected).
+  Verification numbers of all 28 Python files checked.
+
+Notes for later steps:
+- Artifact and log retention stays at 90 days. Since 1 October 2026 it also deletes checks,
+  workflow runs and commit statuses.
+- The setting that requires actions pinned to a full-length commit SHA: switch it on after
+  Dependabot runs on main, then check its first run.
+- Before the next pull request to main, merge origin/main into phase-1. The up-to-date rule
+  requires it. Checked: no conflict and no file changes.
+- Dependabot starts only when .github/dependabot.yml is on main.
+- Push protection was not tested with a real secret.
+- llama.cpp marks almost every build as pre-release. b11960 stays because the Mac uses it.
+- The label ubuntu-latest moves to Ubuntu 26.04 in November 2026. CI names ubuntu-24.04.
+
+### Exact next step
+
+1. Step 1.5 (free GPU profile), shown to the owner for approval first.
+
+## Session 7 to 9 November 2026: agent harness package plan (during step 1.4)
+
+- Plan D43 replaces D38: the agent harness is one package, src/mrag/harness/, with context
+  building, retrieval at question time, memory, tools, the agent loop, limits, guards, answer
+  checks and the request trace totals behind one entry, harness.run(), which streams answer
+  events. service.py calls it from 1.6, so the API, the chat page and the demo never change
+  their call. Indexing and the other model work at upload stay outside the harness.
+- Rule C2 allows this one package. New step 7.7, FR-AGT-005, AT-7.7 and RISK-023. The import
+  test of the harness starts in 1.6. Design note: docs/04-architecture/agent-harness.md.
+- Commits 78ec8f4, e1e681b and the commit that adds this entry. No code, config or test files
+  changed. uv run pytest: 91 passed, 1 skipped, 18 deselected. Verification numbers unchanged.
+- Step 1.4 is in progress: 1.4.1 to 1.4.7 are done (commits c6f1765 to eb8c6f7). The step 1.4
+  entry with its results follows at the end of the step.
+
+### Exact next step
+
+1. Sub-step 1.4.8: a deliberately broken commit on a test branch must fail CI.
+
+## Session 6 and 7 November 2026: versioning rules (step 1.3)
+
+- Plan D41. Prompts are text files in configs/prompts/ (the first comes in 6.1). prompts.py
+  registers each changed text as a new MLflow prompt version and records every use in the
+  trace and the run. Without MLflow the version is the file's fingerprint.
+- configs/models.yaml pins each Mac model with source, revision and the SHA-256 of the 6 files
+  llama-server loads. The 3 downloaded files match the SHA-256 names in the Hugging Face cache.
+  A unit test keeps llama-swap.yaml and models.yaml in line. tests/integration/test_models_mac.py
+  checks the files (about 11 GB, 15 s).
+- Mac tests now run only with uv run pytest -m mac. uv run pytest runs the fast tests.
+- Pipeline version: one fingerprint of the git commit, uncommitted changes, profile, config
+  files and prompt files, taken at program start and stored on every run and trace.
+- compose.yaml pins Qdrant by digest (sha256:9bfc89f9…4cd2, the same on Docker Hub and on this
+  Mac).
+- ops/check_result.py traces one run to its exact versions. AT-1.3 passed: run e3192767 (mac
+  check) at commit ddd7abf, pipeline version p-74afc0dc4b62, RESULT: OK (0 warnings).
+- Tests: 73 unit tests and 16 Mac tests passed. Commits 20f5319 to ddd7abf.
+
+Notes for later steps:
+- MLflow's own app versions (LoggedModel) need numpy and pandas, so they are not used.
+- Runs made before step 1.3 have no pipeline version, so check_result.py reports them as failed.
+- New files that Git does not track yet count by name only in the changes fingerprint.
+- The running Qdrant container still uses the tag line. It changes to the digest line at the
+  next docker compose up -d (same image, data stays in the volume).
+- Dataset hashing comes with the datasets in step 2.1.
+
+### Exact next step
+
+1. Step 1.4 (CI pipeline), shown to the owner for approval first.
+
+## Session 6 November 2026: MLflow (step 1.2)
+
+- MLflow 3.17.2 (D40). The mlflow-skinny client is in the project environment. The full server
+  has its own locked environment in ops/mlflow-server, because the two packages install the
+  same files (1,326 shared files, counted in the 3.17.2 install files).
+- make mlflow starts the server on 127.0.0.1:5001 with its data in mlflow/. It only accepts an
+  address on this Mac and turns off usage statistics.
+- tracing.py: one trace per request with its totals (tokens in and out, model calls, tool
+  calls, time, fallback) and one span per model call. Runs record the git commit, config
+  fingerprints, model and dataset versions, metrics and result files. Only runs marked for
+  publishing are exported. On in the mac profile only. service.py calls tracing.setup() from
+  step 1.6.
+- llm_client.py records chat, streamed chat, embedding and rerank calls inside a request.
+  Streamed answers report their token counts (stream_options include_usage, confirmed with
+  llama.cpp b11960).
+- export_results.py writes published runs to results/<route>/<date>_<run id>.json. Without a
+  running server it stops at once with a message.
+- make backup takes a clean copy of mlflow/mlflow.db. make restore-test checks its integrity
+  and that MLflow opens it. Not run yet.
+- Tests: 52 unit tests and 10 Mac tests with both servers passed. AT-1.2 passed. Commits
+  6491fb1 to 1600e62.
+- Checked on the Mac: run file links start with mlflow-artifacts:, so the mlflow folder can
+  move to another computer. The server tells the MLflow page that usage data is off
+  (disable_ui_telemetry true). The page still shows an information box about usage data.
+  MLflow with its workers used about 125 MB (RSS).
+
+Notes for later steps:
+- MLflow 3.17.2 lists its automatic OpenAI tracing as tested only with openai 2.2.0 to 2.47.0.
+  Model calls are therefore traced inside llm_client.py. Check MLflow's tested range for
+  LangGraph before its tracing is turned on in 7.2.
+- The tests show one warning from SQLAlchemy 2.1 about MLflow's database code (noload).
+- Every run of the Mac tests adds one trace and one run to the MLflow experiment
+  integration-test.
+- One push failed with "fatal error in commit_refs_rules" on GitHub's side. The same push
+  worked on the second try.
+- Suggested: run make backup and make restore-test once, because the backup code changed in
+  this step. Before that, create the own Google Drive client_id for rclone (note of 4 November).
+
+### Exact next step
+
+1. Step 1.3 (versioning rules), shown to the owner for approval first.
+
+## Session 5 November 2026: GitHub workflow (step 1.1)
+
+- gh 2.103.3 from Homebrew, logged in as Hossain007Bhuiyan.
+- Repo settings: merge commits only. Branches are not deleted after a merge.
+- Ruleset protect-main (id 26650257) on the default branch: pull request required with 0
+  approvals, no deletion, no force push, merge method merge, no bypass. GitHub also set
+  require_extra_approval_for_unattributed_changes to true by default. Its effect is not
+  documented and not checked.
+- Branch phase-1. Commit 46b3d12 records version 0.0.1 in CHANGELOG.md.
+- AT-1.1 passed: a direct push of phase-1 to main was refused (GH013, "Changes must be made
+  through a pull request"). Pull request #1 merged with merge commit 62c367c, tag v0.0.1.
+- No code changed. Tests were not re-run.
+
+### Exact next step
+
+1. Step 1.2 (MLflow), shown to the owner for approval first.
+2. These status changes reach main with the next pull request.
+
 ## Session 5 November 2026: agent harness plan
+
+Replaced on 9 November 2026: D43 makes the harness one package (see the session of 7 to 9
+November).
 
 The agent parts of the plan were checked against current published sources on agent harnesses.
 

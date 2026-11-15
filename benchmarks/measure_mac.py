@@ -17,7 +17,7 @@ import time
 import urllib.error
 import urllib.request
 import zlib
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 
 from mrag.config import PROJECT_ROOT, get_settings
@@ -32,26 +32,39 @@ HELPER_DIR = "models--unsloth--Qwen3.5-2B-GGUF/snapshots/f6d5376be1edb4d416d56da
 
 
 def main_model(ctx):
-    return {"role": "chat", "hub": f"{MAIN_DIR}/Qwen3.5-9B-Q4_K_M.gguf",
-            "hub_mmproj": f"{MAIN_DIR}/mmproj-F16.gguf", "args": ["--ctx-size", str(ctx)]}
+    return {
+        "role": "chat",
+        "hub": f"{MAIN_DIR}/Qwen3.5-9B-Q4_K_M.gguf",
+        "hub_mmproj": f"{MAIN_DIR}/mmproj-F16.gguf",
+        "args": ["--ctx-size", str(ctx)],
+    }
 
 
 def helper_model():
-    return {"role": "chat", "hub": f"{HELPER_DIR}/Qwen3.5-2B-Q8_0.gguf",
-            "args": ["--ctx-size", "4096"]}
+    return {
+        "role": "chat",
+        "hub": f"{HELPER_DIR}/Qwen3.5-2B-Q8_0.gguf",
+        "args": ["--ctx-size", "4096"],
+    }
 
 
 def embed_model(quant, mmproj, ctx):
-    model = {"role": "embed", "local": f"Qwen3-VL-Embedding-2B-{quant}.gguf",
-             "args": ["--embedding", "--ctx-size", str(ctx), "--ubatch-size", str(ctx)]}
+    model = {
+        "role": "embed",
+        "local": f"Qwen3-VL-Embedding-2B-{quant}.gguf",
+        "args": ["--embedding", "--ctx-size", str(ctx), "--ubatch-size", str(ctx)],
+    }
     if mmproj:
         model["local_mmproj"] = f"mmproj-Qwen3-VL-Embedding-2B-{mmproj}.gguf"
     return model
 
 
 def rerank_model(quant, mmproj, ctx):
-    model = {"role": "rerank", "local": f"Qwen3-VL-Reranker-2B-{quant}.gguf",
-             "args": ["--rerank", "--ctx-size", str(ctx)]}
+    model = {
+        "role": "rerank",
+        "local": f"Qwen3-VL-Reranker-2B-{quant}.gguf",
+        "args": ["--rerank", "--ctx-size", str(ctx)],
+    }
     if mmproj:
         model["local_mmproj"] = f"mmproj-Qwen3-VL-Reranker-2B-{mmproj}.gguf"
     return model
@@ -64,37 +77,64 @@ SCENARIOS = [
     ("helper alone, ctx 4096", [helper_model()]),
     ("embedding alone, Q8_0, image F16, ctx 4096", [embed_model("Q8_0", "F16", 4096)]),
     ("reranker alone, Q8_0, image F16, ctx 8192", [rerank_model("Q8_0", "F16", 8192)]),
-    ("main + embedding Q8_0 + reranker Q8_0, images Q8_0, ctx 2048/4096",
-     [main_model(8192), embed_model("Q8_0", "Q8_0", 2048), rerank_model("Q8_0", "Q8_0", 4096)]),
-    ("main + embedding Q4_K_M + reranker Q4_K_M, images Q8_0, ctx 2048/4096",
-     [main_model(8192), embed_model("Q4_K_M", "Q8_0", 2048), rerank_model("Q4_K_M", "Q8_0", 4096)]),
-    ("main + embedding Q4_K_M + reranker Q4_K_M text only, ctx 2048/4096",
-     [main_model(8192), embed_model("Q4_K_M", "Q8_0", 2048), rerank_model("Q4_K_M", None, 4096)]),
+    (
+        "main + embedding Q8_0 + reranker Q8_0, images Q8_0, ctx 2048/4096",
+        [main_model(8192), embed_model("Q8_0", "Q8_0", 2048), rerank_model("Q8_0", "Q8_0", 4096)],
+    ),
+    (
+        "main + embedding Q4_K_M + reranker Q4_K_M, images Q8_0, ctx 2048/4096",
+        [
+            main_model(8192),
+            embed_model("Q4_K_M", "Q8_0", 2048),
+            rerank_model("Q4_K_M", "Q8_0", 4096),
+        ],
+    ),
+    (
+        "main + embedding Q4_K_M + reranker Q4_K_M text only, ctx 2048/4096",
+        [main_model(8192), embed_model("Q4_K_M", "Q8_0", 2048), rerank_model("Q4_K_M", None, 4096)],
+    ),
 ]
 
 COLUMNS = [
-    "run_at", "git_commit", "llama_cpp_build", "gpu_limit_mb", "scenario", "status",
-    "load_s", "peak_wired_increase_mb", "servers_total_mb", "chat_first_token_s",
-    "chat_tokens_per_s", "image_chat_s", "embed_s", "rerank_s",
-    "swap_used_start_mb", "swap_used_end_mb", "note",
+    "run_at",
+    "git_commit",
+    "llama_cpp_build",
+    "gpu_limit_mb",
+    "scenario",
+    "status",
+    "load_s",
+    "peak_wired_increase_mb",
+    "servers_total_mb",
+    "chat_first_token_s",
+    "chat_tokens_per_s",
+    "image_chat_s",
+    "embed_s",
+    "rerank_s",
+    "swap_used_start_mb",
+    "swap_used_end_mb",
+    "note",
 ]
 
 
 def wired_mb():
-    out = subprocess.run(["vm_stat"], capture_output=True, text=True).stdout
+    out = subprocess.run(["vm_stat"], capture_output=True, text=True, check=False).stdout
     pages = int(re.search(r"Pages wired down:\s+(\d+)", out).group(1))
     return pages * PAGE_SIZE / 1048576
 
 
 def swap_used_mb():
-    out = subprocess.run(["sysctl", "-n", "vm.swapusage"], capture_output=True, text=True).stdout
+    out = subprocess.run(
+        ["sysctl", "-n", "vm.swapusage"], capture_output=True, text=True, check=False
+    ).stdout
     return float(re.search(r"used = ([\d.]+)M", out).group(1))
 
 
 def process_total_mb(pid):
     # footprint TOTAL line: dirty memory plus clean memory (the mapped model file)
-    out = subprocess.run(["footprint", "-p", str(pid)], capture_output=True, text=True).stdout
-    match = re.search(r"^\s*(\S+ \S+)\s+(\S+ \S+)\s+\S+ \S+\s+\d+\s+TOTAL", out, re.M)
+    out = subprocess.run(
+        ["footprint", "-p", str(pid)], capture_output=True, text=True, check=False
+    ).stdout
+    match = re.search(r"^\s*(\S+ \S+)\s+(\S+ \S+)\s+\S+ \S+\s+\d+\s+TOTAL", out, re.MULTILINE)
     if not match:
         return 0.0
     return sum(to_mb(part) for part in match.groups())
@@ -121,8 +161,10 @@ class WiredSampler(threading.Thread):
 
 def post(port, path, body, timeout=600):
     request = urllib.request.Request(
-        f"http://127.0.0.1:{port}{path}", data=json.dumps(body).encode(),
-        headers={"Content-Type": "application/json"})
+        f"http://127.0.0.1:{port}{path}",
+        data=json.dumps(body).encode(),
+        headers={"Content-Type": "application/json"},
+    )
     with urllib.request.urlopen(request, timeout=timeout) as response:
         return json.load(response)
 
@@ -145,32 +187,54 @@ def wait_healthy(port, process, timeout=300):
 def test_image_png():
     # 256 x 128 picture: left half red, right half blue
     width, height = 256, 128
-    row = b"\x00" + b"".join(b"\xff\x00\x00" if x < width // 2 else b"\x00\x00\xff"
-                             for x in range(width))
+    row = b"\x00" + b"".join(
+        b"\xff\x00\x00" if x < width // 2 else b"\x00\x00\xff" for x in range(width)
+    )
 
     def chunk(kind, data):
-        return (struct.pack(">I", len(data)) + kind + data
-                + struct.pack(">I", zlib.crc32(kind + data) & 0xFFFFFFFF))
+        return (
+            struct.pack(">I", len(data))
+            + kind
+            + data
+            + struct.pack(">I", zlib.crc32(kind + data) & 0xFFFFFFFF)
+        )
 
     header = struct.pack(">IIBBBBB", width, height, 8, 2, 0, 0, 0)
-    return (b"\x89PNG\r\n\x1a\n" + chunk(b"IHDR", header)
-            + chunk(b"IDAT", zlib.compress(row * height)) + chunk(b"IEND", b""))
+    return (
+        b"\x89PNG\r\n\x1a\n"
+        + chunk(b"IHDR", header)
+        + chunk(b"IDAT", zlib.compress(row * height))
+        + chunk(b"IEND", b"")
+    )
 
 
 IMAGE_B64 = base64.b64encode(test_image_png()).decode()
-PASSAGE = ("The annual report describes revenue, costs and staff numbers for each region. "
-           "Tables on later pages compare the results with the previous year. ") * 12
+PASSAGE = (
+    "The annual report describes revenue, costs and staff numbers for each region. "
+    "Tables on later pages compare the results with the previous year. "
+) * 12
 
 
 def run_chat(port, has_image):
     # Streamed answer without thinking: time to the first token and generation speed
-    body = {"messages": [{"role": "user", "content": "Explain in about 100 words what a "
-                          "search index is and why it makes search faster."}],
-            "max_tokens": 160, "temperature": 0, "stream": True,
-            "chat_template_kwargs": {"enable_thinking": False}}
+    body = {
+        "messages": [
+            {
+                "role": "user",
+                "content": "Explain in about 100 words what a "
+                "search index is and why it makes search faster.",
+            }
+        ],
+        "max_tokens": 160,
+        "temperature": 0,
+        "stream": True,
+        "chat_template_kwargs": {"enable_thinking": False},
+    }
     request = urllib.request.Request(
-        f"http://127.0.0.1:{port}/v1/chat/completions", data=json.dumps(body).encode(),
-        headers={"Content-Type": "application/json"})
+        f"http://127.0.0.1:{port}/v1/chat/completions",
+        data=json.dumps(body).encode(),
+        headers={"Content-Type": "application/json"},
+    )
     start = time.time()
     first_token = None
     speed = None
@@ -187,12 +251,27 @@ def run_chat(port, has_image):
     result = {"chat_first_token_s": first_token, "chat_tokens_per_s": speed}
     if has_image:
         start = time.time()
-        post(port, "/v1/chat/completions", {
-            "messages": [{"role": "user", "content": [
-                {"type": "text", "text": "Which colours are in this picture?"},
-                {"type": "image_url", "image_url": {"url": f"data:image/png;base64,{IMAGE_B64}"}}]}],
-            "max_tokens": 40, "temperature": 0,
-            "chat_template_kwargs": {"enable_thinking": False}})
+        post(
+            port,
+            "/v1/chat/completions",
+            {
+                "messages": [
+                    {
+                        "role": "user",
+                        "content": [
+                            {"type": "text", "text": "Which colours are in this picture?"},
+                            {
+                                "type": "image_url",
+                                "image_url": {"url": f"data:image/png;base64,{IMAGE_B64}"},
+                            },
+                        ],
+                    }
+                ],
+                "max_tokens": 40,
+                "temperature": 0,
+                "chat_template_kwargs": {"enable_thinking": False},
+            },
+        )
         result["image_chat_s"] = time.time() - start
     return result
 
@@ -214,8 +293,11 @@ def run_rerank(port, has_image):
     if has_image:
         documents.append({"text": "A page image", "image": f"data:image/png;base64,{IMAGE_B64}"})
     start = time.time()
-    post(port, "/v1/rerank", {"query": "How did revenue change in each region?",
-                              "documents": documents})
+    post(
+        port,
+        "/v1/rerank",
+        {"query": "How did revenue change in each region?", "documents": documents},
+    )
     return {"rerank_s": time.time() - start}
 
 
@@ -225,8 +307,17 @@ WORKLOADS = {"chat": run_chat, "embed": run_embed, "rerank": run_rerank}
 def model_command(model, settings, port):
     hub = settings.hf_home / "hub"
     path = hub / model["hub"] if "hub" in model else settings.models_dir / model["local"]
-    command = [str(settings.llama_server), "--host", "127.0.0.1", "--port", str(port),
-               "--offline", "--model", str(path), *model["args"]]
+    command = [
+        str(settings.llama_server),
+        "--host",
+        "127.0.0.1",
+        "--port",
+        str(port),
+        "--offline",
+        "--model",
+        str(path),
+        *model["args"],
+    ]
     if "hub_mmproj" in model:
         command += ["--mmproj", str(hub / model["hub_mmproj"])]
     if "local_mmproj" in model:
@@ -245,9 +336,11 @@ def run_scenario(name, models, settings, log_dir):
     try:
         for index, model in enumerate(models):
             port = FIRST_PORT + index
-            log = open(log_dir / f"{len(servers)}-{model['role']}-{port}.log", "w")
-            process = subprocess.Popen(model_command(model, settings, port),
-                                       stdout=log, stderr=subprocess.STDOUT)
+            # Stays open while the server runs. Closed in the finally block below
+            log = open(log_dir / f"{len(servers)}-{model['role']}-{port}.log", "w")  # noqa: SIM115
+            process = subprocess.Popen(
+                model_command(model, settings, port), stdout=log, stderr=subprocess.STDOUT
+            )
             servers.append((model, port, process, log))
         for model, port, process, _ in servers:
             if not wait_healthy(port, process):
@@ -283,32 +376,47 @@ def log_text(path):
 
 
 def gpu_limit_mb(llama_server):
-    out = subprocess.run([str(llama_server), "--list-devices"], capture_output=True, text=True)
+    out = subprocess.run(
+        [str(llama_server), "--list-devices"], capture_output=True, text=True, check=False
+    )
     match = re.search(r"MTL0: .*?\((\d+) MiB", out.stdout + out.stderr)
     return int(match.group(1)) if match else ""
 
 
 def llama_build(llama_server):
-    out = subprocess.run([str(llama_server), "--version"], capture_output=True, text=True)
+    out = subprocess.run(
+        [str(llama_server), "--version"], capture_output=True, text=True, check=False
+    )
     match = re.search(r"build (\d+)", out.stdout + out.stderr)
     return f"b{match.group(1)}" if match else ""
 
 
 def git_commit():
-    out = subprocess.run(["git", "rev-parse", "--short", "HEAD"], cwd=PROJECT_ROOT,
-                         capture_output=True, text=True)
+    out = subprocess.run(
+        ["git", "rev-parse", "--short", "HEAD"],
+        cwd=PROJECT_ROOT,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
     return out.stdout.strip() or "unknown"
 
 
 def main():
     settings = get_settings()
-    missing = [name for name in ("hf_home", "llama_server", "models_dir")
-               if getattr(settings, name) is None]
+    missing = [
+        name
+        for name in ("hf_home", "llama_server", "models_dir")
+        if getattr(settings, name) is None
+    ]
     if missing:
         raise SystemExit(f"Set these in .env first: {', '.join(missing)}")
-    common = {"run_at": datetime.now(timezone.utc).isoformat(timespec="seconds"),
-              "git_commit": git_commit(), "llama_cpp_build": llama_build(settings.llama_server),
-              "gpu_limit_mb": gpu_limit_mb(settings.llama_server)}
+    common = {
+        "run_at": datetime.now(UTC).isoformat(timespec="seconds"),
+        "git_commit": git_commit(),
+        "llama_cpp_build": llama_build(settings.llama_server),
+        "gpu_limit_mb": gpu_limit_mb(settings.llama_server),
+    }
     log_dir = Path(tempfile.mkdtemp(prefix="mrag-measure-"))
     print(f"Server logs: {log_dir}")
     rows = []
@@ -322,8 +430,13 @@ def main():
         writer = csv.DictWriter(handle, fieldnames=COLUMNS)
         writer.writeheader()
         for row in rows:
-            writer.writerow({key: round(value, 2) if isinstance(value, float) else value
-                             for key, value in row.items() if key in COLUMNS})
+            writer.writerow(
+                {
+                    key: round(value, 2) if isinstance(value, float) else value
+                    for key, value in row.items()
+                    if key in COLUMNS
+                }
+            )
     print(f"Saved {len(rows)} rows to {RESULTS_FILE}")
 
 

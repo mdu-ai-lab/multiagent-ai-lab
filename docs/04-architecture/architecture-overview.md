@@ -4,11 +4,11 @@
 |---|---|
 | Purpose | One-page view of the planned architecture |
 | Status | Proposed |
-| Last updated | 2026-11-05 |
+| Last updated | 2026-11-13 |
 | Source of truth | [WORK_PLAN.md](../WORK_PLAN.md) v1.10 |
 | Related documents | [System architecture](../04-architecture/system-architecture.md), [ADRs](../04-architecture/architecture-decision-records/README.md) |
 
-> Implementation status: Phase 0 done (project setup, search database, Mac model server, model client and backup). Later features are planned and not built yet. Test results are in docs/HANDOVER.md.
+> Implementation status: see docs/WORK_PLAN.md, section 1 (current state). Test results are in docs/HANDOVER.md.
 
 The planned system has 4 layers:
 
@@ -16,7 +16,7 @@ The planned system has 4 layers:
 |---|---|---|
 | Clients | Chat web page, live demo, MCP clients | [Frontend architecture](frontend-architecture.md) |
 | Service | FastAPI (api.py) over service.py | [Backend architecture](backend-architecture.md) |
-| Intelligence | LangGraph agent graph and routes, grounding, retrieval, model client | [System architecture](system-architecture.md) |
+| Intelligence | Harness package (LangGraph agent graph, routes, context, retrieval, tools, grounding) and model client | [System architecture](system-architecture.md) |
 | Data and models | Qdrant, SQLite (Postgres later), MLflow, llama.cpp / vLLM / Transformers | [Deployment architecture](deployment-architecture.md) |
 
 The plan's own architecture diagram, copied word for word from WORK_PLAN.md section 8.1:
@@ -25,18 +25,20 @@ The plan's own architecture diagram, copied word for word from WORK_PLAN.md sect
 Browser (chat page)  ·  Live demo (ZeroGPU Space)  ·  MCP clients
             │ HTTP /v1 (local)            │ in-process
             ▼                             ▼
-        FastAPI (api.py) ───────► service.py (core functions)
-                                          │
-                     LangGraph agent graph (graph.py) ◄── harness.py (prompt budget, tool list, limits, trace totals)
-   Router → chat · document Q&A · compare · web · summary · extract · calc
-                     │ Planner–Navigator–Reviewer (max 3, gated)
-                     │ grounding.py (citations, claim check, refusal)
-          ┌──────────┼───────────────┬──────────────────┐
-     retrieve.py  rerank.py      llm_client.py       tools (web.py, calc.py sandbox)
-          │                         │
-       Qdrant              llama.cpp + llama-swap (Mac) · vLLM (Colab/Kaggle/company) · Transformers (demo)
-          ▲
-   worker.py: parse.py (Docling) → figures.py → chunking.py → pii.py → embed.py → index.py
+        FastAPI (api.py) ───────► service.py (core functions, route table)
+                                          │ harness.run(): streamed answer events
+                                          ▼
+   harness/ package (D43) ◄── route agents (qa.py, summary.py, extract.py, calc.py, graphrag.py ...)
+     loop.py: Router → chat · document Q&A · compare · web · summary · extract · calc
+              Planner–Navigator–Reviewer (max 3, gated)
+     context.py (prompt, history, sources within the token budget) · memory.py (chat tables)
+     retrieval.py + rerank.py (question time, access filter) · tools.py · limits.py
+     guards.py (data wrapping, injection rules) · verify.py (citations, claim check, refusal)
+          ┌──────────────┼──────────────────┬──────────────────┐
+       Qdrant      llm_client.py     tools (web.py, calc.py sandbox)   prompts.py · tracing.py (trace totals)
+          ▲              │
+          │        llama.cpp + llama-swap (Mac) · vLLM (Kaggle) · llama.cpp (Colab, D44) · vLLM (company) · Transformers (demo)
+   worker.py: parse.py (Docling) → figures.py → chunking.py → sections.py → pii.py → embed.py → index.py
    SQLite (users, collections, documents, versions, jobs, chat memory)
    MLflow (experiments, prompts, versions, traces, feedback) → export → results/ → dashboard
 ```

@@ -1,0 +1,14 @@
+# Lowest and highest allowed scores for the committed evaluation results in results/.
+# Read by ops/eval_gate.py, which CI runs on every push. For each limit, the newest published
+# result of that route, profile and dataset must report the metric within min and max.
+# No limits yet: they are added from the first baseline results.
+#
+# One limit looks like this:
+#   - route: qa
+#     profile: mac
+#     dataset: qasper
+#     metric: f1
+#     min: 0.6
+# A limit needs min, max or both. Use max for numbers that must stay low, such as time.
+
+limits: []

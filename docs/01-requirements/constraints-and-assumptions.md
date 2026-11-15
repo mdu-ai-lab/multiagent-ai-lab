@@ -4,11 +4,11 @@
 |---|---|
 | Purpose | Fixed limits and open assumptions that shape the design |
 | Status | Proposed |
-| Last updated | 2026-11-05 |
+| Last updated | 2026-11-11 |
 | Source of truth | [WORK_PLAN.md](../WORK_PLAN.md) v1.10 |
 | Related documents | [SRS](../01-requirements/srs.md), [Risk register](../12-project-management/risk-register.md) |
 
-> Implementation status: Phase 0 done (project setup, search database, Mac model server, model client and backup). Later features are planned and not built yet. Test results are in docs/HANDOVER.md.
+> Implementation status: see docs/WORK_PLAN.md, section 1 (current state). Test results are in docs/HANDOVER.md.
 
 ## Constraints
 
@@ -16,11 +16,11 @@
 |---|---|---|
 | CON-001 | Zero cost everywhere | Rule Z |
 | CON-002 | Main machine: MacBook Air M2, 16 GB RAM, project on an external 2 TB SSD | Section 6 |
-| CON-003 | Free cloud GPU only: Colab free (main), Kaggle free (backup) | D10 |
+| CON-003 | Free cloud GPU only: Kaggle free (main), Colab free (backup) | D10 |
 | CON-004 | Private documents stay on the Mac | Rule V |
 | CON-005 | Google Drive: the owner's existing 2 TB plan | Section 7 |
 | CON-006 | ZeroGPU Spaces only on the personal Hugging Face account (organizations need a paid plan) | D16 |
-| CON-008 | Python 3.12, uv, flat modules in src/<package>/ | Rule C2 |
+| CON-008 | Python 3.12, uv, flat modules in src/<package>/ and one package for the agent harness (D43) | Rule C2 |
 
 ## Assumptions (each needs confirmation)
 

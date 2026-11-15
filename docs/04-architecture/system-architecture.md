@@ -4,11 +4,11 @@
 |---|---|
 | Purpose | Components, data flow and boundaries of the planned system |
 | Status | Proposed |
-| Last updated | 2026-11-05 |
+| Last updated | 2026-11-09 |
 | Source of truth | [WORK_PLAN.md](../WORK_PLAN.md) v1.10 |
 | Related documents | [Backend architecture](../04-architecture/backend-architecture.md), [Integration architecture](../04-architecture/integration-architecture.md), [Threat model](../07-security/threat-model.md) |
 
-> Implementation status: Phase 0 done (project setup, search database, Mac model server, model client and backup). Later features are planned and not built yet. Test results are in docs/HANDOVER.md.
+> Implementation status: see docs/WORK_PLAN.md, section 1 (current state). Test results are in docs/HANDOVER.md.
 
 All diagrams show the PROPOSED design from WORK_PLAN.md section 8.1. No component exists yet.
 
@@ -25,28 +25,30 @@ flowchart TB
   UI --> API
   MCP --> API
   DEMO -->|in-process| SVC
-  SVC --> G[LangGraph agent graph graph.py]
-  G --> H[harness.py prompt budget, tool list, limits]
-  G --> R[router.py]
+  SVC -->|harness.run streamed events| HP[harness package D43]
+  HP --> G[LangGraph agent graph harness/loop.py]
+  HP --> HX[harness context, memory, tools, limits, guards, trace totals]
+  G --> R[harness/router.py]
   R --> CHAT[chat]
   R --> QA[document Q&A qa.py]
   R --> CMP[compare]
-  R --> WEB[web.py]
+  R --> WEB[web route, search through web.py]
   R --> SUM[summary.py]
   R --> EXT[extract.py]
   R --> CALC[calc.py sandbox]
   R --> GR2[graphrag.py graph route]
-  GR2 --> KGS[(Graph store - format chosen in 9A.3)]
+  GR2 -->|graph facts through harness/retrieval.py| KGS[(Graph store - format chosen in 9A.3)]
   ONT[ontology.py LinkML] --> KG[kg.py graph extraction] --> KGS
   NB[notebook.py + study.py] --> SUM
-  NB --> KGS
-  QA --> PL[planner.py loop max 3]
-  QA --> GR[grounding.py]
-  QA --> RET[retrieve.py + rerank.py]
+  NB -->|through harness/retrieval.py| KGS
+  QA --> PL[harness/planner.py loop max 3]
+  QA --> GR[harness/verify.py]
+  QA --> RET[harness/retrieval.py + harness/rerank.py]
   RET --> QD[(Qdrant)]
   G --> LLM[llm_client.py]
   LLM --> MS[llama.cpp + llama-swap / vLLM / Transformers]
   WK[worker.py] --> PARSE[parse.py Docling] --> FIG[figures.py] --> CH[chunking.py] --> PII[pii.py] --> EMB[embed.py] --> IDX[index.py] --> QD
+  CH --> SEC[sections.py section summaries at upload]
   SVC --> DB[(SQLite)]
   G --> ML[(MLflow traces)]
 ```
@@ -57,12 +59,12 @@ flowchart TB
 sequenceDiagram
   participant U as User
   participant A as api.py
-  participant G as graph.py
-  participant R as retrieve.py
+  participant G as harness/loop.py
+  participant R as harness/retrieval.py
   participant M as Model server
-  participant C as grounding.py
+  participant C as harness/verify.py
   U->>A: question + chosen files
-  A->>G: run with user and collection filter
+  A->>G: harness.run with user and collection filter
   G->>G: router picks document Q&A
   G->>R: hybrid search with filters
   R-->>G: top 6 to 8 chunks
@@ -79,6 +81,7 @@ sequenceDiagram
 flowchart LR
   UP[Upload] --> J[Job queued] --> P[Parse + OCR] --> F[Describe figures] --> C[Chunk] --> X[Mask personal data in logs] --> E[Embed] --> I[Index in Qdrant] --> D[Job done]
   P -->|failure| FL[Job failed with reason]
+  C -->|for the summary route| SM[Section summaries with sections.py - 9.1]
   I -->|optional per collection| KX[Graph extraction with ontology - 9A.2] --> KD[Graph store]
 ```
 

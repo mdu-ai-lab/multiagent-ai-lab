@@ -4,16 +4,16 @@
 |---|---|
 | Purpose | Phase order |
 | Status | Proposed |
-| Last updated | 2026-11-05 |
+| Last updated | 2026-11-14 |
 | Source of truth | [WORK_PLAN.md](../WORK_PLAN.md) v1.10 |
 | Related documents | [Milestones](../12-project-management/milestones.md) |
 
-> Implementation status: Phase 0 done (project setup, search database, Mac model server, model client and backup). Later features are planned and not built yet. Test results are in docs/HANDOVER.md.
+> Implementation status: see docs/WORK_PLAN.md, section 1 (current state). Test results are in docs/HANDOVER.md.
 
 | State | Content |
 |---|---|
 | Existing functionality | Project setup (step 0.1): settings, database layer, Alembic. Qdrant in Docker (step 0.2). Local model server with 4 models (step 0.3). Mac measurements (step 0.4). Model client (step 0.5). Backup to Google Drive (step 0.6) |
-| Work in progress | None. Next: Phase 1 |
+| Work in progress | Phase 1 (steps 1.1 to 1.6 done) |
 | Planned | Phases 0 to 16 (below) |
 | Future possibilities | SSO, multi-server scaling, fine-tuning, more languages (not in v1) |
 

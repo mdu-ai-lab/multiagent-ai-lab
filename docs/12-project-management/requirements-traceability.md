@@ -4,18 +4,18 @@
 |---|---|
 | Purpose | Links from each requirement to module, test and status |
 | Status | Proposed |
-| Last updated | 2026-11-05 |
+| Last updated | 2026-11-14 |
 | Source of truth | [WORK_PLAN.md](../WORK_PLAN.md) v1.10 |
 | Related documents | [Functional requirements](../01-requirements/functional-requirements.md), [Acceptance test cases](../09-testing/acceptance-test-cases.md) |
 
-> Implementation status: Phase 0 done (project setup, search database, Mac model server, model client and backup). Later features are planned and not built yet. Test results are in docs/HANDOVER.md.
+> Implementation status: see docs/WORK_PLAN.md, section 1 (current state). Test results are in docs/HANDOVER.md.
 
 Components, entities and APIs per requirement are listed in each module document. Status uses: Implemented and verified, Implemented verification incomplete, Partially implemented, Not implemented, Not verified, Blocked, Not applicable.
 
 | Requirement | Module | Test | Status |
 |---|---|---|---|
 | FR-CHAT-001 | [agents-and-memory](../03-functional-modules/agents-and-memory.md) | AT-7.2 | Not implemented |
-| FR-CHAT-002 | [agents-and-memory](../03-functional-modules/agents-and-memory.md) | AT-6.1 | Not implemented |
+| FR-CHAT-002 | [agents-and-memory](../03-functional-modules/agents-and-memory.md) | AT-1.6, AT-6.1 | Not implemented |
 | FR-CHAT-003 | [agents-and-memory](../03-functional-modules/agents-and-memory.md) | AT-7.5 | Not implemented |
 | FR-ING-001 | [ingestion](../03-functional-modules/ingestion.md) | AT-3.2 | Not implemented |
 | FR-ING-002 | [ingestion](../03-functional-modules/ingestion.md) | AT-3.1 | Not implemented |
@@ -38,6 +38,7 @@ Components, entities and APIs per requirement are listed in each module document
 | FR-AGT-002 | [agents-and-memory](../03-functional-modules/agents-and-memory.md) | AT-7.3 | Not implemented |
 | FR-AGT-003 | [agents-and-memory](../03-functional-modules/agents-and-memory.md) | AT-7.4 | Not implemented |
 | FR-AGT-004 | [agents-and-memory](../03-functional-modules/agents-and-memory.md) | AT-7.6 | Not implemented |
+| FR-AGT-005 | [agents-and-memory](../03-functional-modules/agents-and-memory.md) | AT-1.6, AT-7.7 | Not implemented |
 | FR-WEB-001 | [web-search](../03-functional-modules/web-search.md) | AT-8.1 | Not implemented |
 | FR-WEB-002 | [web-search](../03-functional-modules/web-search.md) | AT-8.2 | Not implemented |
 | FR-WEB-003 | [web-search](../03-functional-modules/web-search.md) | AT-8.3 | Not implemented |
@@ -92,25 +93,25 @@ Components, entities and APIs per requirement are listed in each module document
 | R11 | Every technology has a real purpose | Section 9 (why column) | Planned |
 | R12 | Project on the external 2 TB SSD | Section 6.3 | Done |
 | R13 | Full backup of the project on the SSD to Google Drive, restorable to another laptop or SSD | Section 6.4, step 0.6 | Done |
-| R14 | Use both MacBook Air M2 (16 GB) and Google Colab, chosen per task | Section 6.2 | Planned |
+| R14 | Use both MacBook Air M2 (16 GB) and the free cloud GPUs (Kaggle main, Google Colab backup), chosen per task | Section 6.2 | Partly done (Mac profile in Phase 0, Kaggle and Colab GPU profiles in 1.5) |
 | R15 | Do not limit the design because of the MacBook. Use free cloud GPU when needed | Sections 6.1 and 6.2 | Planned |
 | R16 | Push to GitHub after every step | Rule G | Planned |
 | R17 | Live website that updates automatically after every push, before and after the API exists | Section 11, steps 1.7, 1.8 | Planned |
-| R18 | API at the best stage, without rework | Step 1.6 (API-first), Phase 13 hardening | Planned |
-| R19 | CI/CD and MLOps where they have a purpose | Phase 1 | Planned |
-| R20 | MLflow for experiments, traces and versioning | 1.2, 1.3 | Planned |
-| R21 | Testing, monitoring, documentation, version control, data management, security | 1.4, 1.9, 13.4, 16.2, section 6, Phase 12 | Planned |
+| R18 | API at the best stage, without rework | Step 1.6 (API-first), Phase 13 hardening | Partly done (API-first skeleton in 1.6, hardening in Phase 13) |
+| R19 | CI/CD and MLOps where they have a purpose | Phase 1 | Partly done (MLflow in 1.2 and 1.3, CI in 1.4. CD for the dashboard and the demo in 1.7 and 1.8) |
+| R20 | MLflow for experiments, traces and versioning | 1.2, 1.3 | Done |
+| R21 | Testing, monitoring, documentation, version control, data management, security | 1.4, 1.9, 13.4, 16.2, section 6, Phase 12 | Partly done (version control in 1.1, CI tests and security checks in 1.4) |
 | R22 | Future company use (on-prem, audit trail, versioned releases) | Phase 15 | Planned |
 | R23 | A self-contained handover | Sections 1 and 15 | Planned |
 | R24 | Easy English, step by step, why for each step | Rule C1 | Planned |
 | R25 | Coding rules (flat modules, file creation by the coding assistant after approval, hashes, full commands, Git one per line, expected output, human style, no comma before and/or/but) | Section 5.2 | Planned |
 | R26 | One phase at a time with checks and permission. Done/not-done table after each phase. What to do next after each step | Rule P | Planned |
 | R27 | Copy-pasteable plan | This file | Done |
-| R28 | Repo owned by a GitHub organization from the start | Step 0.1, step 1.1 | Partly done (organization repo created. Workflow in step 1.1) |
+| R28 | Repo owned by a GitHub organization from the start | Step 0.1, step 1.1 | Done (organization repo, protected main branch and pull request workflow) |
 | R29 | GraphRAG: answers that follow relationships between entities across documents | Phase 9A | Planned |
 | R30 | Ontology: a defined, versioned set of entity and relation types | Step 9A.1 | Planned |
 | R31 | Knowledge base: collections, knowledge graph and saved notes together (interpretation, see Q11) | Phases 9A, 9B | Planned |
 | R32 | Notebooks (workspaces on one topic): sources, chat, notes, study guide, FAQ, briefing, flashcards, quiz, mind map | Phase 9B | Planned |
 | R33 | Verification loop: code, commands and expected output with a 12-character verification number per Python code file, checked locally with uv | Rules C12, C13, step 0.1 | Done (in use since step 0.1) |
 | R34 | Own chat web page with accounts, login and an admin panel from Phase 1, rebuilt from the chat page preview | Step 1.10, D37 | Planned |
-| R35 | One agent harness: context building, retrieval, tool access, limits, safety rules and traces brought together in one place | D38, steps 6.1, 7.4, 7.6, 12.1 | Planned |
+| R35 | One agent harness: context building, retrieval, memory, tool access, the agent loop, limits, safety rules, answer checks and traces brought together in one place | D43, steps 1.6, 5.3, 6.1, 7.2, 7.4, 7.6, 7.7, 12.1 | Planned |

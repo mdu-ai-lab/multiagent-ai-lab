@@ -8,12 +8,12 @@
 | Source of truth | [WORK_PLAN.md](../WORK_PLAN.md) v1.10 |
 | Related documents | [Roadmap](../12-project-management/roadmap.md) |
 
-> Implementation status: Phase 0 done (project setup, search database, Mac model server, model client and backup). Later features are planned and not built yet. Test results are in docs/HANDOVER.md.
+> Implementation status: see docs/WORK_PLAN.md, section 1 (current state). Test results are in docs/HANDOVER.md.
 
 | Milestone | Phase | Marker | Status |
 |---|---|---|---|
 | M-0 | Phase 0: Foundations on the Mac | Version tag at phase end (1.1) | Done (v0.0.0) |
-| M-1 | Phase 1: MLOps, API and live delivery base | Version tag at phase end (1.1) | Not started |
+| M-1 | Phase 1: MLOps, API and live delivery base | Version tag at phase end (1.1) | In progress |
 | M-2 | Phase 2: Evaluation base | Version tag at phase end (1.1) | Not started |
 | M-3 | Phase 3: Ingestion | Version tag at phase end (1.1) | Not started |
 | M-4 | Phase 4: Charts and figures | Version tag at phase end (1.1) | Not started |

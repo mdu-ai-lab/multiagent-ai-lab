@@ -4,15 +4,15 @@
 |---|---|
 | Purpose | Planned GitHub Actions workflows |
 | Status | Proposed |
-| Last updated | 2026-11-05 |
+| Last updated | 2026-11-09 |
 | Source of truth | [WORK_PLAN.md](../WORK_PLAN.md) v1.10 |
 | Related documents | [Testing strategy](../09-testing/testing-strategy.md), [Git workflow](../11-development-standards/git-workflow.md) |
 
-> Implementation status: Phase 0 done (project setup, search database, Mac model server, model client and backup). Later features are planned and not built yet. Test results are in docs/HANDOVER.md.
+> Implementation status: see docs/WORK_PLAN.md, section 1 (current state). Test results are in docs/HANDOVER.md.
 
 ```mermaid
 flowchart LR
-  P[git push or pull request] --> CI[ci.yml: ruff, mypy, pytest, tiny-model test, pip-audit, secret scan, eval gate]
+  P[git push or pull request] --> CI[ci.yml: ruff, mypy, pytest, tiny-model test, pip-audit, eval gate]
   CI -->|green on main| PG[pages.yml: build site from results/ to GitHub Pages]
   CI -->|green on main| DM[demo.yml: upload demo/ and src/ to ZeroGPU Space]
   T[version tag] --> RL[release.yml: images to GHCR]
@@ -27,7 +27,7 @@ flowchart LR
 | health.yml | Weekly | 1.9 |
 | release.yml | Version tag | 15.1 |
 
-Cost guard: public repo, standard runners only, small artifacts with short retention (rule Z, 1.4). Dependabot proposes security updates (1.4).
+Cost guard: public repo, standard runners only, no paid features and no stored artifacts except the Pages deployment artifact, which GitHub deletes after 1 day. An organization without a payment method cannot be billed (rule Z, D42). Dependabot proposes updates (1.4). Secret scanning with push protection runs on GitHub itself, not in ci.yml.
 
 ## Live website: how it works and updates (WORK_PLAN.md section 11, word for word)
 

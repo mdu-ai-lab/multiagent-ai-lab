@@ -4,11 +4,11 @@
 |---|---|
 | Purpose | How code is written in this project |
 | Status | Proposed |
-| Last updated | 2026-11-05 |
+| Last updated | 2026-11-09 |
 | Source of truth | [WORK_PLAN.md](../WORK_PLAN.md) v1.10 |
 | Related documents | [Project structure](../11-development-standards/project-structure.md), [Code review](../11-development-standards/code-review.md) |
 
-> Implementation status: Phase 0 done (project setup, search database, Mac model server, model client and backup). Later features are planned and not built yet. Test results are in docs/HANDOVER.md.
+> Implementation status: see docs/WORK_PLAN.md, section 1 (current state). Test results are in docs/HANDOVER.md.
 
 These are the owner's approved rules, copied word for word from WORK_PLAN.md section 5. Ruff and mypy in CI (step 1.4) enforce style and types from Phase 1. All other rules are working rules and are not enforced by tooling.
 
@@ -34,7 +34,7 @@ These are the owner's approved rules, copied word for word from WORK_PLAN.md sec
 | ID | Rule |
 |---|---|
 | C1 | Very easy English, step by step, with why each step is needed |
-| C2 | Flat modules in src/mrag/ for platform code only. Run with uv run python -m mrag.<module>. Other tools live in top-level folders such as benchmarks/ |
+| C2 | Flat modules in src/mrag/ for platform code only, with one exception: the agent harness is the package src/mrag/harness/ (D43), because its parts must work together as one unit. Run with uv run python -m mrag.<module>. Other tools live in top-level folders such as benchmarks/ |
 | C3 | Code files are written by the coding assistant in the project folder, only after the owner approves each change. Never through terminal commands such as heredoc |
 | C4 | Give a short hash check for every code file plus the Mac command to compute it |
 | C5 | Write every command in full. Never say "the command from step X". Group independent commands |

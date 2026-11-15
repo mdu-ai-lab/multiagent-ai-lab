@@ -4,11 +4,11 @@
 |---|---|
 | Purpose | Specification of the summaries module |
 | Status | Proposed |
-| Last updated | 2026-11-05 |
+| Last updated | 2026-11-09 |
 | Source of truth | [WORK_PLAN.md](../WORK_PLAN.md) v1.10 |
 | Related documents | [Modules index](../03-functional-modules/README.md), [Traceability](../12-project-management/requirements-traceability.md) |
 
-> Implementation status: Phase 0 done (project setup, search database, Mac model server, model client and backup). Later features are planned and not built yet. Test results are in docs/HANDOVER.md.
+> Implementation status: see docs/WORK_PLAN.md, section 1 (current state). Test results are in docs/HANDOVER.md.
 
 | Item | Detail |
 |---|---|
@@ -16,7 +16,7 @@
 | Actors | Member |
 | Functional requirements | FR-SUM-001, FR-SUM-002 |
 | Business rules | BR-GND-002 |
-| Planned files | summary.py |
+| Planned files | summary.py (question time), sections.py (section summaries at upload) |
 | Models and tools | Main model, pandas |
 | Data entities | Section summaries (storage REQUIRES CONFIRMATION) |
 | API endpoints | Summary endpoint (path REQUIRES CONFIRMATION) |

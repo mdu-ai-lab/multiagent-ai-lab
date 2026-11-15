@@ -1,6 +1,7 @@
 # Unit tests for ops/backup.py. They test the safety parts without rclone, Drive or Docker.
 
 import importlib.util
+import re
 import sqlite3
 from datetime import datetime
 from pathlib import Path
@@ -26,7 +27,8 @@ def test_drive_paths_stay_inside_the_root_folder():
     assert paths["multiagent-ai-lab"] == f"{ROOT}/multiagent-ai-lab"
     assert paths["multiagent-ai-lab-local"] == f"{ROOT}/multiagent-ai-lab-local"
     assert paths["history/multiagent-ai-lab"] == (
-        f"{ROOT}/multiagent-ai-lab-backup/history/2026-11-02_090507/multiagent-ai-lab")
+        f"{ROOT}/multiagent-ai-lab-backup/history/2026-11-02_090507/multiagent-ai-lab"
+    )
     assert paths["logs"] == f"{ROOT}/multiagent-ai-lab-backup/logs/2026-11-02_090507"
     # No target is the root itself, so other folders in it are never touched
     assert all(p.startswith(ROOT + "/") for p in paths.values())
@@ -58,9 +60,13 @@ def test_check_sources_accepts_a_complete_folder(tmp_path):
 
 
 def test_sync_command_keeps_links_permissions_and_history(tmp_path):
-    cmd = backup.sync_command(Path("/src"), f"{ROOT}/multiagent-ai-lab-local",
-                              f"{ROOT}/multiagent-ai-lab-backup/history/r/multiagent-ai-lab-local",
-                              "multiagent-ai-lab-local", tmp_path / "log")
+    cmd = backup.sync_command(
+        Path("/src"),
+        f"{ROOT}/multiagent-ai-lab-local",
+        f"{ROOT}/multiagent-ai-lab-backup/history/r/multiagent-ai-lab-local",
+        "multiagent-ai-lab-local",
+        tmp_path / "log",
+    )
     assert cmd[:4] == ["rclone", "sync", "/src", f"{ROOT}/multiagent-ai-lab-local"]
     assert cmd[cmd.index("--backup-dir") + 1].endswith("/history/r/multiagent-ai-lab-local")
     for flag in ("--links", "-M", "--create-empty-src-dirs"):
@@ -130,3 +136,27 @@ def test_qdrant_snapshot_is_skipped_when_qdrant_is_off(tmp_path):
 
 def test_qdrant_image_comes_from_compose():
     assert backup.qdrant_image().startswith("qdrant/qdrant:v")
+
+
+def test_qdrant_image_is_pinned_by_digest():
+    # The tag names the release, the digest makes sure it is exactly that image
+    image = backup.qdrant_image()
+    assert re.fullmatch(r"qdrant/qdrant:v[\d.]+@sha256:[0-9a-f]{64}", image)
+
+
+def test_mlflow_opens_a_real_mlflow_database(tmp_path, monkeypatch):
+    from mlflow.tracking import MlflowClient
+
+    # MLflow writes run files next to the working folder, so the test works in a temporary one
+    monkeypatch.chdir(tmp_path)
+    db = tmp_path / "mlflow.db"
+    MlflowClient(tracking_uri=f"sqlite:///{db}").create_experiment("qa")
+    # The Default experiment plus qa
+    assert backup.mlflow_opens(db) == {"status": "ok", "experiments": 2}
+
+
+def test_mlflow_opens_reports_a_broken_database(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
+    broken = tmp_path / "mlflow.db"
+    broken.write_text("not a database")
+    assert backup.mlflow_opens(broken)["status"] == "failed"
