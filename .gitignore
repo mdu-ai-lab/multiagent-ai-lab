@@ -32,6 +32,8 @@ __pycache__/
 .ipynb_checkpoints/
 build/
 dist/
+# The built dashboard (python -m mrag.site_build). CI builds it again for GitHub Pages
+_site/
 *.egg-info/
 
 # macOS and personal editor settings

@@ -80,6 +80,10 @@ jobs:
       - name: Evaluation gate (committed results against configs/eval/limits.yaml)
         run: uv run python ops/eval_gate.py
 
+      # The same build as for GitHub Pages, so a broken dashboard fails here first
+      - name: Build the live dashboard
+        run: uv run python -m mrag.site_build
+
   model:
     # The same server program as on the Mac (llama.cpp build b11960) with a small model on
     # the CPU, called through llm_client.py
