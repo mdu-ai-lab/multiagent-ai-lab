@@ -119,6 +119,9 @@ footer { margin-top: 48px; color: var(--muted); font-size: 0.85rem; }
 {% for release in releases %}
   <details class="phase"{% if loop.first %} open{% endif %}>
     <summary><h3>{{ release.title }}</h3></summary>
+    {% if not release.sections %}
+    <p class="muted">No changes since the last version yet.</p>
+    {% endif %}
     {% for name, items in release.sections.items() %}
     <p class="muted">{{ name }}</p>
     <ul>{% for item in items %}<li>{{ item }}</li>{% endfor %}</ul>

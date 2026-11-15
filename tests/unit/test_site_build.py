@@ -48,7 +48,8 @@ def test_the_real_state_diagram_and_changelog_are_read():
     assert "harness.run()" in site_build.read_architecture(PLAN)
     releases = site_build.read_changelog(CHANGELOG)
     assert releases[0].title == "[Unreleased]"
-    assert releases[0].sections["Added"]
+    # Unreleased is empty right after a version is recorded, so look at all versions
+    assert any(release.sections.get("Added") for release in releases)
 
 
 def test_results_are_grouped_and_ordered(tmp_path):
@@ -73,6 +74,12 @@ def test_trend_points():
 def test_without_results_the_page_says_so(tmp_path):
     page = site_build.render(PLAN, CHANGELOG, tmp_path)
     assert "No published results yet" in page
+
+
+def test_a_version_without_changes_gets_a_note(tmp_path):
+    changelog = "# Changelog\n\n## [Unreleased]\n\n## [0.0.2] - 2026-11-15\n\n### Added\n\n- A\n"
+    page = site_build.render(PLAN, changelog, tmp_path)
+    assert page.count("No changes since the last version yet.") == 1
 
 
 def test_text_from_the_docs_is_escaped(tmp_path):
