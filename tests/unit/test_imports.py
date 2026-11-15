@@ -29,7 +29,8 @@ def imports(path):
 
 
 def outer_layer():
-    files = [SRC / "service.py", SRC / "api.py"]
+    # The demo is outer layer too: it reaches the model only through service.py
+    files = [SRC / "service.py", SRC / "api.py", *sorted((PROJECT_ROOT / "demo").glob("*.py"))]
     return files + [SRC / f"{name}.py" for name in ROUTE_AGENTS if (SRC / f"{name}.py").exists()]
 
 

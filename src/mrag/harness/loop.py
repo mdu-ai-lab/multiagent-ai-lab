@@ -10,7 +10,13 @@ from mrag.config import get_settings
 from mrag.harness.handle import Delta, Done, Error, Event, Harness, Request, Route
 from mrag.harness.limits import Deadline, TimeLimitError
 from mrag.harness.settings import HarnessError, for_profile
-from mrag.llm_client import InputTooLongError, LLMError, ModelUnavailableError, get_client
+from mrag.llm_client import (
+    InputTooLongError,
+    LLMError,
+    ModelUnavailableError,
+    TransformersClient,
+    get_client,
+)
 
 # The first matching type names the error. InputTooLongError is also an LLMError
 ERROR_KINDS: list[tuple[type[Exception], str]] = [
@@ -20,6 +26,14 @@ ERROR_KINDS: list[tuple[type[Exception], str]] = [
     (TimeLimitError, "time_limit"),
     (HarnessError, "harness_error"),
 ]
+
+
+def prepare() -> None:
+    # Loads the main model now when this profile runs it inside the process (Transformers).
+    # A model server (llama-swap, vLLM) loads its models itself, so nothing happens then
+    client = get_client()
+    if isinstance(client, TransformersClient):
+        client.load("main")
 
 
 # A generator, so a reader can close it: closing stops the model call

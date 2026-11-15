@@ -269,9 +269,13 @@ def git_state() -> dict[str, str]:
     # The code version: commit, whether there are uncommitted changes and a fingerprint of
     # them. New files that Git does not track yet count by name only
     def git(*args: str) -> str:
-        done = subprocess.run(
-            ["git", *args], cwd=PROJECT_ROOT, capture_output=True, text=True, check=False
-        )
+        # Empty when Git is missing, for example in a Space image without it
+        try:
+            done = subprocess.run(
+                ["git", *args], cwd=PROJECT_ROOT, capture_output=True, text=True, check=False
+            )
+        except OSError:
+            return ""
         return done.stdout.strip()
 
     status = git("status", "--porcelain")
