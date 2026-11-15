@@ -113,7 +113,7 @@ def create_user(s: Session, email: str, name: str, password: str, role: str = "m
     if problem:
         raise AccountError(problem)
     # Telling that an email is taken shows that the account exists. Without email sending
-    # there is no way around it. Sign-up is off by default and login throttling comes later
+    # there is no way around it. Login throttling comes later
     if s.scalar(select(db.User.id).where(db.User.email == email)) is not None:
         raise AccountError("email_taken")
     user = db.User(email=email, name=name, password_hash=hash_password(password), role=role)

@@ -154,7 +154,10 @@ def test_keep_me_logged_in_gives_a_lasting_cookie(client):
     assert f"max-age={30 * 24 * 3600}" in response.headers["set-cookie"].lower()
 
 
-def test_sign_up_is_off_by_default(client):
+def test_sign_up_is_on_by_default_and_an_admin_can_turn_it_off(client):
+    assert '<a href="/signup">Create one</a>' in client.get("/login").text
+    set_option("signup_open", False)
+    assert '<a href="/signup">' not in client.get("/login").text
     headers = open_page(client, "/signup")
     assert "Sign-up is turned off" in client.get("/signup").text
     response = client.post(

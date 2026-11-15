@@ -1,5 +1,5 @@
 # Admin settings of the chat page (saved in the app_settings table) and the admin commands
-# in Terminal. The first admin account is made here, because sign-up is off by default:
+# in Terminal. The first admin account is made here, because a new sign-up is always a member:
 #   uv run python -m mrag.admin create-admin <email> <name>
 #   uv run python -m mrag.admin list-users
 
@@ -14,8 +14,8 @@ from sqlalchemy.orm import Session
 from mrag import auth, db
 from mrag.translations import TEXT
 
-# Used while an admin has not changed a setting: guests and sign-up stay off
-DEFAULTS: dict[str, Any] = {"guest_mode": False, "guest_limit": 5, "signup_open": False}
+# Used while an admin has not changed a setting: guest mode starts off and sign-up starts on
+DEFAULTS: dict[str, Any] = {"guest_mode": False, "guest_limit": 5, "signup_open": True}
 # The name the activity log shows for actions done in Terminal
 TERMINAL = "Terminal"
 
