@@ -2,6 +2,50 @@
 
 Report of the last work session. Read this after docs/WORK_PLAN.md at the start of every session.
 
+## Session 15 November 2026: live dashboard (step 1.7)
+
+- Review of the whole project before the step: ruff, mypy, 165 unit tests, pip-audit (0 known
+  holes), 0 open Dependabot and secret scanning alerts and the active ruleset. It found 100
+  documents whose status note still said that only Phase 0 was done. The note now points to
+  the current state in WORK_PLAN.md section 1 (fd8415a). The root README.md stays as it is
+  until the end of the project.
+- Plan D46 (fd8415a). The GitHub Pages limits were checked again on docs.github.com.
+- Generator (9dc0aa7): src/mrag/site_build.py builds one static page with Jinja2 from the
+  plan (progress per phase and step, the architecture diagram), the changelog and results/
+  (newest result per route, profile and dataset with an SVG trend line). Every value is
+  HTML-escaped and the page loads nothing from other sites. CI builds it on every push.
+- Pages workflow (d3ceb22): .github/workflows/pages.yml runs after CI passed on a push to main
+  in this repository and builds exactly the tested commit. configure-pages is not used (it
+  configures static site generators). The check of the event and the repository stops a pull
+  request from a fork with a branch named main.
+- Version record 0.0.2 (ecccb57) and a fix (92174b3): the dashboard test expected changes in
+  Unreleased, which is empty right after a version is recorded, so CI failed. The tests had
+  not been run after the changelog change. The test was fixed and the page shows a note for a
+  version without changes.
+- Merge: origin/main merged into phase-1 without file changes (21c2457). Pull request #3 merged
+  as 0e1301e. Tag v0.0.2 on 0e1301e.
+- GitHub settings (owner): Pages source GitHub Actions. GitHub created the environment
+  github-pages, from which only main may deploy (checked through the API).
+- Done-when: https://mdu-ai-lab.github.io/multiagent-ai-lab/ answers with HTTP 200, 38 kB, built
+  from 0e1301e about 7 minutes after the merge (Pages run 43735516730).
+- Tests: 174 unit tests passed on the Mac and in CI (run 43735340703 on main). Verification
+  numbers of all 49 Python files checked.
+
+Notes for later steps:
+- Dependabot started once its settings reached main. Pull request #4 (7 Python packages, CI
+  green) is open and not merged: it raises mlflow-skinny from 3.17.2 to 3.18.0, which D40 pins.
+  Check it on the Mac before a merge.
+- Dependabot opens its pull requests against main. After merging one, run git merge
+  origin/main on phase-1. Whether security updates always go to the default branch is not
+  checked.
+- The dashboard changes only with a merge to main (rule L).
+- Before the next pull request to main, merge origin/main into phase-1.
+
+### Exact next step
+
+1. Step 1.8 (live demo), shown to the owner for approval first. Open question Q3 comes first:
+   is the Hugging Face account older than 30 days with a verified email?
+
 ## Session 13 to 14 November 2026: API-first skeleton (step 1.6)
 
 - Plan D45 (c602718).

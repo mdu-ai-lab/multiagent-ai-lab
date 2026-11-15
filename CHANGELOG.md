@@ -5,6 +5,10 @@ Versions are tagged at the end of each phase (WORK_PLAN.md rule G).
 
 ## [Unreleased]
 
+### Added
+
+- Plan and docs: the live dashboard is done and online at https://mdu-ai-lab.github.io/multiagent-ai-lab/ (version 0.0.2). The results and the notes for later steps are in docs/HANDOVER.md.
+
 ## [0.0.2] - 2026-11-15
 
 ### Added

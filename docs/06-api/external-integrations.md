@@ -4,7 +4,7 @@
 |---|---|
 | Purpose | Every outside service and its limits |
 | Status | Proposed |
-| Last updated | 2026-11-11 |
+| Last updated | 2026-11-15 |
 | Source of truth | [WORK_PLAN.md](../WORK_PLAN.md) v1.10 |
 | Related documents | [Integration architecture](../04-architecture/integration-architecture.md), [Secrets management](../07-security/secrets-management.md) |
 
@@ -26,7 +26,7 @@ Limits checked on 28 Oct 2026. Details: WORK_PLAN.md section 7.
 | Service | What is free | Limits | Can it charge you? | Guard |
 |---|---|---|---|---|
 | GitHub Actions | Standard runners in public repos | None for public repos on standard runners | Private repos past quota, larger runners (even in public repos) | Public repo, standard runners only |
-| GitHub Pages | Public repos on GitHub Free and GitHub Free for organizations | Site max 1 GB, soft 100 GB bandwidth per month, soft 10 builds per hour (not for custom Actions workflows) | No. Over limits the site may stop being served | Small static site, custom Actions deploy. Dashboard address: mdu-ai-lab.github.io/multiagent-ai-lab |
+| GitHub Pages | Public repos on GitHub Free and GitHub Free for organizations | Site max 1 GB, soft 100 GB bandwidth per month, soft 10 builds per hour (not for custom Actions workflows) | No. Over limits the site may stop being served | Small static site, custom Actions deploy. Dashboard address: mdu-ai-lab.github.io/multiagent-ai-lab. Re-checked 15 November 2026 (D46) |
 | GitHub Container Registry | Public packages | Registry storage and bandwidth described as "currently free" | Private packages past quota | Public images only |
 | Hugging Face ZeroGPU Space | Up to 2 Spaces for free accounts older than 30 days with a verified email | Gradio only. Daily GPU quota per visitor (free accounts 5 min). Sleeps when unused | Not without a payment method or credits | No payment method on HF. This project uses 1 of 2 Spaces |
 | Hugging Face CPU or Docker Space | Not free for new Spaces | Paid plan required | Yes | Not used |
