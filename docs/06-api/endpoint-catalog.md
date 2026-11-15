@@ -8,7 +8,7 @@
 | Source of truth | [WORK_PLAN.md](../WORK_PLAN.md) v1.10 |
 | Related documents | [API standards](../06-api/api-standards.md), [Modules](../03-functional-modules/README.md) |
 
-> Implementation status: Phase 0 done (project setup, search database, Mac model server, model client and backup). Later features are planned and not built yet. Test results are in docs/HANDOVER.md.
+> Implementation status: see docs/WORK_PLAN.md, section 1 (current state). Test results are in docs/HANDOVER.md.
 
 The 4 endpoints of step 1.6 exist in src/mrag/api.py (WORK_PLAN.md D45). They are experimental until Phase 13 freezes the API.
 

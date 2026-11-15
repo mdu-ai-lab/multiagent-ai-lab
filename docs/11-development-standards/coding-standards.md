@@ -8,7 +8,7 @@
 | Source of truth | [WORK_PLAN.md](../WORK_PLAN.md) v1.10 |
 | Related documents | [Project structure](../11-development-standards/project-structure.md), [Code review](../11-development-standards/code-review.md) |
 
-> Implementation status: Phase 0 done (project setup, search database, Mac model server, model client and backup). Later features are planned and not built yet. Test results are in docs/HANDOVER.md.
+> Implementation status: see docs/WORK_PLAN.md, section 1 (current state). Test results are in docs/HANDOVER.md.
 
 These are the owner's approved rules, copied word for word from WORK_PLAN.md section 5. Ruff and mypy in CI (step 1.4) enforce style and types from Phase 1. All other rules are working rules and are not enforced by tooling.
 

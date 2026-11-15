@@ -8,7 +8,7 @@
 | Source of truth | [WORK_PLAN.md](../WORK_PLAN.md) v1.10 |
 | Related documents | [Testing strategy](../09-testing/testing-strategy.md), [Git workflow](../11-development-standards/git-workflow.md) |
 
-> Implementation status: Phase 0 done (project setup, search database, Mac model server, model client and backup). Later features are planned and not built yet. Test results are in docs/HANDOVER.md.
+> Implementation status: see docs/WORK_PLAN.md, section 1 (current state). Test results are in docs/HANDOVER.md.
 
 ```mermaid
 flowchart LR
@@ -27,7 +27,7 @@ flowchart LR
 | health.yml | Weekly | 1.9 |
 | release.yml | Version tag | 15.1 |
 
-Cost guard: public repo, standard runners only, no paid features and no stored artifacts. An organization without a payment method cannot be billed (rule Z, D42). Dependabot proposes updates (1.4). Secret scanning with push protection runs on GitHub itself, not in ci.yml.
+Cost guard: public repo, standard runners only, no paid features and no stored artifacts except the Pages deployment artifact, which GitHub deletes after 1 day. An organization without a payment method cannot be billed (rule Z, D42). Dependabot proposes updates (1.4). Secret scanning with push protection runs on GitHub itself, not in ci.yml.
 
 ## Live website: how it works and updates (WORK_PLAN.md section 11, word for word)
 

@@ -8,6 +8,6 @@
 | Source of truth | [WORK_PLAN.md](../WORK_PLAN.md) v1.10 |
 | Related documents | [Authentication and authorization](../07-security/authentication-and-authorization.md) |
 
-> Implementation status: Phase 0 done (project setup, search database, Mac model server, model client and backup). Later features are planned and not built yet. Test results are in docs/HANDOVER.md.
+> Implementation status: see docs/WORK_PLAN.md, section 1 (current state). Test results are in docs/HANDOVER.md.
 
 The single policy document is [authentication and authorization](../07-security/authentication-and-authorization.md). Summary: login with hashed passwords and sessions from step 1.10. Tokens for other apps from 13.1. MCP uses a login token (13.3).

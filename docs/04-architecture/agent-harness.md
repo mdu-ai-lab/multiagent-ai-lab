@@ -8,7 +8,7 @@
 | Source of truth | [WORK_PLAN.md](../WORK_PLAN.md) v1.10 (D43, R35, steps 1.6 to 13.3) |
 | Related documents | [Backend architecture](../04-architecture/backend-architecture.md), [System architecture](../04-architecture/system-architecture.md), [Agents and memory](../03-functional-modules/agents-and-memory.md) |
 
-> Implementation status: Phase 0 done (project setup, search database, Mac model server, model client and backup). Later features are planned and not built yet. Test results are in docs/HANDOVER.md.
+> Implementation status: see docs/WORK_PLAN.md, section 1 (current state). Test results are in docs/HANDOVER.md.
 
 ## What the harness is
 
