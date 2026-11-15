@@ -1,19 +1,18 @@
-# Tables of the app database and their migration, on a new SQLite file for each test.
+# Tables of the app database and their migration, on a new SQLite file for each test
+# (the database fixture in conftest.py).
 # The migration must build exactly the tables the code describes. The database itself must
 # enforce the rules a bug in the code could break: owners, allowed values and deletes.
 
 import uuid
-from collections.abc import Iterator
 from datetime import UTC, datetime, timedelta, timezone
 
 import pytest
 from alembic import command
-from alembic.config import Config
 from sqlalchemy import inspect, select
 from sqlalchemy.exc import IntegrityError, StatementError
 from sqlalchemy.orm import Session
 
-from mrag import config, db
+from mrag import db
 
 TABLES = {
     "app_settings",
@@ -25,32 +24,6 @@ TABLES = {
     "sessions",
     "users",
 }
-
-
-def alembic_config() -> Config:
-    return Config(toml_file=config.PROJECT_ROOT / "pyproject.toml")
-
-
-def clear_caches() -> None:
-    config.get_settings.cache_clear()
-    db.get_engine.cache_clear()
-    db.get_sessionmaker.cache_clear()
-
-
-@pytest.fixture
-def database(tmp_path, monkeypatch) -> Iterator[None]:
-    monkeypatch.setenv("MRAG_DATABASE_URL", f"sqlite:///{tmp_path / 'app.db'}")
-    clear_caches()
-    command.upgrade(alembic_config(), "head")
-    yield
-    db.get_engine().dispose()
-    clear_caches()
-
-
-@pytest.fixture
-def session(database) -> Iterator[Session]:
-    with db.get_sessionmaker()() as s:
-        yield s
 
 
 def add_user(s: Session, email: str = "ada@example.org") -> db.User:
@@ -79,11 +52,11 @@ def test_migration_builds_every_table(database):
 
 def test_migration_matches_the_tables_in_the_code(database):
     # Fails when a table changes in db.py without a new migration
-    command.check(alembic_config())
+    command.check(database)
 
 
 def test_downgrade_removes_every_table(database):
-    command.downgrade(alembic_config(), "base")
+    command.downgrade(database, "base")
     assert set(inspect(db.get_engine()).get_table_names()) == {"alembic_version"}
 
 

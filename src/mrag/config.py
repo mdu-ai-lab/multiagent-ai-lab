@@ -47,6 +47,13 @@ class Settings(BaseSettings):
     llama_server: Path | None = None
     models_dir: Path | None = None
 
+    # Login time limits of the chat page. A session ends after this long without use or
+    # this long in total. "Keep me logged in" uses the longer pair
+    session_idle_minutes: int = Field(default=30, gt=0)
+    session_hours: int = Field(default=12, gt=0)
+    remember_idle_days: int = Field(default=7, gt=0)
+    remember_days: int = Field(default=30, gt=0)
+
     @model_validator(mode="after")
     def fill_paths(self) -> "Settings":
         if not self.data_dir.is_absolute():
