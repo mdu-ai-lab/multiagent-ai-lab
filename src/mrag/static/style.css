@@ -36,7 +36,7 @@
   --sidebar-width: 272px;
 }
 
-/* Light colours. Used for "Light", and for "System" when the Mac is set to light. */
+/* Light colours. Used for "Light" and for "System" when the Mac is set to light. */
 :root[data-theme="light"] {
   color-scheme: light;
   --bg: #ffffff;
