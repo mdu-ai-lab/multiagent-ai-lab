@@ -1,7 +1,8 @@
-# The chat web page: HTML pages from templates/ui with the CSS and JavaScript in static/.
-# Jinja2 escapes every value it puts into a page. The page scripts read and change data only
-# through the API under /v1. Every page gets a session for its browser, so its forms can send
-# the token against forged requests. Every response gets the security headers below
+# The chat web page: HTML pages from templates/ui with the CSS and JavaScript in static/,
+# taken from the chat page preview. Jinja2 escapes every value it puts into a page. The page
+# scripts read and change data only through the API under /v1. Every page gets a session for
+# its browser, so its forms can send the token against forged requests. Every response gets
+# the security headers below. Answers in Markdown are turned into safe HTML here
 
 import hashlib
 from functools import lru_cache
@@ -11,11 +12,12 @@ from typing import Any
 from fastapi import APIRouter, Request
 from fastapi.responses import HTMLResponse, RedirectResponse, Response
 from fastapi.templating import Jinja2Templates
+from markdown_it import MarkdownIt
 from sqlalchemy.orm import Session
 from starlette.datastructures import MutableHeaders
 from starlette.types import ASGIApp, Message, Receive, Scope, Send
 
-from mrag import admin, auth, db
+from mrag import admin, auth, db, service
 from mrag.translations import LANGUAGES, TEXT, translator
 
 HERE = Path(__file__).resolve().parent
@@ -24,6 +26,10 @@ templates = Jinja2Templates(directory=HERE / "templates" / "ui")
 router = APIRouter(include_in_schema=False)
 
 APP_NAME = "MDU AI Lab"
+# The longest message the page sends, as in the chat page preview
+MAX_MESSAGE_LENGTH = 4000
+# The admin panel item of the account menu shows together with the admin page
+ADMIN_PAGE = False
 THEMES = ("dark", "light", "system")
 # The page settings of a user and their values while nothing is saved
 DEFAULT_SETTINGS: dict[str, Any] = {
@@ -74,6 +80,40 @@ class SecurityHeaders:
             await send(message)
 
         await self.app(scope, receive, send_with_headers)
+
+
+# Markdown without raw HTML and without pictures (they would load from other sites). Links that
+# could run code (javascript: and the like) are not made into links. Tables and strikethrough on
+_markdown = MarkdownIt("commonmark", {"html": False}).enable(["table", "strikethrough"])
+_markdown.disable("image")
+
+
+def _link_open(renderer: Any, tokens: Any, index: int, options: Any, env: Any) -> str:
+    # Links open in a new tab and tell the other site nothing about this page
+    tokens[index].attrSet("target", "_blank")
+    tokens[index].attrSet("rel", "noopener noreferrer")
+    return str(renderer.renderToken(tokens, index, options, env))
+
+
+_markdown.add_render_rule("link_open", _link_open)
+
+
+def answer_html(text: str) -> str:
+    return str(_markdown.render(text))
+
+
+def mod_key(request: Request) -> str:
+    # The Command key on a Mac, Ctrl everywhere else (shown in the shortcuts)
+    return "\u2318" if "Macintosh" in request.headers.get("user-agent", "") else "Ctrl"
+
+
+def initials(name: str) -> str:
+    return "".join(part[0] for part in name.split()[:2]).upper() or "U"
+
+
+def model_label(name: str, source: str) -> str:
+    # "unsloth/Qwen3.5-9B-GGUF" -> "Qwen3.5-9B"
+    return (source or name).rsplit("/", 1)[-1].removesuffix("-GGUF")
 
 
 @lru_cache(maxsize=64)
@@ -129,11 +169,18 @@ class Visit:
         settings = page_settings(self.request, self.user)
         lang = settings["language"]
         user = self.user
+        guest_left = max(0, self.options["guest_limit"] - self.browser.guest_messages)
         config = {
             "csrf": self.browser.csrf_token,
             "lang": lang,
-            "texts": TEXT[lang],
+            "t": TEXT[lang],
             "user": {"name": user.name, "email": user.email, "role": user.role} if user else None,
+            "prefs": settings,
+            "mod": mod_key(self.request),
+            "guest_limit": self.options["guest_limit"],
+            "guest_left": 0 if user else guest_left,
+            "signup_open": self.options["signup_open"],
+            "max_message_length": MAX_MESSAGE_LENGTH,
         }
         context = {
             "app_name": APP_NAME,
@@ -143,6 +190,11 @@ class Visit:
             "tr": translator(lang),
             "user": user,
             "options": self.options,
+            "prefs": settings,
+            "languages": LANGUAGES,
+            "mod": config["mod"],
+            "guest_limit": self.options["guest_limit"],
+            "signup_open": self.options["signup_open"],
             "asset": asset_url,
             "config": config,
             **extra,
@@ -155,10 +207,27 @@ class Visit:
 
 @router.get("/", response_class=HTMLResponse)
 def index(request: Request, s: auth.DbSession) -> Response:
+    # The chat page of the preview: for a user or for a guest while guest mode is on
     visit = Visit(request, s)
-    if visit.user is None and not visit.options["guest_mode"]:
+    user = visit.user
+    if user is None and not visit.options["guest_mode"]:
         return visit.redirect("/login")
-    return visit.render("index.html")
+    found = service.models()
+    labels = {model.role: model_label(model.name, model.source) for model in found.models}
+    if user is not None:
+        collapsed = bool(page_settings(request, user)["sidebar_collapsed"])
+    else:
+        collapsed = request.cookies.get("sidebar") == "collapsed"
+    return visit.render(
+        "index.html",
+        initials=initials(user.name) if user else "",
+        model_name=labels.get("main", ""),
+        models=[f"{label} ({role})" for role, label in labels.items()],
+        profile=found.profile,
+        app_version=service.version().package,
+        sidebar_collapsed=collapsed,
+        admin_page=ADMIN_PAGE,
+    )
 
 
 @router.get("/login", response_class=HTMLResponse)

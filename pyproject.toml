@@ -11,6 +11,7 @@ dependencies = [
     "argon2-cffi>=25.1.0",
     "fastapi>=0.162.0",
     "jinja2>=3.1.6",
+    "markdown-it-py>=4.2.0",
     "mlflow-skinny==3.17.2",
     "openai>=3.42.0",
     "pydantic-settings>=2.16.2",
@@ -74,6 +75,10 @@ target-version = "py312"
 
 [tool.ruff.lint]
 extend-select = ["E501"]
+
+# Each text of the chat page stays on one line, as in the chat page preview
+[tool.ruff.lint.per-file-ignores]
+"src/mrag/translations.py" = ["E501"]
 
 # mlflow/ in the project folder holds MLflow's data, not code. Without this setting the
 # import sorting would treat the mlflow package as project code

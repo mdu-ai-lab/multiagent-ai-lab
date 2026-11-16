@@ -7,6 +7,7 @@ Versions are tagged at the end of each phase (WORK_PLAN.md rule G).
 
 ### Added
 
+- Chat page of the preview (templates/ui/index.html with static/app.js and static/account.js): the sidebar with the chat list grouped by date, the 3-dot menu to rename and delete, the account menu, settings with 4 tabs, Dark, Light and System, English and Swedish, keyboard shortcuts, help, feedback and About. Answers stream from the AI model and are then shown as Markdown that the server made safe (markdown-it-py with raw HTML and pictures off). New endpoints change the name, the settings and the password, export the own chats, delete the own account and send feedback. The upload button shows a notice until files can be read. Guest chats stay in the page as in the preview.
 - Guest mode starts on as in the chat page preview: visitors can send 5 messages before they log in. The login and sign-up pages use the preview's texts again. Only the numbers follow the current rules: passwords of 15 to 128 characters and names of up to 60. "Keep me logged in" lasts 30 days.
 - Sign-up starts on, as in the chat page preview: the login page links to it and a new account is a member. An admin can turn it off.
 - Admin commands in Terminal (python -m mrag.admin): create-admin makes an admin account and asks for the password twice without showing it. list-users lists every account. A new sign-up is always a member, so the first admin is made this way. The action is saved in the admin activity log.

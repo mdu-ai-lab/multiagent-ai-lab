@@ -150,7 +150,13 @@ def test_the_documentation_lists_the_experimental_endpoints():
         "/v1/chat",
         "/v1/chats",
         "/v1/chats/{chat_id}",
+        "/v1/feedback",
         "/v1/health",
+        "/v1/me",
+        "/v1/me/delete",
+        "/v1/me/export",
+        "/v1/me/password",
+        "/v1/me/preferences",
         "/v1/models",
         "/v1/version",
     ]

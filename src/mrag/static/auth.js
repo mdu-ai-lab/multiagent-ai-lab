@@ -5,7 +5,7 @@
 "use strict";
 
 const config = JSON.parse(document.getElementById("page-config").textContent);
-const t = config.texts;
+const t = config.t;
 
 function errorText(code) {
   return t["err_" + code] || t.err_unknown;

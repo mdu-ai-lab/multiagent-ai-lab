@@ -10,8 +10,9 @@ from dataclasses import dataclass
 from datetime import datetime
 from functools import lru_cache
 from importlib.metadata import version as package_version
+from typing import Any
 
-from sqlalchemy import ColumnElement, delete, select
+from sqlalchemy import ColumnElement, delete, func, select
 from sqlalchemy.orm import Session
 
 from mrag import admin, auth, db, harness, tracing
@@ -154,6 +155,8 @@ class ChatMessage:
     content: str
     status: str
     created_at: datetime
+    # The answer as safe HTML from its Markdown (filled in by the API)
+    html: str | None = None
 
 
 @dataclass(frozen=True)
@@ -269,3 +272,64 @@ def finish_turn(chat_id: uuid.UUID, answer: str, status: str) -> None:
         memory.save_turn(s, chat_id, "assistant", answer, status)
         chat.updated_at = db.utcnow()
         s.commit()
+
+
+# Account of a logged-in user
+
+
+def set_name(user: db.User, name: str) -> str:
+    name = name.strip()
+    if not 1 <= len(name) <= 60:
+        raise auth.AccountError("name_invalid")
+    user.name = name
+    return name
+
+
+def export_chats(s: Session, user: db.User) -> dict[str, Any]:
+    # All chats of the user with every message, newest chat first
+    chats = []
+    for chat in s.scalars(
+        select(db.Chat).where(db.Chat.user_id == user.id).order_by(db.Chat.updated_at.desc())
+    ):
+        query = select(db.Message).where(db.Message.chat_id == chat.id).order_by(db.Message.id)
+        chats.append(
+            {
+                "title": chat.title,
+                "updated_at": chat.updated_at.isoformat(timespec="seconds"),
+                "messages": [
+                    {
+                        "role": row.role,
+                        "text": row.content,
+                        "status": row.status,
+                        "time": row.created_at.isoformat(timespec="seconds"),
+                    }
+                    for row in s.scalars(query)
+                ],
+            }
+        )
+    return {
+        "exported_at": db.utcnow().isoformat(timespec="seconds"),
+        "user": {"name": user.name, "email": user.email},
+        "chats": chats,
+    }
+
+
+def delete_account(s: Session, user: db.User, password: str) -> None:
+    # Needs the password. The last active admin cannot go. Sessions, chats and messages go
+    # with the account (the database deletes them)
+    if not auth.verify_password(user.password_hash, password):
+        raise auth.AccountError("password_wrong")
+    if user.role == "admin":
+        admins = s.scalar(
+            select(func.count()).where(db.User.role == "admin", db.User.blocked.is_(False))
+        )
+        if (admins or 0) <= 1:
+            raise auth.AccountError("last_admin")
+    s.delete(user)
+
+
+def add_feedback(s: Session, user: db.User, kind: str, message: str) -> None:
+    message = message.strip()
+    if not message:
+        raise auth.AccountError("feedback_empty")
+    s.add(db.Feedback(user_id=user.id, kind=kind, message=message))

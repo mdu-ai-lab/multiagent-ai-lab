@@ -1,21 +1,518 @@
-{% extends "base.html" %}
-{# The start page. The chat itself is added to this page next #}
-{% block title %}{{ t.welcome }}{% endblock %}
-{% block body_class %}auth-body{% endblock %}
-{% block body %}
-<main class="auth-main">
-  <div class="auth-card">
-    <h1>{{ t.welcome }}</h1>
-    {% if user %}
-    <p class="auth-sub">{{ tr("logged_in_as", name=user.name) }}</p>
-    <button class="btn-ghost btn-block" type="button" data-logout>{{ t.log_out }}</button>
-    {% else %}
-    <a class="btn-primary btn-block btn-large" href="/login">{{ t.log_in }}</a>
-    {% if options.signup_open %}
-    <p class="auth-switch"><a href="/signup">{{ t.sign_up }}</a></p>
-    {% endif %}
-    {% endif %}
+<!DOCTYPE html>
+<html lang="{{ lang }}" data-theme="{{ theme }}"{% if sidebar_collapsed %} class="sb-collapsed"{% endif %}>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{ app_name }}</title>
+  {# The server sets the hidden sidebar for guests too (cookie), so the page never jumps #}
+  <link rel="stylesheet" href="{{ asset('style.css') }}">
+</head>
+<body>
+<div class="app">
+
+  <!-- Left: brand, new chat button, chat list and account -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-top">
+      <div class="brand">
+        <div class="brand-mark">M</div>
+        <div class="brand-text">
+          <div class="brand-name">{{ app_name }}</div>
+          <div class="brand-sub">{{ t.app_subtitle }}</div>
+        </div>
+        <button class="icon-btn sidebar-toggle" id="sidebarToggle" type="button"
+                title="{{ t.hide_sidebar }} ({{ mod }} B)" aria-label="{{ t.hide_sidebar }}" aria-expanded="true">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="3"/><path d="M9 4v16"/></svg>
+        </button>
+      </div>
+      <button class="btn-new" id="newChat" type="button" title="{{ t.new_chat }}">
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+        <span class="btn-new-label">{{ t.new_chat }}</span>
+      </button>
+    </div>
+
+    <nav class="history" id="history"></nav>
+
+    <div class="sidebar-footer">
+      {% if user %}
+      <div class="account" id="account">
+
+        <!-- Account menu: opens above the account button -->
+        <div class="account-menu" id="accountMenu" role="menu" aria-label="{{ t.account_menu }}">
+          <div class="am-email">{{ user.email }}</div>
+
+          {# The admin panel item comes back together with the admin page #}
+          {% if user.role == "admin" and admin_page %}
+          <a class="am-item" role="menuitem" href="/admin">
+            <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            <span>{{ t.admin_panel }}</span>
+          </a>
+          <div class="am-sep"></div>
+          {% endif %}
+
+          <button class="am-item" type="button" role="menuitem" data-action="settings">
+            <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>
+            <span>{{ t.settings }}</span>
+          </button>
+
+          <div class="am-item has-sub" role="menuitem" tabindex="0" aria-haspopup="true">
+            <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 3v18" /><path d="M12 3a9 9 0 0 1 0 18z" fill="currentColor" stroke="none"/></svg>
+            <span>{{ t.appearance }}</span>
+            <span class="am-value" id="themeValue">{{ t[theme] }}</span>
+            <svg class="am-chevron" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 6l6 6-6 6"/></svg>
+            <div class="am-sub" role="menu">
+              {% for value in ["dark", "light", "system"] %}
+              <button class="am-item am-choice{% if theme == value %} selected{% endif %}" type="button" role="menuitemradio" data-set-theme="{{ value }}">
+                <span>{{ t[value] }}</span>
+                <svg class="am-check" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"/></svg>
+              </button>
+              {% endfor %}
+            </div>
+          </div>
+
+          <div class="am-item has-sub" role="menuitem" tabindex="0" aria-haspopup="true">
+            <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/></svg>
+            <span>{{ t.language }}</span>
+            <span class="am-value">{{ languages[lang] }}</span>
+            <svg class="am-chevron" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 6l6 6-6 6"/></svg>
+            <div class="am-sub" role="menu">
+              {% for code, label in languages.items() %}
+              <button class="am-item am-choice{% if lang == code %} selected{% endif %}" type="button" role="menuitemradio" data-set-lang="{{ code }}">
+                <span>{{ label }}</span>
+                <svg class="am-check" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"/></svg>
+              </button>
+              {% endfor %}
+            </div>
+          </div>
+
+          <div class="am-sep"></div>
+
+          <button class="am-item" type="button" role="menuitem" data-action="shortcuts">
+            <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="6" width="20" height="12" rx="2"/><path d="M6 10h.01M10 10h.01M14 10h.01M18 10h.01M7 14h10"/></svg>
+            <span>{{ t.keyboard_shortcuts }}</span>
+            <span class="am-kbd">{{ mod }} /</span>
+          </button>
+          <button class="am-item" type="button" role="menuitem" data-action="help">
+            <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M9.1 9a3 3 0 0 1 5.8 1c0 2-3 3-3 3M12 17h.01"/></svg>
+            <span>{{ t.get_help }}</span>
+          </button>
+          <button class="am-item" type="button" role="menuitem" data-action="feedback">
+            <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/><path d="M8 9h8M8 13h5"/></svg>
+            <span>{{ t.send_feedback }}</span>
+          </button>
+          <button class="am-item" type="button" role="menuitem" data-action="about">
+            <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 16v-4M12 8h.01"/></svg>
+            <span>{{ t.about }}</span>
+          </button>
+
+          <div class="am-sep"></div>
+
+          <button class="am-item" type="button" role="menuitem" data-logout>
+            <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/></svg>
+            <span>{{ t.log_out }}</span>
+          </button>
+        </div>
+
+        <!-- Account button: initials, name, email and the arrow -->
+        <button class="account-btn" id="accountBtn" type="button" aria-haspopup="menu" aria-expanded="false">
+          <span class="account-avatar" id="accountInitials">{{ initials }}</span>
+          <span class="account-who">
+            <span class="account-name" id="accountName">{{ user.name }}</span>
+            <span class="account-email">{{ user.email }}</span>
+          </span>
+          <svg class="account-chevron" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 15l6-6 6 6"/></svg>
+        </button>
+      </div>
+      {% else %}
+      <div class="status"><span class="dot"></span>{{ t.guest_mode }}</div>
+      <div class="footer-note">{{ tr("guest_free", n=guest_limit) }}</div>
+      {% endif %}
+    </div>
+  </aside>
+  <div class="backdrop" id="backdrop"></div>
+
+  <!-- Centre: top bar, messages and the message box -->
+  <main class="main">
+    <header class="topbar">
+      <button class="icon-btn menu-btn" id="menuBtn" type="button" title="{{ t.show_chats }}">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+      </button>
+      <div class="model">
+        <span class="model-name">{{ model_name }}</span>
+        <span class="pill">{{ t.model_local }}</span>
+      </div>
+
+      <div class="topbar-right">
+        {% if not user %}
+        <a class="{% if signup_open %}btn-ghost{% else %}btn-primary{% endif %}" href="/login">{{ t.log_in }}</a>
+        {% if signup_open %}<a class="btn-primary" href="/signup">{{ t.sign_up }}</a>{% endif %}
+        {% endif %}
+      </div>
+    </header>
+
+    <section class="chat" id="chat">
+      <div class="welcome" id="welcome">
+        <h1 id="welcomeTitle">{% if user %}{{ tr("welcome_user", name=user.name.split()[0]) }}{% else %}{{ t.welcome }}{% endif %}</h1>
+        <p>{{ t.welcome_sub }}</p>
+        <div class="examples" id="examples"{% if not prefs.show_examples %} hidden{% endif %}>
+          {% for i in range(1, 5) %}
+          <button class="example" type="button" data-prompt="{{ t['ex%d_prompt' % i] }}">
+            <span class="example-title">{{ t['ex%d_title' % i] }}</span>
+            <span class="example-text">{{ t['ex%d_prompt' % i] }}</span>
+          </button>
+          {% endfor %}
+        </div>
+      </div>
+      <div class="messages" id="messages"></div>
+    </section>
+
+    <footer class="composer-wrap">
+      {% if not user %}
+      <div class="guest-bar" id="guestBar"></div>
+      {% endif %}
+      <form class="composer" id="composer">
+        <div class="attachments" id="attachments"></div>
+        <div class="composer-row">
+          <button type="button" class="icon-btn attach-btn{% if not user %} locked{% endif %}" id="attachBtn"
+                  title="{% if user %}{{ t.attach_files }}{% else %}{{ t.login_to_upload }}{% endif %}">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.4 11.1l-9.2 9.2a6 6 0 0 1-8.5-8.5l9.2-9.2a4 4 0 0 1 5.7 5.7l-9.2 9.2a2 2 0 0 1-2.8-2.8l8.5-8.5"/></svg>
+            {% if not user %}<span class="lock-badge"><svg viewBox="0 0 24 24" width="9" height="9" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg></span>{% endif %}
+          </button>
+          <input type="file" id="fileInput" multiple hidden>
+          <textarea id="input" rows="1" maxlength="{{ config.max_message_length }}" placeholder="{{ tr('message_placeholder', app=app_name) }}"></textarea>
+          <button type="submit" class="send-btn" id="sendBtn" title="{{ t.send }}" disabled>
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
+          </button>
+        </div>
+      </form>
+      <p class="disclaimer">{{ t.disclaimer }}</p>
+    </footer>
+  </main>
+</div>
+
+{% if not user %}
+<!-- Shown when a guest tries a locked feature or runs out of messages -->
+<div class="modal-overlay" id="authModal">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <button class="modal-close" type="button" title="{{ t.close }}" data-close>&times;</button>
+    <div class="modal-icon">
+      <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>
+    </div>
+    <h2 id="modalTitle">{{ t.gm_title }}</h2>
+    <p id="modalText">{{ t.gm_text }}</p>
+    <div class="compare">
+      <div class="compare-col">
+        <div class="compare-head">{{ t.gm_guest }}</div>
+        <ul>
+          <li class="no">{{ tr("gm_guest_msgs", n=guest_limit) }}</li>
+          <li class="no">{{ t.gm_not_saved }}</li>
+        </ul>
+      </div>
+      <div class="compare-col highlight">
+        <div class="compare-head">{{ t.gm_account }}</div>
+        <ul>
+          <li class="yes">{{ t.gm_unlimited }}</li>
+          <li class="yes">{{ t.gm_saved }}</li>
+        </ul>
+      </div>
+    </div>
+    <div class="modal-actions">
+      {% if signup_open %}<a class="btn-primary btn-block" href="/signup">{{ t.gm_create }}</a>{% endif %}
+      <a class="{% if signup_open %}btn-ghost{% else %}btn-primary{% endif %} btn-block" href="/login">{{ t.log_in }}</a>
+    </div>
   </div>
-</main>
-{% endblock %}
-{% block scripts %}<script src="{{ asset('auth.js') }}"></script>{% endblock %}
+</div>
+{% endif %}
+
+{% if user %}
+<!-- Settings window -->
+<div class="modal-overlay" id="settingsModal">
+  <div class="settings" role="dialog" aria-modal="true" aria-labelledby="settingsTitle">
+    <nav class="settings-nav">
+      <h2 id="settingsTitle">{{ t.settings }}</h2>
+      <button class="settings-tab active" type="button" data-tab="general">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 21v-7M4 10V3M12 21v-9M12 8V3M20 21v-5M20 12V3M1 14h6M9 8h6M17 16h6"/></svg>
+        {{ t.tab_general }}
+      </button>
+      <button class="settings-tab" type="button" data-tab="account">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>
+        {{ t.tab_account }}
+      </button>
+      <button class="settings-tab" type="button" data-tab="chat">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+        {{ t.tab_chat }}
+      </button>
+      <button class="settings-tab" type="button" data-tab="data">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5" rx="8" ry="3"/><path d="M4 5v14c0 1.7 3.6 3 8 3s8-1.3 8-3V5M4 12c0 1.7 3.6 3 8 3s8-1.3 8-3"/></svg>
+        {{ t.tab_data }}
+      </button>
+    </nav>
+
+    <div class="settings-body">
+      <button class="modal-close" type="button" title="{{ t.close }}" data-close>&times;</button>
+
+      <!-- General -->
+      <section class="settings-panel active" data-panel="general">
+        <h3>{{ t.tab_general }}</h3>
+        <div class="setting-row">
+          <div class="setting-info">
+            <div class="setting-title">{{ t.appearance }}</div>
+            <div class="setting-desc">{{ t.appearance_desc }}</div>
+          </div>
+          <div class="segmented" id="themeSegmented">
+            {% for value in ["dark", "light", "system"] %}
+            <button type="button" data-set-theme="{{ value }}"{% if theme == value %} class="selected"{% endif %}>{{ t[value] }}</button>
+            {% endfor %}
+          </div>
+        </div>
+        <div class="setting-row">
+          <div class="setting-info">
+            <div class="setting-title">{{ t.language }}</div>
+            <div class="setting-desc">{{ t.language_desc }}</div>
+          </div>
+          <select class="select" id="languageSelect">
+            {% for code, label in languages.items() %}
+            <option value="{{ code }}"{% if lang == code %} selected{% endif %}>{{ label }}</option>
+            {% endfor %}
+          </select>
+        </div>
+      </section>
+
+      <!-- Account -->
+      <section class="settings-panel" data-panel="account">
+        <h3>{{ t.tab_account }}</h3>
+
+        <form class="settings-form" id="nameForm">
+          <div class="settings-sub">{{ t.profile }}</div>
+          <label class="field">
+            <span>{{ t.name }}</span>
+            <input type="text" name="name" value="{{ user.name }}" maxlength="60" autocomplete="name" required>
+          </label>
+          <label class="field">
+            <span>{{ t.email }}</span>
+            <input type="email" value="{{ user.email }}" disabled>
+            <small>{{ t.email_note }}</small>
+          </label>
+          <div class="form-error" hidden></div>
+          <div class="form-actions"><button class="btn-primary" type="submit">{{ t.save }}</button></div>
+        </form>
+
+        <form class="settings-form" id="passwordForm">
+          <div class="settings-sub">{{ t.change_password }}</div>
+          <label class="field">
+            <span>{{ t.current_password }}</span>
+            <input type="password" name="current_password" autocomplete="current-password" required>
+          </label>
+          <label class="field">
+            <span>{{ t.new_password }}</span>
+            <input type="password" name="new_password" autocomplete="new-password" minlength="15" required>
+            <small>{{ t.password_hint }}</small>
+          </label>
+          <label class="field">
+            <span>{{ t.confirm_password }}</span>
+            <input type="password" name="confirm_password" autocomplete="new-password" minlength="15" required>
+          </label>
+          <div class="form-error" hidden></div>
+          <div class="form-actions"><button class="btn-primary" type="submit">{{ t.update_password }}</button></div>
+        </form>
+
+        <div class="danger-zone">
+          <div class="settings-sub danger">{{ t.danger_zone }}</div>
+          <div class="setting-row">
+            <div class="setting-info">
+              <div class="setting-title">{{ t.delete_account }}</div>
+              <div class="setting-desc">{{ t.delete_account_desc }}</div>
+            </div>
+            <button class="btn-danger-outline" type="button" id="deleteAccountBtn">{{ t.delete_account }}</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- Chat -->
+      <section class="settings-panel" data-panel="chat">
+        <h3>{{ t.tab_chat }}</h3>
+        <div class="setting-row">
+          <div class="setting-info">
+            <div class="setting-title">{{ t.enter_sends }}</div>
+            <div class="setting-desc">{{ tr("enter_sends_desc", mod=mod) }}</div>
+          </div>
+          <label class="switch">
+            <input type="checkbox" id="enterSendsToggle"{% if prefs.enter_sends %} checked{% endif %}>
+            <span class="switch-track"></span>
+          </label>
+        </div>
+        <div class="setting-row">
+          <div class="setting-info">
+            <div class="setting-title">{{ t.show_examples }}</div>
+            <div class="setting-desc">{{ t.show_examples_desc }}</div>
+          </div>
+          <label class="switch">
+            <input type="checkbox" id="showExamplesToggle"{% if prefs.show_examples %} checked{% endif %}>
+            <span class="switch-track"></span>
+          </label>
+        </div>
+      </section>
+
+      <!-- Data -->
+      <section class="settings-panel" data-panel="data">
+        <h3>{{ t.tab_data }}</h3>
+        <div class="setting-row">
+          <div class="setting-info">
+            <div class="setting-title">{{ t.export_chats }}</div>
+            <div class="setting-desc">{{ t.export_desc }}</div>
+          </div>
+          <button class="btn-ghost" type="button" id="exportBtn">{{ t.download }}</button>
+        </div>
+        <div class="setting-row">
+          <div class="setting-info">
+            <div class="setting-title">{{ t.delete_all_chats }}</div>
+            <div class="setting-desc">{{ t.delete_all_desc }}</div>
+          </div>
+          <button class="btn-danger-outline" type="button" id="deleteAllBtn">{{ t.delete_all }}</button>
+        </div>
+      </section>
+    </div>
+  </div>
+</div>
+
+<!-- Delete account: needs the password -->
+<div class="modal-overlay" id="deleteAccountModal">
+  <form class="modal modal-confirm" id="deleteAccountForm" role="alertdialog" aria-modal="true" aria-labelledby="deleteAccountTitle">
+    <h2 id="deleteAccountTitle">{{ t.delete_account_title }}</h2>
+    <p>{{ t.delete_account_text }}</p>
+    <label class="field">
+      <span>{{ t.password }}</span>
+      <input type="password" name="password" autocomplete="current-password" required>
+    </label>
+    <div class="form-error" hidden></div>
+    <div class="confirm-actions">
+      <button class="btn-ghost" type="button" data-close>{{ t.cancel }}</button>
+      <button class="btn-danger" type="submit">{{ t.delete_account }}</button>
+    </div>
+  </form>
+</div>
+
+<!-- Keyboard shortcuts -->
+<div class="modal-overlay" id="shortcutsModal">
+  <div class="modal modal-panel" role="dialog" aria-modal="true" aria-labelledby="shortcutsTitle">
+    <button class="modal-close" type="button" title="{{ t.close }}" data-close>&times;</button>
+    <h2 id="shortcutsTitle">{{ t.shortcuts_title }}</h2>
+    <ul class="shortcuts">
+      <li><span>{{ t.sc_new_chat }}</span><span class="keys"><kbd>{{ mod }}</kbd><kbd>Shift</kbd><kbd>O</kbd></span></li>
+      <li><span>{{ t.sc_focus }}</span><span class="keys"><kbd>Shift</kbd><kbd>Esc</kbd></span></li>
+      <li><span>{{ t.sc_send }}</span><span class="keys" id="sendKeys"><kbd>Enter</kbd></span></li>
+      <li><span>{{ t.sc_newline }}</span><span class="keys" id="newlineKeys"><kbd>Shift</kbd><kbd>Enter</kbd></span></li>
+      <li><span>{{ t.sc_shortcuts }}</span><span class="keys"><kbd>{{ mod }}</kbd><kbd>/</kbd></span></li>
+      <li><span>{{ t.sc_sidebar }}</span><span class="keys"><kbd>{{ mod }}</kbd><kbd>B</kbd></span></li>
+      <li><span>{{ t.sc_close }}</span><span class="keys"><kbd>Esc</kbd></span></li>
+    </ul>
+  </div>
+</div>
+
+<!-- Help center -->
+<div class="modal-overlay" id="helpModal">
+  <div class="modal modal-panel" role="dialog" aria-modal="true" aria-labelledby="helpTitle">
+    <button class="modal-close" type="button" title="{{ t.close }}" data-close>&times;</button>
+    <h2 id="helpTitle">{{ t.help_title }}</h2>
+    <p class="panel-sub">{{ t.help_sub }}</p>
+    <div class="faq">
+      {# The question about file types (faq2) shows once files can be read #}
+      {% for i in range(1, 7) if i != 2 %}
+      <details{% if i == 1 %} open{% endif %}>
+        <summary>{{ t['faq%d_q' % i] }}</summary>
+        <p>{{ tr('faq%d_a' % i, n=guest_limit, model=model_name) }}</p>
+      </details>
+      {% endfor %}
+    </div>
+    <div class="help-more">
+      <span>{{ t.help_more }}</span>
+      <button class="btn-ghost" type="button" data-action="feedback">{{ t.send_feedback }}</button>
+    </div>
+  </div>
+</div>
+
+<!-- Send feedback -->
+<div class="modal-overlay" id="feedbackModal">
+  <form class="modal modal-panel" id="feedbackForm" role="dialog" aria-modal="true" aria-labelledby="feedbackTitle">
+    <button class="modal-close" type="button" title="{{ t.close }}" data-close>&times;</button>
+    <h2 id="feedbackTitle">{{ t.send_feedback }}</h2>
+    <p class="panel-sub">{{ t.feedback_sub }}</p>
+    <div class="field">
+      <span>{{ t.feedback_type }}</span>
+      <div class="segmented segmented-full" id="feedbackKind">
+        <button type="button" class="selected" data-kind="problem">{{ t.fb_problem }}</button>
+        <button type="button" data-kind="idea">{{ t.fb_idea }}</button>
+        <button type="button" data-kind="other">{{ t.fb_other }}</button>
+      </div>
+    </div>
+    <label class="field">
+      <span>{{ t.feedback_message }}</span>
+      <textarea name="message" rows="5" maxlength="2000" placeholder="{{ t.feedback_placeholder }}" required></textarea>
+    </label>
+    <div class="form-error" hidden></div>
+    <div class="confirm-actions">
+      <button class="btn-ghost" type="button" data-close>{{ t.cancel }}</button>
+      <button class="btn-primary" type="submit">{{ t.send }}</button>
+    </div>
+  </form>
+</div>
+
+<!-- About and what's new -->
+<div class="modal-overlay" id="aboutModal">
+  <div class="modal modal-panel" role="dialog" aria-modal="true" aria-labelledby="aboutTitle">
+    <button class="modal-close" type="button" title="{{ t.close }}" data-close>&times;</button>
+    <div class="about-head">
+      <div class="brand-mark about-mark">M</div>
+      <div>
+        <h2 id="aboutTitle">{{ tr("about_title", app=app_name) }}</h2>
+        <div class="about-version">{{ t.version }} {{ app_version }}</div>
+      </div>
+    </div>
+    <p class="panel-sub">{{ t.about_desc }}</p>
+    <div class="changelog">
+      <div class="release">
+        <div class="release-head">
+          <span class="release-version">{{ t.about_profile }}</span>
+          <span class="release-date">{{ profile }}</span>
+        </div>
+        <div class="release-head">
+          <span class="release-version">{{ t.about_models }}</span>
+        </div>
+        <ul>
+          {% for model in models %}<li>{{ model }}</li>{% endfor %}
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+{% endif %}
+
+<!-- Asks before something is deleted -->
+<div class="modal-overlay" id="confirmModal">
+  <div class="modal modal-confirm" role="alertdialog" aria-modal="true" aria-labelledby="confirmTitle">
+    <h2 id="confirmTitle"></h2>
+    <p id="confirmText"></p>
+    <div class="confirm-actions">
+      <button class="btn-ghost" id="confirmCancel" type="button">{{ t.cancel }}</button>
+      <button class="btn-danger" id="confirmOk" type="button">{{ t.delete }}</button>
+    </div>
+  </div>
+</div>
+
+<!-- Short confirmation message at the bottom -->
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<!-- Shown while a file is dragged over the page -->
+<div class="drop-overlay" id="dropOverlay">
+  <div class="drop-box">
+    <svg viewBox="0 0 24 24" width="40" height="40" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 16V4M6 10l6-6 6 6M4 20h16"/></svg>
+    <div class="drop-title">{{ t.drop_title }}</div>
+    <div class="drop-text">{{ t.drop_text }}</div>
+  </div>
+</div>
+
+{# Page settings for the scripts: JSON data, which the browser never runs as code #}
+<script type="application/json" id="page-config">{{ config | tojson }}</script>
+<script src="{{ asset('app.js') }}"></script>
+{% if user %}<script src="{{ asset('account.js') }}"></script>{% endif %}
+</body>
+</html>

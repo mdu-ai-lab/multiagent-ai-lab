@@ -4,7 +4,7 @@
 |---|---|
 | Purpose | Planned endpoints by phase |
 | Status | Proposed |
-| Last updated | 2026-11-15 |
+| Last updated | 2026-11-16 |
 | Source of truth | [WORK_PLAN.md](../WORK_PLAN.md) v1.10 |
 | Related documents | [API standards](../06-api/api-standards.md), [Modules](../03-functional-modules/README.md) |
 
@@ -22,10 +22,16 @@ The endpoints below exist in src/mrag/api.py (WORK_PLAN.md D45, D49). They are e
 | GET | /v1/models | Models in the active profile, read from configs/models.yaml without a model call | Login | 1.6, 1.10 | Implemented (experimental) |
 | POST | /v1/chat | Chat and file questions, streamed. Starts a saved chat or continues one (chat_id). Events: chat, delta, then done or error | Login or a guest session while guest mode is on. Token | 1.6, 1.10, 6, 7, 8 | Implemented (experimental) |
 | GET | /v1/chats | The caller's chats, newest first | Login or a guest session while guest mode is on | 1.10 | Implemented (experimental) |
-| GET | /v1/chats/{chat_id} | One chat with its messages | Login or a guest session while guest mode is on | 1.10 | Implemented (experimental) |
+| GET | /v1/chats/{chat_id} | One chat with its messages. Each answer also as safe HTML made from its Markdown | Login or a guest session while guest mode is on | 1.10 | Implemented (experimental) |
 | PATCH | /v1/chats/{chat_id} | New title of 1 to 80 characters | Login or a guest session while guest mode is on. Token | 1.10 | Implemented (experimental) |
 | DELETE | /v1/chats/{chat_id} | Delete one chat with its messages | Login or a guest session while guest mode is on. Token | 1.10 | Implemented (experimental) |
 | DELETE | /v1/chats | Delete all chats of the caller | Login or a guest session while guest mode is on. Token | 1.10 | Implemented (experimental) |
+| PATCH | /v1/me | Change the own name. Answers the new name and initials | Login. Token | 1.10 | Implemented (experimental) |
+| PATCH | /v1/me/preferences | Theme, language, Enter sends, example questions and the hidden sidebar | Login. Token | 1.10 | Implemented (experimental) |
+| POST | /v1/me/password | Change the password. Other logins end and this browser gets a new session | Login. Token | 1.10 | Implemented (experimental) |
+| GET | /v1/me/export | All own chats as a JSON file | Login | 1.10 | Implemented (experimental) |
+| POST | /v1/me/delete | Delete the own account with its chats. Needs the password. The last admin cannot | Login. Token | 1.10 | Implemented (experimental) |
+| POST | /v1/feedback | Send feedback: problem, idea or other | Login. Token | 1.10 | Implemented (experimental) |
 
 A chat of someone else answers 404 like a chat that does not exist, so no chat ID is ever confirmed.
 
@@ -42,7 +48,7 @@ The chat page itself (/, /login and /signup) and its files in /static come from 
 | Build or rebuild a collection's graph | 9A.2 | REQUIRES CONFIRMATION |
 | Notebooks, notes and study outputs | 9B | REQUIRES CONFIRMATION |
 | Extraction and export | 10 | REQUIRES CONFIRMATION |
-| Account settings and admin | 1.10 | Paths set when they are built |
-| Feedback | 1.10 (feedback form), 13.4 (answer ratings) | Paths set in 1.10 and 13.4 |
+| Admin | 1.10 | Paths set when they are built |
+| Answer ratings | 13.4 | Path set in 13.4 |
 
 Rule A: each feature phase adds its endpoint when the feature is built. This catalog is updated then.

@@ -1520,3 +1520,17 @@ a.am-item { text-decoration: none; }
   .settings-body { padding: 18px; }
   .setting-row { flex-direction: column; align-items: flex-start; }
 }
+
+/* Answers in Markdown (lists, code, tables), made safe by the server. Added for the AI answers */
+.msg-text.md { white-space: normal; }
+.msg-text.md > :first-child { margin-top: 0; }
+.msg-text.md > :last-child { margin-bottom: 0; }
+.msg-text.md p, .msg-text.md ul, .msg-text.md ol, .msg-text.md pre, .msg-text.md table { margin: 0 0 12px; }
+.msg-text.md h1, .msg-text.md h2, .msg-text.md h3 { margin: 16px 0 8px; font-size: 1.05em; }
+.msg-text.md ul, .msg-text.md ol { padding-left: 22px; }
+.msg-text.md code { padding: 1px 5px; border-radius: 5px; background: var(--panel-2); font-size: 0.92em; }
+.msg-text.md pre { padding: 12px 14px; border-radius: 10px; background: var(--panel-2); overflow-x: auto; }
+.msg-text.md pre code { padding: 0; background: none; }
+.msg-text.md table { border-collapse: collapse; }
+.msg-text.md th, .msg-text.md td { padding: 6px 10px; border: 1px solid var(--border); text-align: left; }
+.msg-text.md a { color: var(--accent); }

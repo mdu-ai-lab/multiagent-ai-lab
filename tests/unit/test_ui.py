@@ -122,7 +122,7 @@ def test_login_starts_a_new_session_and_ends_the_guest_one(client):
     assert client.cookies[auth.COOKIE] != guest_cookie
     assert sessions() == [True]
     assert client.get("/login", follow_redirects=False).headers["location"] == "/"
-    assert "Logged in as Ada" in client.get("/").text
+    assert '<span class="account-name" id="accountName">Ada</span>' in client.get("/").text
 
 
 @pytest.mark.parametrize("case", ["wrong password", "unknown email", "blocked"])
@@ -179,7 +179,7 @@ def test_sign_up_creates_a_member_and_logs_in(client):
     )
     assert response.json()["role"] == "member"
     assert sessions() == [True]
-    assert "Logged in as Ada" in client.get("/").text
+    assert '<span class="account-name" id="accountName">Ada</span>' in client.get("/").text
 
 
 @pytest.mark.parametrize(
@@ -219,7 +219,10 @@ def test_a_blocked_user_starts_again_as_a_guest(client):
         s.scalars(select(db.User)).one().blocked = True
         s.commit()
     page = client.get("/")
-    assert "Logged in as Ada" not in page.text and page_config(page)["user"] is None
+    assert (
+        '<span class="account-name" id="accountName">Ada</span>' not in page.text
+        and page_config(page)["user"] is None
+    )
     assert sessions() == [False]
 
 
@@ -253,7 +256,7 @@ def test_the_language_cookie_switches_the_page_to_swedish(client):
 
 def test_user_text_in_a_translation_is_filled_in_once():
     tr = translator("en")
-    assert tr("logged_in_as", name="{name} <b>") == "Logged in as {name} <b>"
+    assert tr("welcome_user", name="{name} <b>") == "How can I help you, {name} <b>?"
 
 
 def test_a_name_with_html_is_shown_as_text(client):
@@ -286,7 +289,10 @@ def test_scripts_never_insert_text_as_html():
             assert "insertAdjacentHTML" not in line and "outerHTML" not in line, path.name
             found = re.search(r"innerHTML\s*=\s*(.+);", line)
             if found:
-                assert found.group(1) == '""' or found.group(1).startswith("ICONS."), line
+                # Empty, a fixed icon or the answer HTML the server made safe (test_chat_page.py).
+                # "icon" is the argument of menuButton, which only ever gets one of ICONS
+                value = found.group(1)
+                assert value in ('""', "msg.html", "icon") or value.startswith("ICONS."), line
 
 
 def test_nothing_is_loaded_from_the_internet():

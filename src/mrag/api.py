@@ -5,16 +5,19 @@
 # request needs the token of its session (auth.check_request_origin). The same app serves the
 # chat page (ui.py) and its files in /static
 
+import dataclasses
 import json
 import uuid
 from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
 from dataclasses import asdict
+from datetime import date
 from importlib.metadata import version
-from typing import Annotated
+from typing import Annotated, Any, Literal
 
 import anyio
 from fastapi import Depends, FastAPI, HTTPException, Request, Response
+from fastapi.responses import JSONResponse
 from fastapi.sse import EventSourceResponse, format_sse_event
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field, StringConstraints
@@ -30,6 +33,9 @@ ANSWER_STATUS = {harness.Done: "done", harness.Error: "failed"}
 
 SAME_SITE_ONLY = [Depends(auth.check_request_origin)]
 LOGGED_IN = [Depends(auth.require_user)]
+User = Annotated[db.User, Depends(auth.require_user)]
+# The language and theme cookies keep the choice on the login page after logging out
+YEAR = 365 * 24 * 3600
 
 
 @asynccontextmanager
@@ -69,7 +75,7 @@ Title = Annotated[str, StringConstraints(strip_whitespace=True, min_length=1, ma
 
 
 class ChatRequest(BaseModel):
-    message: str = Field(min_length=1)
+    message: str = Field(min_length=1, max_length=ui.MAX_MESSAGE_LENGTH)
     # Empty starts a new chat. The earlier turns come from the saved chat
     chat_id: uuid.UUID | None = None
 
@@ -102,6 +108,33 @@ class UserInfo(BaseModel):
     @classmethod
     def of(cls, user: db.User) -> "UserInfo":
         return cls(name=user.name, email=user.email, role=user.role)
+
+
+class NameRequest(BaseModel):
+    name: str = Field(max_length=200)
+
+
+class SettingsRequest(BaseModel):
+    theme: Literal["dark", "light", "system"] | None = None
+    language: Literal["en", "sv"] | None = None
+    enter_sends: bool | None = None
+    show_examples: bool | None = None
+    sidebar_collapsed: bool | None = None
+
+
+class PasswordRequest(BaseModel):
+    current_password: str = Field(max_length=1024)
+    new_password: str = Field(max_length=1024)
+    confirm_password: str = Field(max_length=1024)
+
+
+class DeleteAccountRequest(BaseModel):
+    password: str = Field(max_length=1024)
+
+
+class FeedbackRequest(BaseModel):
+    kind: Literal["problem", "idea", "other"]
+    message: str = Field(max_length=2000)
 
 
 @app.get("/v1/health")
@@ -232,10 +265,16 @@ def list_chats(s: auth.DbSession, owner: ChatOwner) -> list[service.ChatSummary]
 
 @app.get("/v1/chats/{chat_id}")
 def get_chat(chat_id: uuid.UUID, s: auth.DbSession, owner: ChatOwner) -> service.ChatDetail:
+    # Every answer also comes as safe HTML made from its Markdown
     try:
-        return service.get_chat(s, owner, chat_id)
+        found = service.get_chat(s, owner, chat_id)
     except service.ChatNotFound:
         raise HTTPException(404, "chat_not_found") from None
+    messages = [
+        dataclasses.replace(m, html=ui.answer_html(m.content)) if m.role == "assistant" else m
+        for m in found.messages
+    ]
+    return dataclasses.replace(found, messages=messages)
 
 
 @app.patch("/v1/chats/{chat_id}", dependencies=SAME_SITE_ONLY)
@@ -265,3 +304,86 @@ def delete_all_chats(s: auth.DbSession, owner: ChatOwner) -> Deleted:
     deleted = service.delete_all_chats(s, owner)
     s.commit()
     return Deleted(deleted=deleted)
+
+
+# The account of a logged-in user: the account menu and the settings of the chat page
+
+
+@app.patch("/v1/me", dependencies=SAME_SITE_ONLY)
+def update_name(body: NameRequest, s: auth.DbSession, user: User) -> dict[str, str]:
+    try:
+        name = service.set_name(user, body.name)
+    except auth.AccountError as error:
+        raise HTTPException(400, error.code) from None
+    s.commit()
+    return {"name": name, "initials": ui.initials(name)}
+
+
+@app.patch("/v1/me/preferences", dependencies=SAME_SITE_ONLY)
+def update_settings(
+    body: SettingsRequest, request: Request, s: auth.DbSession, user: User
+) -> JSONResponse:
+    settings = ui.page_settings(request, user)
+    settings.update(body.model_dump(exclude_none=True))
+    # A new dict, so the database sees the change
+    user.settings = dict(settings)
+    s.commit()
+    response = JSONResponse(settings)
+    for name, value in (("lang", settings["language"]), ("theme", settings["theme"])):
+        response.set_cookie(name, value, max_age=YEAR, httponly=True, samesite="strict")
+    return response
+
+
+@app.post("/v1/me/password", dependencies=SAME_SITE_ONLY)
+def change_password(
+    body: PasswordRequest,
+    request: Request,
+    response: Response,
+    s: auth.DbSession,
+    user: User,
+    browser: auth.SessionRow,
+) -> dict[str, bool]:
+    # Every other login of the account ends. This browser stays logged in with a new session
+    if body.new_password != body.confirm_password:
+        raise HTTPException(400, "password_match")
+    remember = browser.remember if browser else False
+    try:
+        token = auth.change_password(s, user, body.current_password, body.new_password, remember)
+    except auth.AccountError as error:
+        raise HTTPException(400, error.code) from None
+    s.commit()
+    auth.set_session_cookie(response, request, token, remember)
+    return {"changed": True}
+
+
+@app.get("/v1/me/export")
+def export_chats(s: auth.DbSession, user: User) -> JSONResponse:
+    filename = f"mdu-ai-lab-chats-{date.today():%Y-%m-%d}.json"
+    return JSONResponse(
+        service.export_chats(s, user),
+        headers={"Content-Disposition": f'attachment; filename="{filename}"'},
+    )
+
+
+@app.post("/v1/me/delete", dependencies=SAME_SITE_ONLY)
+def delete_account(
+    body: DeleteAccountRequest, request: Request, s: auth.DbSession, user: User
+) -> JSONResponse:
+    try:
+        service.delete_account(s, user, body.password)
+    except auth.AccountError as error:
+        raise HTTPException(400, error.code) from None
+    s.commit()
+    response = JSONResponse({"deleted": True})
+    auth.clear_session_cookie(response, request)
+    return response
+
+
+@app.post("/v1/feedback", dependencies=SAME_SITE_ONLY)
+def send_feedback(body: FeedbackRequest, s: auth.DbSession, user: User) -> dict[str, Any]:
+    try:
+        service.add_feedback(s, user, body.kind, body.message)
+    except auth.AccountError as error:
+        raise HTTPException(400, error.code) from None
+    s.commit()
+    return {"sent": True}
