@@ -19,7 +19,7 @@ updates:
     # usually found and pulled by then
     cooldown:
       default-days: 7
-    # MLflow is pinned on purpose (WORK_PLAN D40): a new minor version can need a database
+    # MLflow is pinned on purpose: a new minor version can need a database
     # upgrade of the local MLflow store, so it is updated in its own planned change
     ignore:
       - dependency-name: "mlflow"
