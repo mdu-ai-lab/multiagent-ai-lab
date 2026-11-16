@@ -29,7 +29,7 @@ APP_NAME = "MDU AI Lab"
 # The longest message the page sends, as in the chat page preview
 MAX_MESSAGE_LENGTH = 4000
 # The admin panel item of the account menu shows together with the admin page
-ADMIN_PAGE = False
+ADMIN_PAGE = True
 THEMES = ("dark", "light", "system")
 # The page settings of a user and their values while nothing is saved
 DEFAULT_SETTINGS: dict[str, Any] = {
@@ -165,7 +165,13 @@ class Visit:
     def redirect(self, path: str) -> Response:
         return self.finish(RedirectResponse(path, status_code=303))
 
-    def render(self, template: str, **extra: Any) -> Response:
+    def render(
+        self,
+        template: str,
+        status_code: int = 200,
+        config_extra: dict[str, Any] | None = None,
+        **extra: Any,
+    ) -> Response:
         settings = page_settings(self.request, self.user)
         lang = settings["language"]
         user = self.user
@@ -181,6 +187,7 @@ class Visit:
             "guest_left": 0 if user else guest_left,
             "signup_open": self.options["signup_open"],
             "max_message_length": MAX_MESSAGE_LENGTH,
+            **(config_extra or {}),
         }
         context = {
             "app_name": APP_NAME,
@@ -199,7 +206,9 @@ class Visit:
             "config": config,
             **extra,
         }
-        response = templates.TemplateResponse(self.request, template, context)
+        response = templates.TemplateResponse(
+            self.request, template, context, status_code=status_code
+        )
         # Pages hold the session's token and personal data, so browsers never keep a copy
         response.headers["Cache-Control"] = "no-store"
         return self.finish(response)
@@ -244,3 +253,26 @@ def signup_page(request: Request, s: auth.DbSession) -> Response:
     if visit.user is not None:
         return visit.redirect("/")
     return visit.render("signup.html")
+
+
+@router.get("/admin", response_class=HTMLResponse)
+def admin_page(request: Request, s: auth.DbSession) -> Response:
+    # Guests go to the login page, members see "Not allowed". The admin API checks the role
+    # again on every request, so this page is never the only guard
+    visit = Visit(request, s)
+    user = visit.user
+    if user is None:
+        return visit.redirect("/login")
+    tr = translator(page_settings(request, user)["language"])
+    if user.role != "admin":
+        return visit.render(
+            "error.html",
+            status_code=403,
+            title=tr("not_allowed_title"),
+            text=tr("not_allowed_text"),
+        )
+    return visit.render(
+        "admin.html",
+        initials=initials(user.name),
+        config_extra={"me": {"id": user.id, "name": user.name, "email": user.email}},
+    )

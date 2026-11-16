@@ -33,7 +33,9 @@ ANSWER_STATUS = {harness.Done: "done", harness.Error: "failed"}
 
 SAME_SITE_ONLY = [Depends(auth.check_request_origin)]
 LOGGED_IN = [Depends(auth.require_user)]
+ADMIN_ONLY = [Depends(auth.require_admin)]
 User = Annotated[db.User, Depends(auth.require_user)]
+Admin = Annotated[db.User, Depends(auth.require_admin)]
 # The language and theme cookies keep the choice on the login page after logging out
 YEAR = 365 * 24 * 3600
 
@@ -135,6 +137,28 @@ class DeleteAccountRequest(BaseModel):
 class FeedbackRequest(BaseModel):
     kind: Literal["problem", "idea", "other"]
     message: str = Field(max_length=2000)
+
+
+class CreateUserRequest(BaseModel):
+    name: str = Field(max_length=200)
+    email: str = Field(max_length=300)
+    password: str = Field(max_length=1024)
+    role: Literal["member", "admin"] = "member"
+
+
+class UpdateUserRequest(BaseModel):
+    role: Literal["member", "admin"] | None = None
+    blocked: bool | None = None
+
+
+class FeedbackDoneRequest(BaseModel):
+    done: bool
+
+
+class AdminSettingsRequest(BaseModel):
+    guest_mode: bool | None = None
+    guest_limit: int | None = None
+    signup_open: bool | None = None
 
 
 @app.get("/v1/health")
@@ -387,3 +411,102 @@ def send_feedback(body: FeedbackRequest, s: auth.DbSession, user: User) -> dict[
         raise HTTPException(400, error.code) from None
     s.commit()
     return {"sent": True}
+
+
+# The admin panel. Every route needs the admin role, checked on the server
+
+
+def admin_error(error: auth.AccountError) -> HTTPException:
+    return HTTPException(404 if error.code.endswith("not_found") else 400, error.code)
+
+
+@app.get("/v1/admin/stats", dependencies=ADMIN_ONLY)
+def admin_stats(s: auth.DbSession) -> dict[str, int]:
+    return admin.stats(s)
+
+
+@app.get("/v1/admin/users", dependencies=ADMIN_ONLY)
+def admin_users(s: auth.DbSession) -> list[dict[str, Any]]:
+    return admin.user_list(s)
+
+
+@app.post("/v1/admin/users", dependencies=SAME_SITE_ONLY)
+def admin_create_user(body: CreateUserRequest, s: auth.DbSession, acting: Admin) -> dict[str, int]:
+    try:
+        user = admin.create_user(s, acting, body.name, body.email, body.password, body.role)
+    except auth.AccountError as error:
+        raise admin_error(error) from None
+    s.commit()
+    return {"id": user.id}
+
+
+@app.patch("/v1/admin/users/{user_id}", dependencies=SAME_SITE_ONLY)
+def admin_update_user(
+    user_id: int, body: UpdateUserRequest, s: auth.DbSession, acting: Admin
+) -> dict[str, bool]:
+    try:
+        admin.update_user(s, acting, user_id, body.role, body.blocked)
+    except auth.AccountError as error:
+        raise admin_error(error) from None
+    s.commit()
+    return {"updated": True}
+
+
+@app.post("/v1/admin/users/{user_id}/reset-password", dependencies=SAME_SITE_ONLY)
+def admin_reset_password(user_id: int, s: auth.DbSession, acting: Admin) -> dict[str, str]:
+    try:
+        password = admin.reset_password(s, acting, user_id)
+    except auth.AccountError as error:
+        raise admin_error(error) from None
+    s.commit()
+    return {"password": password}
+
+
+@app.delete("/v1/admin/users/{user_id}", dependencies=SAME_SITE_ONLY)
+def admin_delete_user(user_id: int, s: auth.DbSession, acting: Admin) -> dict[str, bool]:
+    try:
+        admin.delete_user(s, acting, user_id)
+    except auth.AccountError as error:
+        raise admin_error(error) from None
+    s.commit()
+    return {"deleted": True}
+
+
+@app.get("/v1/admin/feedback", dependencies=ADMIN_ONLY)
+def admin_feedback(s: auth.DbSession) -> list[dict[str, Any]]:
+    return admin.feedback_list(s)
+
+
+@app.patch("/v1/admin/feedback/{feedback_id}", dependencies=SAME_SITE_ONLY)
+def admin_update_feedback(
+    feedback_id: int, body: FeedbackDoneRequest, s: auth.DbSession, acting: Admin
+) -> dict[str, bool]:
+    try:
+        admin.set_feedback_done(s, acting, feedback_id, body.done)
+    except auth.AccountError as error:
+        raise admin_error(error) from None
+    s.commit()
+    return {"done": body.done}
+
+
+@app.get("/v1/admin/settings", dependencies=ADMIN_ONLY)
+def admin_get_settings(s: auth.DbSession) -> dict[str, Any]:
+    return admin.settings(s)
+
+
+@app.patch("/v1/admin/settings", dependencies=SAME_SITE_ONLY)
+def admin_update_settings(
+    body: AdminSettingsRequest, s: auth.DbSession, acting: Admin
+) -> dict[str, Any]:
+    try:
+        saved = admin.update_settings(s, acting, body.model_dump(exclude_none=True))
+    except auth.AccountError as error:
+        raise admin_error(error) from None
+    s.commit()
+    return saved
+
+
+@app.get("/v1/admin/log", dependencies=ADMIN_ONLY)
+def admin_log(s: auth.DbSession) -> list[dict[str, Any]]:
+    # The newest admin actions first
+    return admin.activity(s)

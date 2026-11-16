@@ -290,9 +290,11 @@ def test_scripts_never_insert_text_as_html():
             found = re.search(r"innerHTML\s*=\s*(.+);", line)
             if found:
                 # Empty, a fixed icon or the answer HTML the server made safe (test_chat_page.py).
-                # "icon" is the argument of menuButton, which only ever gets one of ICONS
+                # "icon" is the argument of menuButton, which only ever gets one of ICONS.
+                # A fixed SVG written in the script itself is no user text either
                 value = found.group(1)
-                assert value in ('""', "msg.html", "icon") or value.startswith("ICONS."), line
+                fixed = value.startswith(("ICONS.", "'<svg"))
+                assert value in ('""', "msg.html", "icon") or fixed, line
 
 
 def test_nothing_is_loaded_from_the_internet():

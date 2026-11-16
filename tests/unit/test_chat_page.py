@@ -85,8 +85,11 @@ def test_a_user_gets_the_account_menu_and_settings(client):
     }
 
 
-def test_the_admin_panel_item_waits_for_the_admin_page(client):
+def test_only_admins_see_the_admin_panel_item(client):
     log_in(client, role="admin")
+    assert 'href="/admin"' in client.get("/").text
+    client.cookies.clear()
+    log_in(client, email="grace@example.org")
     assert 'href="/admin"' not in client.get("/").text
 
 

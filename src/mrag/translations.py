@@ -333,6 +333,9 @@ TEXT: dict[str, dict[str, str]] = {
         "err_model_error": "The AI model could not answer. Try again.",
         "err_time_limit": "The answer took too long and was stopped. Try again.",
         "err_harness_error": "The answer could not be prepared. Try again.",
+        "guest_mode_label": "Allow guests",
+        "guest_mode_desc": "When off, visitors must log in to chat.",
+        "err_feedback_not_found": "Feedback not found.",
     },
     "sv": {
         "app_subtitle": "Multiagent RAG-assistent",
@@ -641,6 +644,9 @@ TEXT: dict[str, dict[str, str]] = {
         "err_model_error": "AI-modellen kunde inte svara. Försök igen.",
         "err_time_limit": "Svaret tog för lång tid och stoppades. Försök igen.",
         "err_harness_error": "Svaret kunde inte förberedas. Försök igen.",
+        "guest_mode_label": "Tillåt gäster",
+        "guest_mode_desc": "När det är av måste besökare logga in för att chatta.",
+        "err_feedback_not_found": "Feedbacken hittades inte.",
     },
 }
 

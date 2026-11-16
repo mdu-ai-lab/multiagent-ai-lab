@@ -25,10 +25,11 @@ def test_create_admin_makes_an_admin_who_can_log_in(database, typed, capsys):
         user = auth.check_login(s, "ada@example.org", PASSWORD)
         assert user.role == "admin"
         entry = s.scalars(select(db.AuditEntry)).one()
-        assert (entry.admin_label, entry.action, entry.target) == (
+        assert (entry.admin_label, entry.action, entry.target, entry.details) == (
             "Terminal",
-            "create_admin",
+            "create_user",
             "ada@example.org",
+            "admin",
         )
 
 
@@ -70,3 +71,24 @@ def test_an_old_database_is_refused(database, capsys):
     command.downgrade(database, "base")
     assert admin.main(["list-users"]) == 1
     assert "alembic upgrade head" in capsys.readouterr().out
+
+
+def test_make_admin_gives_an_existing_account_admin_rights(database, capsys):
+    with db.get_sessionmaker()() as s:
+        user = auth.create_user(s, "grace@example.org", "Grace", PASSWORD)
+        auth.start_session(s, user)
+        s.commit()
+    assert admin.main(["make-admin", "Grace@Example.org"]) == 0
+    assert "Admin rights given to grace@example.org" in capsys.readouterr().out
+    with db.get_sessionmaker()() as s:
+        assert s.scalars(select(db.User.role)).one() == "admin"
+        # A change of rights ends every login of the account
+        assert s.scalars(select(db.BrowserSession)).all() == []
+        entry = s.scalars(select(db.AuditEntry)).one()
+        assert (entry.admin_label, entry.action, entry.target) == (
+            "Terminal",
+            "make_admin",
+            "grace@example.org",
+        )
+    assert admin.main(["make-admin", "nobody@example.org"]) == 1
+    assert "User not found." in capsys.readouterr().out
