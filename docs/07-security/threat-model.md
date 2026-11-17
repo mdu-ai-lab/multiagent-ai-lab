@@ -4,7 +4,7 @@
 |---|---|
 | Purpose | Assets, entry points, threats and planned mitigations |
 | Status | Proposed |
-| Last updated | 2026-11-09 |
+| Last updated | 2026-11-15 |
 | Source of truth | [WORK_PLAN.md](../WORK_PLAN.md) v1.10 |
 | Related documents | [Security requirements](../07-security/security-requirements.md), [Risk register](../12-project-management/risk-register.md) |
 
@@ -37,4 +37,8 @@ API, UI, MCP, uploaded files, fetched web pages, the demo, GitHub Actions, noteb
 | SF-11 | rclone or Drive token on the Mac misused | Low | 0.6 | Password manager, no secrets in Drive | — |
 | SF-12 | Entity merging links facts from collections a user cannot see | Medium | 9A.2, 9A.4 | Graph built per collection, same filter as harness/retrieval.py | Merge rules across collections REQUIRES CONFIRMATION |
 | SF-13 | A poisoned document adds false relations to the graph | Medium | 9A.2 | Source page for every fact, claim check, ontology-constrained output | — |
-| SF-14 | Stolen session cookie or forged requests from another site | Medium | 1.10 | HttpOnly and SameSite cookies, check against forged requests | Checked in 1.10 and Phase 12 |
+| SF-14 | Stolen session cookie or forged requests from another site | Medium | 1.10 | Only the SHA-256 of the session token stored, HttpOnly and SameSite=Strict cookies, a token per session against forged requests plus the Origin and Sec-Fetch-Site check (D49) | Tested in 1.10 and Phase 12 |
+| SF-15 | A script hidden in a chat message or a model answer runs in the browser | High | 1.10 | Text shown as text, Markdown rendered on the server with raw HTML off, a strict Content Security Policy (D49) | Tested in 1.10 and Phase 12 |
+| SF-16 | Password guessing on the login page | Medium | 1.10, 13.1 | Argon2id, at least 15 characters, common passwords refused, the same answer for an unknown email and a wrong password (D49) | Login throttling only in 13.1 |
+| SF-17 | Anyone who can open the page creates accounts (sign-up starts on) | Medium | 1.10, 13.1 | The page listens on 127.0.0.1 only. A new account is a member, never an admin. An admin can turn sign-up off (D49) | Rate limits only in 13.1. Turn sign-up off or add HTTPS and limits before the page runs on a network |
+| SF-18 | Visitors use the model without an account (guest mode starts on) | Medium | 1.10, 13.1 | The page listens on 127.0.0.1 only. 5 messages per guest session. An admin can turn guest mode off (D49) | Clearing the browser's cookies gives a new guest session. Rate limits only in 13.1 |

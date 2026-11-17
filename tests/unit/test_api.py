@@ -1,6 +1,6 @@
 # Unit tests for the API and service.py with FastAPI's test client and a fake model, no
 # servers. The test client is not used as a context manager, so the start-up of the API
-# (tracing to MLflow) does not run here.
+# (tracing to MLflow) does not run here. Saved chats and guests: test_chats.py.
 
 import json
 import re
@@ -9,8 +9,9 @@ import time
 import anyio
 import pytest
 from fastapi.testclient import TestClient
+from sqlalchemy import select
 
-from mrag import api, prompts, service, tracing
+from mrag import api, auth, db, prompts, service, tracing
 from mrag.api import app
 from mrag.config import Settings
 from mrag.harness import loop
@@ -44,6 +45,25 @@ def mac_profile(monkeypatch):
     prompts.load.cache_clear()
 
 
+@pytest.fixture(autouse=True)
+def no_cookies():
+    client.cookies.clear()
+    yield
+    client.cookies.clear()
+
+
+@pytest.fixture
+def member(database):
+    # Logs the test client in as a member and returns the header with the session's token
+    with db.get_sessionmaker()() as s:
+        user = auth.create_user(s, "ada@example.org", "Ada", "correct horse battery staple")
+        token, row = auth.start_session(s, user)
+        headers = {auth.CSRF_HEADER: row.csrf_token}
+        s.commit()
+    client.cookies.set(auth.COOKIE, token)
+    return headers
+
+
 def events(response):
     # Server-Sent Events: "event: name" and "data: json" lines, one blank line after each
     found = []
@@ -68,7 +88,11 @@ def test_version():
     assert isinstance(data["git_dirty"], bool)
 
 
-def test_models_of_the_active_profile():
+def test_models_need_a_login(database):
+    assert client.get("/v1/models").json() == {"detail": "login_required"}
+
+
+def test_models_of_the_active_profile(member):
     data = client.get("/v1/models").json()
     expected = load_models()["mac"].models
     assert data["profile"] == "mac"
@@ -79,19 +103,21 @@ def test_models_of_the_active_profile():
     assert all(set(model) == {"role", "name", "source", "revision"} for model in data["models"])
 
 
-def test_a_profile_without_models_lists_none(monkeypatch):
+def test_a_profile_without_models_lists_none(member, monkeypatch):
     monkeypatch.setattr(service, "get_settings", lambda: Settings(profile="company"))
     assert client.get("/v1/models").json() == {"profile": "company", "models": []}
 
 
-def test_chat_streams_the_answer_then_the_totals(monkeypatch):
+def test_chat_streams_the_chat_the_answer_then_the_totals(member, monkeypatch):
     monkeypatch.setattr(loop, "get_client", lambda: FakeClient())
-    response = client.post("/v1/chat", json={"message": "Hi", "history": []})
+    response = client.post("/v1/chat", json={"message": "Hi"}, headers=member)
     assert response.status_code == 200
     assert response.headers["content-type"].startswith("text/event-stream")
     found = events(response)
-    assert found[:2] == [("delta", {"text": "Hel"}), ("delta", {"text": "lo"})]
-    name, done = found[2]
+    name, opened = found[0]
+    assert name == "chat" and opened["title"] == "Hi"
+    assert found[1:3] == [("delta", {"text": "Hel"}), ("delta", {"text": "lo"})]
+    name, done = found[3]
     assert name == "done"
     assert (done["answer"], done["model_calls"], done["input_tokens"], done["output_tokens"]) == (
         "Hello",
@@ -101,21 +127,47 @@ def test_chat_streams_the_answer_then_the_totals(monkeypatch):
     )
 
 
-def test_an_unreachable_model_gives_one_error_event(monkeypatch):
+def test_an_unreachable_model_gives_one_error_event(member, monkeypatch):
     monkeypatch.setattr(
         loop, "get_client", lambda: FakeClient(pieces=(), error=ModelUnavailableError("down"))
     )
-    response = client.post("/v1/chat", json={"message": "Hi"})
-    assert events(response) == [("error", {"kind": "model_unavailable", "message": "down"})]
+    response = client.post("/v1/chat", json={"message": "Hi"}, headers=member)
+    found = events(response)
+    assert [name for name, _ in found] == ["chat", "error"]
+    assert found[1] == ("error", {"kind": "model_unavailable", "message": "down"})
 
 
-def test_an_empty_message_is_rejected():
-    assert client.post("/v1/chat", json={"message": ""}).status_code == 422
+def test_an_empty_message_is_rejected(member):
+    assert client.post("/v1/chat", json={"message": ""}, headers=member).status_code == 422
 
 
 def test_the_documentation_lists_the_experimental_endpoints():
     spec = client.get("/openapi.json").json()
-    assert sorted(spec["paths"]) == ["/v1/chat", "/v1/health", "/v1/models", "/v1/version"]
+    assert sorted(spec["paths"]) == [
+        "/v1/admin/feedback",
+        "/v1/admin/feedback/{feedback_id}",
+        "/v1/admin/log",
+        "/v1/admin/settings",
+        "/v1/admin/stats",
+        "/v1/admin/users",
+        "/v1/admin/users/{user_id}",
+        "/v1/admin/users/{user_id}/reset-password",
+        "/v1/auth/login",
+        "/v1/auth/logout",
+        "/v1/auth/signup",
+        "/v1/chat",
+        "/v1/chats",
+        "/v1/chats/{chat_id}",
+        "/v1/feedback",
+        "/v1/health",
+        "/v1/me",
+        "/v1/me/delete",
+        "/v1/me/export",
+        "/v1/me/password",
+        "/v1/me/preferences",
+        "/v1/models",
+        "/v1/version",
+    ]
     assert "Experimental" in spec["info"]["description"]
 
 
@@ -134,7 +186,7 @@ class SlowClient:
             self.closed = True
 
 
-def test_a_closed_connection_closes_the_answer_at_once(monkeypatch):
+def test_a_closed_connection_closes_the_answer_and_saves_it_as_stopped(member, monkeypatch):
     # Runs the endpoint's response the way the web server does. The client goes away after
     # the first answer piece
     model = SlowClient()
@@ -149,13 +201,20 @@ def test_a_closed_connection_closes_the_answer_at_once(monkeypatch):
             await anyio.sleep(0.01)
         return {"type": "http.disconnect"}
 
-    async def serve():
-        response = await api.chat(api.ChatRequest(message="Count to 200"))
-        scope = {"type": "http", "asgi": {"spec_version": "2.3"}}
-        await response(scope, receive, send)
+    with db.get_sessionmaker()() as s:
+        owner = service.Owner(user_id=s.scalars(select(db.User.id)).one())
 
-    anyio.run(serve)
+        async def serve():
+            body = api.ChatRequest(message="Count to 200")
+            response = await api.chat(body, s, owner, None)
+            scope = {"type": "http", "asgi": {"spec_version": "2.3"}}
+            await response(scope, receive, send)
+
+        anyio.run(serve)
     assert model.closed and not model.finished
+    with db.get_sessionmaker()() as s:
+        answer = s.scalars(select(db.Message).where(db.Message.role == "assistant")).one()
+    assert answer.status == "stopped" and answer.content.startswith("0\n")
 
 
 def test_start_without_mlflow_turns_tracing_off(monkeypatch, caplog):

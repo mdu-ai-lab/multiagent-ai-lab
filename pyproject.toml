@@ -8,8 +8,10 @@ license-files = ["LICENSE"]
 requires-python = ">=3.12,<3.13"
 dependencies = [
     "alembic>=1.20.1",
+    "argon2-cffi>=25.1.0",
     "fastapi>=0.162.0",
     "jinja2>=3.1.6",
+    "markdown-it-py>=4.2.0",
     "mlflow-skinny==3.17.2",
     "openai>=3.42.0",
     "pydantic-settings>=2.16.2",
@@ -22,6 +24,11 @@ dependencies = [
 [build-system]
 requires = ["uv_build>=0.13.7,<0.14.0"]
 build-backend = "uv_build"
+
+# New releases are taken only once they are 7 days old, like Dependabot's cooldown.
+# argon2-cffi-bindings 26.2.0 came out on 13 November 2026: remove this rule from 20 November
+[tool.uv]
+exclude-newer-package = { argon2-cffi-bindings = "2026-11-08T00:00:00Z" }
 
 # The package folder is src/mrag, not src/multiagent_ai_lab
 [tool.uv.build-backend]
@@ -52,8 +59,9 @@ dev = [
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 # Tests that need a running model server run only when asked for: uv run pytest -m mac
-# on this Mac and uv run pytest -m ci_model in CI
-addopts = "-m 'not mac and not ci_model'"
+# on this Mac and uv run pytest -m ci_model in CI. The transformers tests download a model, so
+# they also run only when asked for: uv run --group demo pytest -m transformers
+addopts = "-m 'not mac and not ci_model and not transformers'"
 markers = [
     "mac: needs this Mac's model files or servers (run with: uv run pytest -m mac)",
     "ci_model: needs llama-server with the small CI model (run with: uv run pytest -m ci_model)",
@@ -67,6 +75,10 @@ target-version = "py312"
 
 [tool.ruff.lint]
 extend-select = ["E501"]
+
+# Each text of the chat page stays on one line, as in the chat page preview
+[tool.ruff.lint.per-file-ignores]
+"src/mrag/translations.py" = ["E501"]
 
 # mlflow/ in the project folder holds MLflow's data, not code. Without this setting the
 # import sorting would treat the mlflow package as project code

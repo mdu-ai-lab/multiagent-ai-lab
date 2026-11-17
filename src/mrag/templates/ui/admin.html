@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="{{ lang }}" data-theme="{{ theme }}">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{ t.admin_panel }} - {{ app_name }}</title>
+  <link rel="stylesheet" href="{{ asset('style.css') }}">
+</head>
+<body>
+<div class="admin">
+
+  <!-- Left: sections -->
+  <aside class="admin-nav">
+    <div class="brand">
+      <div class="brand-mark">M</div>
+      <div class="brand-text">
+        <div class="brand-name">{{ app_name }}</div>
+        <div class="brand-sub">{{ t.admin_panel }}</div>
+      </div>
+    </div>
+
+    <nav class="admin-tabs">
+      <button class="admin-tab active" type="button" data-section="dashboard">
+        <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/></svg>
+        <span>{{ t.admin_dashboard }}</span>
+      </button>
+      <button class="admin-tab" type="button" data-section="users">
+        <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="4"/><path d="M2 21a7 7 0 0 1 14 0M16 4a4 4 0 0 1 0 8M22 21a7 7 0 0 0-4-6.3"/></svg>
+        <span>{{ t.admin_users }}</span>
+      </button>
+      <button class="admin-tab" type="button" data-section="feedback">
+        <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+        <span>{{ t.admin_feedback }}</span>
+        <span class="tab-badge" id="feedbackBadge" hidden></span>
+      </button>
+      <button class="admin-tab" type="button" data-section="settings">
+        <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 21v-7M4 10V3M12 21v-9M12 8V3M20 21v-5M20 12V3M1 14h6M9 8h6M17 16h6"/></svg>
+        <span>{{ t.admin_settings }}</span>
+      </button>
+      <button class="admin-tab" type="button" data-section="log">
+        <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M8 13h8M8 17h5"/></svg>
+        <span>{{ t.admin_log }}</span>
+      </button>
+    </nav>
+
+    <a class="admin-back" href="/">
+      <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+      {{ t.back_to_chat }}
+    </a>
+    <div class="admin-me">
+      <span class="account-avatar">{{ initials }}</span>
+      <span class="account-who">
+        <span class="account-name">{{ user.name }}</span>
+        <span class="account-email">{{ user.email }}</span>
+      </span>
+    </div>
+  </aside>
+
+  <!-- Right: the open section -->
+  <main class="admin-main">
+    <header class="admin-header">
+      <h1 id="sectionTitle">{{ t.admin_dashboard }}</h1>
+      <div class="admin-privacy">
+        <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        {{ t.privacy_note }}
+      </div>
+    </header>
+
+    <div class="admin-content">
+
+      <!-- Dashboard -->
+      <section class="admin-section active" data-section="dashboard">
+        <div class="stat-grid">
+          <div class="stat-card"><div class="stat-label">{{ t.stat_users }}</div><div class="stat-value" id="stUsers">-</div></div>
+          <div class="stat-card"><div class="stat-label">{{ t.stat_chats }}</div><div class="stat-value" id="stChats">-</div></div>
+          <div class="stat-card"><div class="stat-label">{{ t.stat_messages }}</div><div class="stat-value" id="stMessages">-</div></div>
+          <div class="stat-card"><div class="stat-label">{{ t.stat_open_feedback }}</div><div class="stat-value" id="stFeedback">-</div></div>
+        </div>
+        <div class="stat-grid stat-grid-small">
+          <div class="stat-card"><div class="stat-label">{{ t.stat_admins }}</div><div class="stat-value" id="stAdmins">-</div></div>
+          <div class="stat-card"><div class="stat-label">{{ t.stat_blocked }}</div><div class="stat-value" id="stBlocked">-</div></div>
+          <div class="stat-card"><div class="stat-label">{{ t.stat_new_users }}</div><div class="stat-value" id="stNew">-</div></div>
+          <div class="stat-card"><div class="stat-label">{{ t.stat_guest_today }}</div><div class="stat-value" id="stGuest">-</div></div>
+        </div>
+        <div class="admin-columns">
+          <div class="card">
+            <div class="card-head">
+              <h2>{{ t.newest_users }}</h2>
+              <button class="link-btn" type="button" data-goto="users">{{ t.view_all }}</button>
+            </div>
+            <div id="dashUsers"></div>
+          </div>
+          <div class="card">
+            <div class="card-head">
+              <h2>{{ t.latest_feedback }}</h2>
+              <button class="link-btn" type="button" data-goto="feedback">{{ t.view_all }}</button>
+            </div>
+            <div id="dashFeedback"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Users -->
+      <section class="admin-section" data-section="users">
+        <div class="toolbar">
+          <div class="search">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+            <input type="search" id="userSearch" placeholder="{{ t.search_users }}">
+          </div>
+          <div class="segmented" id="userFilter">
+            <button type="button" class="selected" data-filter="all">{{ t.filter_all }}</button>
+            <button type="button" data-filter="admins">{{ t.filter_admins }}</button>
+            <button type="button" data-filter="blocked">{{ t.filter_blocked }}</button>
+          </div>
+          <button class="btn-primary" type="button" id="createUserBtn">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+            {{ t.create_user }}
+          </button>
+        </div>
+        <div class="card card-flush">
+          <div class="table-wrap">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>{{ t.col_user }}</th>
+                  <th>{{ t.col_role }}</th>
+                  <th>{{ t.col_status }}</th>
+                  <th class="num">{{ t.col_chats }}</th>
+                  <th>{{ t.col_joined }}</th>
+                  <th>{{ t.col_last_login }}</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody id="usersBody"></tbody>
+            </table>
+          </div>
+          <div class="empty" id="usersEmpty" hidden>{{ t.no_users }}</div>
+        </div>
+      </section>
+
+      <!-- Feedback -->
+      <section class="admin-section" data-section="feedback">
+        <div class="toolbar">
+          <div class="segmented" id="feedbackFilter">
+            <button type="button" class="selected" data-filter="open">{{ t.fb_open }}</button>
+            <button type="button" data-filter="done">{{ t.fb_done }}</button>
+            <button type="button" data-filter="all">{{ t.fb_all }}</button>
+          </div>
+        </div>
+        <div class="fb-list" id="feedbackList"></div>
+        <div class="empty card" id="feedbackEmpty" hidden>{{ t.no_feedback }}</div>
+      </section>
+
+      <!-- Settings -->
+      <section class="admin-section" data-section="settings">
+        <div class="card">
+          {# Guest mode on or off: added for this project, in the style of the rows below #}
+          <div class="setting-row">
+            <div class="setting-info">
+              <div class="setting-title">{{ t.guest_mode_label }}</div>
+              <div class="setting-desc">{{ t.guest_mode_desc }}</div>
+            </div>
+            <label class="switch">
+              <input type="checkbox" id="guestMode">
+              <span class="switch-track"></span>
+            </label>
+          </div>
+          <form class="setting-row" id="guestLimitForm">
+            <div class="setting-info">
+              <div class="setting-title">{{ t.guest_limit_label }}</div>
+              <div class="setting-desc">{{ t.guest_limit_desc }}</div>
+            </div>
+            <div class="inline-form">
+              <input class="number-input" type="number" id="guestLimit" min="0" max="100" required>
+              <button class="btn-primary" type="submit">{{ t.save }}</button>
+            </div>
+          </form>
+          <div class="setting-row">
+            <div class="setting-info">
+              <div class="setting-title">{{ t.signup_open_label }}</div>
+              <div class="setting-desc">{{ t.signup_open_desc }}</div>
+            </div>
+            <label class="switch">
+              <input type="checkbox" id="signupOpen">
+              <span class="switch-track"></span>
+            </label>
+          </div>
+        </div>
+      </section>
+
+      <!-- Activity log -->
+      <section class="admin-section" data-section="log">
+        <div class="card card-flush">
+          <div class="table-wrap">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>{{ t.col_time }}</th>
+                  <th>{{ t.col_admin }}</th>
+                  <th>{{ t.col_action }}</th>
+                </tr>
+              </thead>
+              <tbody id="logBody"></tbody>
+            </table>
+          </div>
+          <div class="empty" id="logEmpty" hidden>{{ t.no_log }}</div>
+        </div>
+      </section>
+    </div>
+  </main>
+</div>
+
+<!-- Create user -->
+<div class="modal-overlay" id="createUserModal">
+  <form class="modal modal-panel" id="createUserForm" role="dialog" aria-modal="true" aria-labelledby="createUserTitle">
+    <button class="modal-close" type="button" title="{{ t.close }}" data-close>&times;</button>
+    <h2 id="createUserTitle">{{ t.create_user }}</h2>
+    <p class="panel-sub"></p>
+    <label class="field">
+      <span>{{ t.name }}</span>
+      <input type="text" name="name" maxlength="60" required>
+    </label>
+    <label class="field">
+      <span>{{ t.email }}</span>
+      <input type="email" name="email" required>
+    </label>
+    <label class="field">
+      <span>{{ t.password }}</span>
+      <input type="text" name="password" minlength="15" required autocomplete="off">
+      <small>{{ t.password_hint }}</small>
+    </label>
+    <div class="field">
+      <span>{{ t.role }}</span>
+      <div class="segmented segmented-full" id="createRole">
+        <button type="button" class="selected" data-role="member">{{ t.role_member }}</button>
+        <button type="button" data-role="admin">{{ t.role_admin }}</button>
+      </div>
+    </div>
+    <div class="form-error" hidden></div>
+    <div class="confirm-actions">
+      <button class="btn-ghost" type="button" data-close>{{ t.cancel }}</button>
+      <button class="btn-primary" type="submit">{{ t.create }}</button>
+    </div>
+  </form>
+</div>
+
+<!-- New temporary password, shown once -->
+<div class="modal-overlay" id="passwordModal">
+  <div class="modal modal-confirm" role="dialog" aria-modal="true" aria-labelledby="passwordTitle">
+    <h2 id="passwordTitle">{{ t.temp_password_title }}</h2>
+    <p id="passwordText"></p>
+    <div class="temp-password">
+      <code id="passwordValue"></code>
+      <button class="btn-ghost" type="button" id="copyPassword">{{ t.copy }}</button>
+    </div>
+    <div class="confirm-actions">
+      <button class="btn-primary" type="button" data-close>{{ t.done_btn }}</button>
+    </div>
+  </div>
+</div>
+
+<!-- Asks before an action -->
+<div class="modal-overlay" id="confirmModal">
+  <div class="modal modal-confirm" role="alertdialog" aria-modal="true" aria-labelledby="confirmTitle">
+    <h2 id="confirmTitle"></h2>
+    <p id="confirmText"></p>
+    <div class="form-error" hidden></div>
+    <div class="confirm-actions">
+      <button class="btn-ghost" id="confirmCancel" type="button">{{ t.cancel }}</button>
+      <button class="btn-danger" id="confirmOk" type="button">{{ t.confirm }}</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+{# Page settings for the script: JSON data, which the browser never runs as code #}
+<script type="application/json" id="page-config">{{ config | tojson }}</script>
+<script src="{{ asset('admin.js') }}"></script>
+</body>
+</html>

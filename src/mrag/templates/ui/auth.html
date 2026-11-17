@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{# Shared layout of the login and sign-up pages: what an account gives on the left, the form on the right #}
+{% block body_class %}auth-body{% endblock %}
+{% block body %}
+<div class="auth">
+  <section class="auth-side">
+    <a class="brand brand-link" href="/">
+      <div class="brand-mark">M</div>
+      <div class="brand-text">
+        <div class="brand-name">{{ app_name }}</div>
+        <div class="brand-sub">{{ t.app_subtitle }}</div>
+      </div>
+    </a>
+
+    <div class="auth-pitch">
+      <h2>{{ t.auth_pitch }}</h2>
+      <ul class="perks">
+        <li>
+          <span class="perk-icon"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></span>
+          <div><strong>{{ t.perk1 }}</strong><span>{{ tr("perk1_sub", n=options.guest_limit) }}</span></div>
+        </li>
+        {# The file upload perk (perk2) shows once file uploads exist #}
+        <li>
+          <span class="perk-icon"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 8v4l3 3"/><circle cx="12" cy="12" r="9"/></svg></span>
+          <div><strong>{{ t.perk3 }}</strong><span>{{ t.perk3_sub }}</span></div>
+        </li>
+      </ul>
+    </div>
+
+    <div class="auth-foot">{{ t.runs_locally }}</div>
+  </section>
+
+  <main class="auth-main">
+    <div class="auth-card">
+      {% block form %}{% endblock %}
+    </div>
+  </main>
+</div>
+{% endblock %}
+{% block scripts %}<script src="{{ asset('auth.js') }}"></script>{% endblock %}

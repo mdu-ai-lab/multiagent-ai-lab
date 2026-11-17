@@ -4,16 +4,22 @@
 |---|---|
 | Purpose | Proposed relational entities |
 | Status | Proposed |
-| Last updated | 2026-11-05 |
+| Last updated | 2026-11-15 |
 | Source of truth | [WORK_PLAN.md](../WORK_PLAN.md) v1.10 |
 | Related documents | [Data dictionary](../05-database/data-dictionary.md) |
 
 > Implementation status: see docs/WORK_PLAN.md, section 1 (current state). Test results are in docs/HANDOVER.md.
 
-PROPOSED. Entity and field names are suggestions built from WORK_PLAN.md steps 3.1, 3.4, 3.5 and 12.4. They are finalised when those steps start.
+PROPOSED. Entity and field names are suggestions built from WORK_PLAN.md steps 3.1, 3.4, 3.5 and 12.4. They are finalised when those steps start. USER, SESSION, CHAT, MESSAGE, FEEDBACK and AUDIT_LOG exist since step 1.10 (src/mrag/db.py). The other entities are still proposed.
 
 ```mermaid
 erDiagram
+  USER ||--o{ SESSION : logs_in_with
+  USER ||--o{ CHAT : owns
+  SESSION ||--o{ CHAT : owns_guest_chats
+  CHAT ||--o{ MESSAGE : contains
+  USER |o--o{ FEEDBACK : sends
+  USER |o--o{ AUDIT_LOG : acts_in
   USER ||--o{ COLLECTION_ACCESS : has
   COLLECTION ||--o{ COLLECTION_ACCESS : grants
   COLLECTION ||--o{ DOCUMENT : contains
@@ -25,7 +31,40 @@ erDiagram
   NOTEBOOK ||--o{ NOTE : contains
   USER {
     id id
+    string email
     string name
+    string role
+  }
+  SESSION {
+    id id
+    string token_hash
+    id user_id
+    datetime expires_at
+  }
+  CHAT {
+    uuid id
+    id user_id
+    id session_id
+    string title
+  }
+  MESSAGE {
+    id id
+    uuid chat_id
+    string role
+    text content
+    string status
+  }
+  FEEDBACK {
+    id id
+    id user_id
+    string kind
+    text message
+  }
+  AUDIT_LOG {
+    id id
+    id admin_id
+    string action
+    string target
   }
   COLLECTION {
     id id
