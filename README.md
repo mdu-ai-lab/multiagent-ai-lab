@@ -4,7 +4,7 @@ Work in Progress
 
 ## Status
 
-Phase 0 (foundations) is done (tag v0.0.0). No feature works yet. The full plan and the current
+Phase 1 is in progress. Working now: the FastAPI backend with login, saved chats and an admin panel, the chat web page, CI and the live dashboard (https://mdu-ai-lab.github.io/multiagent-ai-lab/). Document question answering, web search and the other agent features are planned. The full plan and the current
 state are in [docs/WORK_PLAN.md](docs/WORK_PLAN.md).
 
 ## Quick start (Mac)
