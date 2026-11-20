@@ -129,7 +129,7 @@ Full list: [threat model](07-security/threat-model.md).
 | Q3 | Is your Hugging Face account older than 30 days with a verified email? (needed for the free ZeroGPU Space) | Answered 15 November 2026: the email is verified and the account was created about 20 October 2026, so it is older than 30 days from about 20 November 2026 (D47) |
 | Q4 | SPACE dataset licence. Checked 20 November 2026: its GitHub repo states no licence for the data. Replace if it blocks use | Answered 20 November 2026: PeerSum replaces SPACE (section 13) |
 | Q5 | PeerSum key points: written by hand (default) or LLM-assisted (counts as synthetic, needs your approval) | Step 9.3 |
-| Q6 | Swedish documents in v1 or later | Step 2.2 |
+| Q6 | Swedish documents in v1 or later | Answered 20 November 2026: Swedish is in v1. The Swedish test sets are in section 13. Swedish long documents come from the fresh set and the set of own documents (2.2) |
 | Q8 | Which role "full access" means: Owner (controls the whole organization, including deleting it) or Admin (full control of the repo only) | Answered 31 October 2026: Admin on the repo (D24) |
 | Q9 | Which domain ontology to build first (for example research papers or industrial documents) | Step 9A.1 |
 | Q10 | Add audio overviews (spoken summaries of sources)? This needs a text-to-speech model and changes a non-goal | Before Phase 9B |

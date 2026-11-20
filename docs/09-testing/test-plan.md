@@ -47,6 +47,11 @@ Each step in WORK_PLAN.md has a done-when test. These are the acceptance tests. 
 | MMLongBench-Doc (stretch) | Q&A visual | Apache 2.0 per a 2026 paper (confirm) | Second long-document check |
 | 2WikiMultihopQA | GraphRAG | Apache 2.0 (licence file of the authors' GitHub repo, checked 20 November 2026) | Multi-hop questions grounded in entity relations |
 | MuSiQue | GraphRAG | CC BY 4.0 (README of the authors' GitHub repo, checked 20 November 2026) | Harder multi-hop questions |
-| Public speech set | Audio | Chosen in 2.1 from LibriSpeech, FLEURS and AMI, all CC BY 4.0 (Hugging Face cards, checked 20 November 2026) | Word error rate test |
+| ScandiQA (Swedish part) | Q&A and refusal (Swedish) | CC BY-SA 4.0 (Hugging Face card, checked 20 November 2026) | Swedish questions with a Wikipedia passage. About 42% of the passages do not hold the answer. The questions and answers were translated by people, the passages by machine |
+| Belebele (Swedish part) | Reading comprehension (Swedish) | CC BY-SA 4.0 (README of the authors' GitHub repo, checked 20 November 2026) | Passages and questions translated by people, with 4 choices each |
+| MKQA (Swedish part) | Questions without documents, refusal (Swedish) | CC BY-SA 3.0 (README of the authors' GitHub repo, checked 20 November 2026) | 10,000 questions with Swedish answers. 1,427 are marked unanswerable |
+| SweFAQ | Retrieval (Swedish) | CC BY 4.0 (Språkbanken, checked 20 November 2026) | Native Swedish questions and answers from the FAQs of Swedish authorities |
+| FLEURS (Swedish part) | Audio (Swedish) | CC BY 4.0 (Hugging Face card, checked 20 November 2026) | 759 recordings of 341 read Swedish sentences with their transcripts |
+| Public speech set | Audio | LibriSpeech and AMI (2.1) and FLEURS Swedish (2.2), all CC BY 4.0 (Hugging Face cards, checked 20 November 2026) | Word error rate test |
 | Public injection set | Security | Chosen and checked in 12.2 | Attack tests |
 | Berkeley Function Calling Leaderboard (BFCL) | Tool calls | Apache 2.0 (Hugging Face card, confirm in 7.6) | Public test of whether the model picks the right tool with valid arguments |

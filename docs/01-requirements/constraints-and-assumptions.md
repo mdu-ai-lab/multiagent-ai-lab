@@ -32,7 +32,7 @@
 | ASM-004 | Qwen3.5-9B runs on ZeroGPU through Transformers | Step 1.8 |
 | ASM-005 | The Hugging Face account is over 30 days old with a verified email | Q3 |
 | ASM-006 | smolagents WebSearchTool works without a key or payment | Step 8.1 |
-| ASM-007 | v1 is evaluated in English. Swedish is open | Q6 |
+| ASM-007 | v1 is evaluated in English and Swedish | Answered by Q6 on 20 November 2026 |
 | ASM-008 | SPACE licence allows use | Not confirmed: no data licence stated (checked 20 November 2026). PeerSum replaces SPACE (Q4) |
 | ASM-009 | LinkML licence allows use | Step 9A.1 |
 | ASM-010 | LightRAG works with our model server and embeddings | Step 9A.3 |

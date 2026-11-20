@@ -208,3 +208,78 @@ datasets:
         size: 332016187
         sha256: 3312bb79400ddef62d5a0097e124dfabe86a693b4643e7fef7d72a62588280d7
         hash_from: source
+
+  - name: scandiqa-sv
+    title: ScandiQA (Swedish part)
+    use: Q&A and refusal (Swedish)
+    licence: CC-BY-SA-4.0
+    licence_source: https://huggingface.co/datasets/alexandrainst/scandi-qa
+    files:
+      - path: val.jsonl
+        url: https://huggingface.co/datasets/alexandrainst/scandi-qa/resolve/0bfc5269714a8861f29c1253bf89e6465eae8ab9/data/sv/val.jsonl
+        size: 1603615
+        sha256: 73f07ae78a46ac68e0c905d97268c3b4fcf93a2e6f83db01cd6691ba5553e060
+        hash_from: source
+      - path: test.jsonl
+        url: https://huggingface.co/datasets/alexandrainst/scandi-qa/resolve/0bfc5269714a8861f29c1253bf89e6465eae8ab9/data/sv/test.jsonl
+        size: 1290162
+        sha256: 7346db84dbd2ac427306d17f8f34877fcae4e76023153c3de6418802756ea9f5
+        hash_from: source
+
+  - name: belebele-sv
+    title: Belebele (Swedish part)
+    use: Reading comprehension (Swedish)
+    licence: CC-BY-SA-4.0
+    licence_source: https://github.com/facebookresearch/belebele
+    files:
+      - path: swe_Latn.jsonl
+        url: https://huggingface.co/datasets/facebook/belebele/resolve/7899cdfa4e1e0d733fd77c848e2c273cb1d32be2/data/swe_Latn.jsonl
+        size: 947688
+        sha256: c3e5e3f0e7d8ea6506c533c5812f39e5f0cd1a908ff9297a247e7977ac89eb6c
+        hash_from: measured
+
+  - name: mkqa
+    title: MKQA (all 26 languages in one file, Swedish used)
+    use: Questions without documents, refusal (Swedish)
+    licence: CC-BY-SA-3.0
+    licence_source: https://github.com/apple/ml-mkqa
+    files:
+      # A fixed commit of the authors' repo, so the file cannot change
+      - path: mkqa.jsonl.gz
+        url: https://raw.githubusercontent.com/apple/ml-mkqa/f964fe1bac4d580cee3d4928572df1f676f8e656/dataset/mkqa.jsonl.gz
+        size: 11903948
+        sha256: f77ac6bf6306e98816c5c047880db71a3c67d2f1491b169896d63e9bb14ef3d3
+        hash_from: measured
+
+  - name: swefaq
+    title: SweFAQ (from the SuperLim 2.0.5 collection)
+    use: Retrieval (Swedish)
+    licence: CC-BY-4.0
+    licence_source: https://spraakbanken.gu.se/en/resources/swefaq
+    files:
+      # Only its swefaq folder is used. This archive holds no SweDN articles, which were
+      # withdrawn at the request of their copyright holder. The older swefaq.zip still bundles them
+      - path: SuperLim-2.0.5.zip
+        url: https://sprakbanken.se/nedladdningar/SuperLim-2.0.5.zip
+        size: 67501021
+        sha256: fad1a0360f5968eaf3ba5dcbb39a8b8c9f6f994f242a567560bf5b9e1bf800b0
+        hash_from: measured
+        unpack: true
+
+  - name: fleurs-sv
+    title: FLEURS (Swedish part, test)
+    use: Speech to text (Swedish)
+    licence: CC-BY-4.0
+    licence_source: https://huggingface.co/datasets/google/fleurs
+    files:
+      - path: test.tsv
+        url: https://huggingface.co/datasets/google/fleurs/resolve/70bb2e84b976b7e960aa89f1c648e09c59f894dd/data/sv_se/test.tsv
+        size: 437092
+        sha256: 55f48c5385a6e5fb8a62ea90212c04b005e2f77d7bd8fcf20bc3a5bda223aae2
+        hash_from: measured
+      - path: test.tar.gz
+        url: https://huggingface.co/datasets/google/fleurs/resolve/70bb2e84b976b7e960aa89f1c648e09c59f894dd/data/sv_se/audio/test.tar.gz
+        size: 440702047
+        sha256: 3792fd432675e16d85a67f5caf9927ad608aefc2484d738f26704f75584a5a6f
+        hash_from: source
+        unpack: true

@@ -16,7 +16,7 @@
 - `uv run python -m mrag.eval_data download` fetches the files into data/public/ (not in Git) and unpacks the archives. `uv run python -m mrag.eval_data verify` checks every file again.
 - A hash marked "source" is published by Hugging Face. A hash marked "measured" was measured once by streaming the file on 20 November 2026, because the source publishes no SHA-256.
 - Only the files the evaluation needs are fetched: no training splits (the plan does no training) and no ready-made page images (step 3.4 renders them).
-- Downloaded on 20 November 2026: 24 files, 6.56 GB. With the unpacked archives the folder holds 11 GB.
+- Downloaded on 20 November 2026: 31 files of 15 datasets, 7.09 GB. With the unpacked archives the folder holds 12 GB.
 - Licences were read at their sources on 20 November 2026. The counts below were counted in the downloaded files on the same day.
 - 2.2 builds the dev and test sets from the pools named below, split by document.
 
@@ -150,8 +150,73 @@
 | Official scorer | None. Word error rate comes from eval_metrics.py |
 | Limits | English meetings only. Headset audio is cleaner than a room microphone |
 
+## ScandiQA (Swedish part)
+
+| Item | Detail |
+|---|---|
+| Source | Hugging Face alexandrainst/scandi-qa at revision 0bfc5269714a |
+| Licence | CC BY-SA 4.0 (Hugging Face card). Share-alike applies to changed copies that are shared. The test sets are rebuilt on the Mac and never published |
+| Files | data/sv/val.jsonl and data/sv/test.jsonl (2.9 MB) |
+| Content | Val: 500 and test: 500 Swedish questions, each with a Wikipedia passage and the answer span. 211 val and 210 test passages do not hold the answer (has_answer false). The card states 750 and 749. The files hold 500 each |
+| Use | Document Q&A and refusal in Swedish (steps 6.1, 6.4) |
+| Pool for 2.2 | Val and test |
+| Official scorer | Not checked yet (2.3) |
+| Limits | The passages were machine-translated from English Wikipedia (the dataset's code calls DeepL and Google Translate). The questions and answers come from MKQA and were translated by people. It tests translated Swedish, not text first written in Swedish |
+
+## Belebele (Swedish part)
+
+| Item | Detail |
+|---|---|
+| Source | Hugging Face facebook/belebele at revision 7899cdfa4e1e |
+| Licence | CC BY-SA 4.0 (README of the authors' GitHub repo facebookresearch/belebele). The authors' training set has another licence and is not used |
+| Files | swe_Latn.jsonl (0.9 MB) |
+| Content | 900 questions over 488 Swedish passages, each with 4 choices and the number of the right one. The passages come from FLORES texts of Wikinews (351 questions), Wikibooks (276) and Wikivoyage (273) and were translated by people |
+| Use | Reading a Swedish passage and answering (step 6.1) |
+| Pool for 2.2 | All 900 (one test set) |
+| Official scorer | None needed: accuracy of the chosen number |
+| Limits | Multiple choice with short passages. It does not test free answers or citations |
+
+## MKQA (Swedish part)
+
+| Item | Detail |
+|---|---|
+| Source | GitHub apple/ml-mkqa at commit f964fe1bac4d, dataset/mkqa.jsonl.gz |
+| Licence | CC BY-SA 3.0 (README of the authors' GitHub repo). The Hugging Face card says CC BY 3.0. The authors' text is followed |
+| Files | mkqa.jsonl.gz (11.9 MB), one file with all 26 languages |
+| Content | 10,000 questions, each with its Swedish wording and Swedish answers. 1,427 have the answer type unanswerable. The other types: entity (4,218), long answer (1,815), date (1,174), number (485), number with unit (394), short phrase (349) and yes or no (138) |
+| Use | Questions without documents and refusal in Swedish (steps 2.4, 6.4) and later web search (Phase 8) |
+| Pool for 2.2 | All 10,000 (one public set) |
+| Official scorer | mkqa_eval.py in the authors' GitHub repo (checked in 2.3) |
+| Limits | No documents: it tests knowledge and refusal, not reading. The questions come from Natural Questions in English and were translated by people |
+
+## SweFAQ
+
+| Item | Detail |
+|---|---|
+| Source | Språkbanken, the SuperLim 2.0.5 collection (SuperLim-2.0.5.zip, updated 14 September 2026), folder swefaq |
+| Licence | CC BY 4.0 (Språkbanken) |
+| Files | SuperLim-2.0.5.zip (67.5 MB). Only its swefaq folder is used. The archive also holds the other SuperLim tasks, which are not used. Its swedn folder holds only a documentation sheet and a table of statistics, no articles. The older swefaq.zip is not used, because it still bundles the SweDN articles that were withdrawn at the request of their copyright holder |
+| Content | Dev: 110 and test: 109 Swedish questions in 10 categories each. Each question comes with all answers of its category (a median of 13 to 14) and the index of the right one. The questions and answers come from the FAQs of Swedish authorities such as Försäkringskassan and 1177 (9 sources, documentation sheet) |
+| Use | Search and answer matching in Swedish (steps 5.3, 5.5) |
+| Pool for 2.2 | Dev and test (the official split keeps the categories apart) |
+| Official scorer | The documentation sheet names Krippendorff's pseudoalpha, computed from the accuracy |
+| Limits | Small: 109 test questions give wide confidence intervals. Its files are a little smaller than those in the older swefaq.zip. The difference was not checked |
+
+## FLEURS (Swedish part, test)
+
+| Item | Detail |
+|---|---|
+| Source | Hugging Face google/fleurs at revision 70bb2e84b976, data/sv_se |
+| Licence | CC BY 4.0 (Hugging Face card) |
+| Files | test.tsv and audio/test.tar.gz (441.1 MB) |
+| Content | 759 recordings (2.33 hours, 16 kHz) of 341 different Swedish sentences, each with its transcript. 636 recordings are of male voices and 123 of female voices |
+| Use | Speech to text in Swedish (steps 14.1, 14.2) |
+| Pool for 2.2 | The test split |
+| Official scorer | None. Word error rate comes from eval_metrics.py |
+| Limits | Read sentences, not free speech. Most recordings are of male voices |
+
 ## Not downloaded
 
 - SPACE: no licence stated for its data (Q4). PeerSum replaces it.
+- SweDN (Swedish news summaries): withdrawn by Språkbanken at the request of the copyright holder. No Swedish summary set is used.
 - MMLongBench-Doc (stretch in section 13): not part of this download.
-- FLEURS Swedish: only if Q6 brings Swedish into v1.

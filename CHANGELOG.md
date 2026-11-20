@@ -7,11 +7,13 @@ Versions are tagged at the end of each phase (WORK_PLAN.md rule G).
 
 ### Added
 
+- Five Swedish datasets join the evaluation list: ScandiQA, Belebele, MKQA, SweFAQ and the Swedish part of FLEURS, each pinned by its size and SHA-256.
 - Docs: a data card for each evaluation dataset with its source, licence, size, content, use and limits.
 - uv run python -m mrag.eval_data downloads the public evaluation datasets listed in configs/eval/datasets.yaml into data/public/. Every file is checked against its pinned size and SHA-256, a cut download continues where it stopped and archives are unpacked only inside their own folder.
 
 ### Changed
 
+- Plan and docs: Swedish is evaluated in v1 (Q6). The MKQA data licence is CC BY-SA 3.0 as its authors state.
 - Plan and docs: PeerSum (Apache 2.0) replaces SPACE as the review summary dataset, because SPACE states no licence for its data.
 - Plan: the evaluation saves the answer and score of every question with an error label, compares two setups on the same questions and checks its metrics against the official scorers of the datasets.
 - Plan: the judge gets three reliability tests. Two more test sets are planned: fresh questions over recent public documents and questions over the group's own documents.

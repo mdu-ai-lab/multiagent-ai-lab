@@ -15,10 +15,10 @@ from mrag import eval_data
 
 BODY = bytes(range(256)) * 400  # 102,400 bytes
 BODY_SHA = hashlib.sha256(BODY).hexdigest()
-# The datasets the evaluation plan names, with the speech sets chosen for it
+# The datasets the evaluation plan names, with the speech sets and the Swedish sets chosen for it
 PLANNED = {
     "longdocurl", "qasper", "tatdqa", "cord", "govreport", "peersum", "2wikimultihopqa",
-    "musique", "librispeech", "ami",
+    "musique", "librispeech", "ami", "scandiqa-sv", "belebele-sv", "mkqa", "swefaq", "fleurs-sv",
 }  # fmt: skip
 
 seen = {"ranges": [], "cut": 0, "requests": 0}
