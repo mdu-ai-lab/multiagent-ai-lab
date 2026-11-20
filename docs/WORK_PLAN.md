@@ -8,9 +8,9 @@ This file is the single source of truth for the project. It is stored in the rep
 
 | Item | Value |
 |---|---|
-| Plan status | Phase 1 in progress |
+| Plan status | Phase 1 done (tag v0.1.0) |
 | Last completed step | Step 1.8 done. All steps of Phase 1 are done. Details in docs/HANDOVER.md |
-| Current phase | Phase 1 (branch phase-1). Next: the end of Phase 1 (full check, version 0.1.0 and the tag v0.1.0) |
+| Current phase | Phase 1 done (branch phase-1). Next: Phase 2, when the owner says start Phase 2 |
 | Repo | github.com/mdu-ai-lab/multiagent-ai-lab (public, owned by the GitHub organization mdu-ai-lab). Created 31 October 2026 |
 | Live dashboard URL | https://mdu-ai-lab.github.io/multiagent-ai-lab/ |
 | Live demo URL | https://huggingface.co/spaces/hossain007bhuiyan/multiagent-ai-lab-demo (ZeroGPU, created 20 November 2026) |

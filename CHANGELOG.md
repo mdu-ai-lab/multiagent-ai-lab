@@ -5,6 +5,8 @@ Versions are tagged at the end of each phase (WORK_PLAN.md rule G).
 
 ## [Unreleased]
 
+## [0.1.0] - 2026-11-20
+
 ### Added
 
 - Plan and docs: the live demo is done and online at https://huggingface.co/spaces/hossain007bhuiyan/multiagent-ai-lab-demo. It answered a question on ZeroGPU with a streamed answer. The three fixes of its first builds are in docs/HANDOVER.md.

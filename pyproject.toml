@@ -1,6 +1,6 @@
 [project]
 name = "multiagent-ai-lab"
-version = "0.0.1"
+version = "0.1.0"
 description = "Local multi-agent RAG platform for the MDU group"
 readme = "README.md"
 license = "Apache-2.0"

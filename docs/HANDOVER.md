@@ -2,6 +2,24 @@
 
 Report of the last work session. Read this after docs/WORK_PLAN.md at the start of every session.
 
+## Session 20 November 2026: end of Phase 1 (version 0.1.0)
+
+- All 10 steps of Phase 1 are done and AT-1.1 to AT-1.10 passed.
+- Full check before the merge: no uncommitted changes, the last 8 CI runs on main and phase-1
+  green, ruff and mypy clean, 348 unit tests passed, node --check passed for the page scripts,
+  pip-audit found no known vulnerabilities in the platform and the MLflow server packages, 0 open
+  Dependabot and secret scanning alerts, 0 open pull requests and issues, the ruleset
+  protect-main active, the dashboard answered HTTP 200 and the demo Space was running on ZeroGPU.
+  Code scanning is not set up (not part of the plan).
+- Found and fixed: the package version was still 0.0.1 while the tags were at v0.0.2. It is now
+  0.1.0 in pyproject.toml, uv.lock and the version test.
+- CHANGELOG.md records version 0.1.0. The tag v0.1.0 goes on the merge commit on main.
+- README.md now describes the state of version 0.1.0.
+
+### Exact next step
+
+1. Phase 2 (evaluation base), only when the owner says "start Phase 2".
+
 ## Session 20 November 2026: live demo on its Space (step 1.8)
 
 - Checked again on huggingface.co/docs/hub/spaces-zerogpu: accounts older than 30 days with a

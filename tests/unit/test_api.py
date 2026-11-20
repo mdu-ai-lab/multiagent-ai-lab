@@ -82,7 +82,7 @@ def test_health():
 
 def test_version():
     data = client.get("/v1/version").json()
-    assert data["package"] == "0.0.1"
+    assert data["package"] == "0.1.0"
     assert data["profile"] == "mac"
     assert re.fullmatch(r"[0-9a-f]{40}|unknown", data["git_commit"])
     assert re.fullmatch(r"p-[0-9a-f]{12}", data["pipeline_version"])
