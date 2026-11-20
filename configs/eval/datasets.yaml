@@ -1,0 +1,210 @@
+# The public datasets of the evaluation. Read by src/mrag/eval_data.py, which downloads them
+# into data/public/<name>/ and checks every file against its size and SHA-256.
+#
+# hash_from tells where a SHA-256 comes from:
+#   source    the source publishes it (the Git LFS hash of a Hugging Face file)
+#   measured  the source publishes no SHA-256, so it was measured once by streaming the file on
+#             20 November 2026. Every later download must match it
+# Hugging Face addresses name a fixed revision, so the files behind them cannot change.
+# Only the files the evaluation needs are listed: no training splits and no ready-made page
+# images. unpack: true unpacks an archive into a folder of the same name without its ending.
+
+datasets:
+  - name: longdocurl
+    title: LongDocURL
+    use: Q&A, retrieval, visual
+    licence: Apache-2.0
+    licence_source: https://huggingface.co/datasets/dengchao/LongDocURL
+    files:
+      - path: LongDocURL_public.jsonl
+        url: https://huggingface.co/datasets/dengchao/LongDocURL/resolve/5c96dbe9055f0382f207228d0f84b77206b6bcb6/LongDocURL_public.jsonl
+        size: 8144843
+        sha256: d1bf5fb77dbfad0a53c40c892d801e71a9a7da19fd98f919e7adc407303548bf
+        hash_from: measured
+      - path: LongDocURL_public_with_subtask_category.jsonl
+        url: https://huggingface.co/datasets/dengchao/LongDocURL/resolve/5c96dbe9055f0382f207228d0f84b77206b6bcb6/LongDocURL_public_with_subtask_category.jsonl
+        size: 8246612
+        sha256: cf4497a6067f80cb915b1d6fe5d1a4ecd43fc99b35e9536a3f6594dcd224725f
+        hash_from: measured
+      - path: pdf_files.tar.gz
+        url: https://huggingface.co/datasets/dengchao/LongDocURL/resolve/5c96dbe9055f0382f207228d0f84b77206b6bcb6/pdf_files.tar.gz
+        size: 2628973496
+        sha256: 0cfc0984417f7a3d309c68a9afd9243768bf5767b1132860846ab4a5d940d8ab
+        hash_from: source
+        unpack: true
+
+  - name: qasper
+    title: QASPER
+    use: Q&A, refusal
+    licence: CC-BY-4.0
+    licence_source: https://huggingface.co/datasets/allenai/qasper
+    files:
+      - path: qasper-train-dev-v0.3.tgz
+        url: https://qasper-dataset.s3.us-west-2.amazonaws.com/qasper-train-dev-v0.3.tgz
+        size: 10835856
+        sha256: a28fdf966db827bcee3d873107d6b6669864fb7ca8fbf73a192f5e39191bdb5a
+        hash_from: measured
+        unpack: true
+      # Also holds the official scorer of QASPER
+      - path: qasper-test-and-evaluator-v0.3.tgz
+        url: https://qasper-dataset.s3.us-west-2.amazonaws.com/qasper-test-and-evaluator-v0.3.tgz
+        size: 3865061
+        sha256: 72a52a41193e2838b8074f80ac074b94f956b84886c36a61c58a7df4171bdd72
+        hash_from: measured
+        unpack: true
+
+  - name: tatdqa
+    title: TAT-DQA
+    use: Tables, calculations
+    licence: CC-BY-4.0
+    licence_source: https://github.com/NExTplusplus/TAT-DQA
+    files:
+      - path: tatdqa_dataset_dev.json
+        url: https://drive.usercontent.google.com/download?id=1dmXKledPa6ptXuFibUCtoJMEP6oCD60N&export=download&confirm=t
+        size: 1210555
+        sha256: 07395642f317754ed22bd8330525af7c1e15b7189efdf046cd0a257fc3178fcb
+        hash_from: measured
+      - path: tatdqa_dataset_test_gold.json
+        url: https://drive.usercontent.google.com/download?id=1ZQjjIC0BB14l6t9b1Ryq0t-CNAP6iC2J&export=download&confirm=t
+        size: 1229595
+        sha256: e6758315b839203a72e05f8849ce4d56fc8d6d7c34dc0240352769014807f5da
+        hash_from: measured
+      - path: tatdqa_docs_dev.zip
+        url: https://drive.usercontent.google.com/download?id=1M1CtHAS4SzFFnNVsFVGgpaGq84mEzPcR&export=download&confirm=t
+        size: 155773433
+        sha256: 0e463045f3f89dcfd0e7238480fc931bd5f301883d9a022d4bd54d3f9c3ee080
+        hash_from: measured
+        unpack: true
+      - path: tatdqa_docs_test.zip
+        url: https://drive.usercontent.google.com/download?id=1iqe5r-qgQZLhGtM4G6LkNp9S6OCwOF2L&export=download&confirm=t
+        size: 173931848
+        sha256: 83c3baf38102fe5b17041efe41ea770912e6afa32eb603fece5337318259ffc8
+        hash_from: measured
+        unpack: true
+
+  - name: cord
+    title: CORD
+    use: Extraction, OCR
+    licence: CC-BY-4.0
+    licence_source: https://huggingface.co/datasets/naver-clova-ix/cord-v2
+    files:
+      - path: validation-00000-of-00001.parquet
+        url: https://huggingface.co/datasets/naver-clova-ix/cord-v2/resolve/7f0115a4b758a71d6473b8d085751692da2fef98/data/validation-00000-of-00001-cc3c5779fe22e8ca.parquet
+        size: 242080800
+        sha256: 0d0f6dac11fdcc549de2746aa9f53136a3bc22a2a1aff2b0b847f7622ad60c15
+        hash_from: source
+      - path: test-00000-of-00001.parquet
+        url: https://huggingface.co/datasets/naver-clova-ix/cord-v2/resolve/7f0115a4b758a71d6473b8d085751692da2fef98/data/test-00000-of-00001-9c204eb3f4e11791.parquet
+        size: 234202795
+        sha256: 51c65f1788faff392abe2a0b55b023eb23e9be551c509138eaa3a832514224e7
+        hash_from: source
+
+  - name: govreport
+    title: GovReport
+    use: Long-document summary
+    licence: CC-BY-4.0
+    licence_source: https://huggingface.co/datasets/launch/gov_report
+    files:
+      - path: gao_valid.jsonl
+        url: https://huggingface.co/datasets/launch/gov_report/resolve/32feeaede49fed993aef070bc4da09263fd0429a/data/gao_valid.jsonl
+        size: 41604401
+        sha256: 9cae7d5fecbcb507d1e84ecf8d476f26796d50a6690ac7c79fabe7b0e13a9b16
+        hash_from: source
+      - path: gao_test.jsonl
+        url: https://huggingface.co/datasets/launch/gov_report/resolve/32feeaede49fed993aef070bc4da09263fd0429a/data/gao_test.jsonl
+        size: 39973256
+        sha256: 5285ee273ae430003c1e8fdb45ed7c6757349c114d2cae45160845ef60a49a94
+        hash_from: source
+      - path: crs_valid.jsonl
+        url: https://huggingface.co/datasets/launch/gov_report/resolve/32feeaede49fed993aef070bc4da09263fd0429a/data/crs_valid.jsonl
+        size: 22496525
+        sha256: f56ff5bdbf381c053f106deadd566ad0ae3324b78c0d6ebe83c69121ecbdd24a
+        hash_from: source
+      - path: crs_test.jsonl
+        url: https://huggingface.co/datasets/launch/gov_report/resolve/32feeaede49fed993aef070bc4da09263fd0429a/data/crs_test.jsonl
+        size: 19779267
+        sha256: bef184f1f4249ee4f145214b9f836a277152d5074395b879bd9ea891c519dece
+        hash_from: source
+
+  - name: peersum
+    title: PeerSum
+    use: Review summary
+    licence: Apache-2.0
+    licence_source: https://huggingface.co/datasets/oaimli/PeerSum
+    files:
+      - path: peersum_huggingface.jsonl
+        url: https://huggingface.co/datasets/oaimli/PeerSum/resolve/08f657c7b1818fc58f42ed42125287953b439645/peersum_huggingface.jsonl
+        size: 476238545
+        sha256: ddd4766837f7d92913d1fa59cf2aabac18bf0313643f35e1c993d09c0ff938ab
+        hash_from: source
+
+  - name: 2wikimultihopqa
+    title: 2WikiMultihopQA
+    use: GraphRAG
+    licence: Apache-2.0
+    licence_source: https://github.com/Alab-NII/2wikimultihop
+    files:
+      # The official dev set holds the answers. The test set has none
+      - path: data.zip
+        url: https://www.dropbox.com/s/npidmtadreo6df2/data.zip?dl=1
+        size: 246135840
+        sha256: e8e57c0aafc4a26d41131e320ebb5afb6f2aca86b8a6e6611b08f52033cb7d04
+        hash_from: measured
+        unpack: true
+
+  - name: musique
+    title: MuSiQue
+    use: GraphRAG
+    licence: CC-BY-4.0
+    licence_source: https://github.com/StonyBrookNLP/musique
+    files:
+      - path: musique_data_v1.0.zip
+        url: https://drive.usercontent.google.com/download?id=1tGdADlNjWFaHLeZZGShh2IRcpO6Lv24h&export=download&confirm=t
+        size: 272049578
+        sha256: 98f839bf2fd5319f5c688aed77901a6d5c30b3b9f9f691ab9a8ecafb045ee0cd
+        hash_from: measured
+        unpack: true
+
+  - name: librispeech
+    title: LibriSpeech (test-clean and test-other)
+    use: Speech to text
+    licence: CC-BY-4.0
+    licence_source: https://huggingface.co/datasets/openslr/librispeech_asr
+    files:
+      - path: test-clean.parquet
+        url: https://huggingface.co/datasets/openslr/librispeech_asr/resolve/71cacbfb7e2354c4226d01e70d77d5fca3d04ba1/clean/test/0000.parquet
+        size: 350452636
+        sha256: 7113aa4c3cf963fb54697145719a7725f984c8836d1c494a554cbb9f1a017df0
+        hash_from: source
+      - path: test-other.parquet
+        url: https://huggingface.co/datasets/openslr/librispeech_asr/resolve/71cacbfb7e2354c4226d01e70d77d5fca3d04ba1/other/test/0000.parquet
+        size: 332873172
+        sha256: 38e0c86a8104585c577badd707ca4331e20fa2c645f46180af0b7bcdecff9249
+        hash_from: source
+
+  - name: ami
+    title: AMI meetings (headset microphones, test)
+    use: Speech to text
+    licence: CC-BY-4.0
+    licence_source: https://huggingface.co/datasets/edinburghcstr/ami
+    files:
+      - path: ihm-test-00000-of-00004.parquet
+        url: https://huggingface.co/datasets/edinburghcstr/ami/resolve/46f28f2503e2ec48f8867a84eef356c70476beab/ihm/test-00000-of-00004.parquet
+        size: 241989739
+        sha256: d95920dccc6924c15215239461bf5d1152fe07c9c61add073bd12da26dd602e0
+        hash_from: source
+      - path: ihm-test-00001-of-00004.parquet
+        url: https://huggingface.co/datasets/edinburghcstr/ami/resolve/46f28f2503e2ec48f8867a84eef356c70476beab/ihm/test-00001-of-00004.parquet
+        size: 292473974
+        sha256: 07a2b1c407cf36bc1e66c1362b0248ed32c897edc2a116549d1dc6b456dc2325
+        hash_from: source
+      - path: ihm-test-00002-of-00004.parquet
+        url: https://huggingface.co/datasets/edinburghcstr/ami/resolve/46f28f2503e2ec48f8867a84eef356c70476beab/ihm/test-00002-of-00004.parquet
+        size: 426034962
+        sha256: 83cde21e55fc884295585327b0ee334cba47ad53bdb787dd5f97437067aca5f8
+        hash_from: source
+      - path: ihm-test-00003-of-00004.parquet
+        url: https://huggingface.co/datasets/edinburghcstr/ami/resolve/46f28f2503e2ec48f8867a84eef356c70476beab/ihm/test-00003-of-00004.parquet
+        size: 332016187
+        sha256: 3312bb79400ddef62d5a0097e124dfabe86a693b4643e7fef7d72a62588280d7
+        hash_from: source
