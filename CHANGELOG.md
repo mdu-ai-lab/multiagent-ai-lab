@@ -7,6 +7,7 @@ Versions are tagged at the end of each phase (WORK_PLAN.md rule G).
 
 ### Added
 
+- Docs: a data card for each evaluation dataset with its source, licence, size, content, use and limits.
 - uv run python -m mrag.eval_data downloads the public evaluation datasets listed in configs/eval/datasets.yaml into data/public/. Every file is checked against its pinned size and SHA-256, a cut download continues where it stopped and archives are unpacked only inside their own folder.
 
 ### Changed
