@@ -5,6 +5,7 @@
 import json
 import re
 import time
+from importlib.metadata import PackageNotFoundError
 
 import anyio
 import pytest
@@ -86,6 +87,15 @@ def test_version():
     assert re.fullmatch(r"[0-9a-f]{40}|unknown", data["git_commit"])
     assert re.fullmatch(r"p-[0-9a-f]{12}", data["pipeline_version"])
     assert isinstance(data["git_dirty"], bool)
+
+
+def test_version_without_the_installed_package(monkeypatch):
+    # The demo Space has the code as files only. It must still start
+    def missing(name):
+        raise PackageNotFoundError(name)
+
+    monkeypatch.setattr(service, "package_version", missing)
+    assert service.version().package == "unknown"
 
 
 def test_models_need_a_login(database):

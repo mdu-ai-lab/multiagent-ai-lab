@@ -7,6 +7,7 @@ Versions are tagged at the end of each phase (WORK_PLAN.md rule G).
 
 ### Added
 
+- The demo Space starts although the package is not installed there: its version reads unknown, like the Git commit without Git.
 - The demo group locks Gradio with its mcp and oauth parts, as a Gradio Space installs it. pydantic goes from 2.14.2 to 2.12.5 because the mcp part needs it.
 - The demo Space gets no fixed spaces version, because a ZeroGPU Space installs its own. Two fixed versions stopped its first build.
 - The temporary limit that kept argon2-cffi-bindings at releases before 8 November 2026 is removed from pyproject.toml, because 26.2.0 is now 7 days old. The lock file keeps 26.1.0 until a normal update.
