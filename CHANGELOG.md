@@ -7,6 +7,7 @@ Versions are tagged at the end of each phase (WORK_PLAN.md rule G).
 
 ### Changed
 
+- Plan and docs: PeerSum (Apache 2.0) replaces SPACE as the review summary dataset, because SPACE states no licence for its data.
 - Plan: the evaluation saves the answer and score of every question with an error label, compares two setups on the same questions and checks its metrics against the official scorers of the datasets.
 - Plan: the judge gets three reliability tests. Two more test sets are planned: fresh questions over recent public documents and questions over the group's own documents.
 - Plan and docs: the licences of the evaluation datasets are recorded as read at their sources on 20 November 2026. MuSiQue is CC BY 4.0. SPACE states no licence for its data.

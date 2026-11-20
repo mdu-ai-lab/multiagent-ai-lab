@@ -33,7 +33,7 @@
 | ASM-005 | The Hugging Face account is over 30 days old with a verified email | Q3 |
 | ASM-006 | smolagents WebSearchTool works without a key or payment | Step 8.1 |
 | ASM-007 | v1 is evaluated in English. Swedish is open | Q6 |
-| ASM-008 | SPACE licence allows use | Q4 (no data licence stated, checked 20 November 2026) |
+| ASM-008 | SPACE licence allows use | Not confirmed: no data licence stated (checked 20 November 2026). PeerSum replaces SPACE (Q4) |
 | ASM-009 | LinkML licence allows use | Step 9A.1 |
 | ASM-010 | LightRAG works with our model server and embeddings | Step 9A.3 |
 | ASM-011 | MuSiQue licence is CC BY 4.0 | Confirmed 20 November 2026 in the README of the authors' GitHub repo |

@@ -16,14 +16,14 @@ Each step in WORK_PLAN.md has a done-when test. These are the acceptance tests. 
 |---|---|---|
 | 0 | Model calls, RAM, backup restore | — |
 | 1 | CI fail test, API endpoints, streamed chat through the harness and its import test, live site update, health check | — |
-| 2 | Rerun identical, judge agreement | LongDocURL, QASPER, TAT-DQA, CORD, GovReport, SPACE, 2WikiMultihopQA, MuSiQue, speech set |
+| 2 | Rerun identical, judge agreement | LongDocURL, QASPER, TAT-DQA, CORD, GovReport, PeerSum, 2WikiMultihopQA, MuSiQue, speech set |
 | 3 | Parse each type, resume, OCR error rate, versions | CORD, sample files |
 | 4 | Figure descriptions help retrieval | LongDocURL |
 | 5 | Ablation, filters, latency | LongDocURL, QASPER |
 | 6 | Citations, claim check, refusal | QASPER |
 | 7 | Routing, loops, fallbacks, memory, tool access, tool calls, the harness import test and the part-by-part ablation | Mixed test set, BFCL |
 | 8 | Toggle, leak test | — |
-| 9 | Coverage vs top-k RAG | GovReport, SPACE |
+| 9 | Coverage vs top-k RAG | GovReport, PeerSum |
 | 9A | Ontology generation, extraction precision, engine comparison, filter, hybrid vs GraphRAG | 2WikiMultihopQA, MuSiQue |
 | 9B | Notebook lifecycle, citation and claim check of study outputs, hand-check | 5 public documents |
 | 10 | JSON validity, field accuracy | CORD |
@@ -43,7 +43,7 @@ Each step in WORK_PLAN.md has a done-when test. These are the acceptance tests. 
 | TAT-DQA | Tables, calculations | CC BY 4.0 (README of the authors' GitHub repo, checked 20 November 2026) | Real financial report pages with arithmetic |
 | CORD | Extraction, OCR | CC BY 4.0 (Hugging Face card and the authors' GitHub repo, checked 20 November 2026) | Gold JSON per receipt (Indonesian receipts) |
 | GovReport | Long-document summary | CC BY 4.0 (Hugging Face card of the authors' lab, launch/gov_report, checked 20 November 2026) | Long reports with expert summaries |
-| SPACE | Review summary | No licence stated for the data. The code in its GitHub repo is MIT (checked 20 November 2026, Q4) | Many reviews per hotel with human summaries |
+| PeerSum | Review summary | Apache 2.0 (Hugging Face card of the authors, oaimli/PeerSum, checked 20 November 2026). The terms of the OpenReview reviews it is built from are checked in 2.1 | Reviews of scientific papers with a rating per review and a human-written meta-review. Replaces SPACE, whose data has no licence (Q4) |
 | MMLongBench-Doc (stretch) | Q&A visual | Apache 2.0 per a 2026 paper (confirm) | Second long-document check |
 | 2WikiMultihopQA | GraphRAG | Apache 2.0 (licence file of the authors' GitHub repo, checked 20 November 2026) | Multi-hop questions grounded in entity relations |
 | MuSiQue | GraphRAG | CC BY 4.0 (README of the authors' GitHub repo, checked 20 November 2026) | Harder multi-hop questions |
