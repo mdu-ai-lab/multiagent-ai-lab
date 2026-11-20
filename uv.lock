@@ -7,11 +7,6 @@ resolution-markers = [
     "sys_platform != 'emscripten' and sys_platform != 'win32'",
 ]
 
-[options]
-
-[options.exclude-newer-package]
-argon2-cffi-bindings = "2026-11-08T00:00:00Z"
-
 [[package]]
 name = "alembic"
 version = "1.20.1"
