@@ -5,6 +5,10 @@ Versions are tagged at the end of each phase (WORK_PLAN.md rule G).
 
 ## [Unreleased]
 
+### Changed
+
+- The health check waits 30 s instead of 5 s between its 3 tries after a server error, because a GitHub commit page answered HTTP 503 for a short time after a merge.
+
 ## [0.1.0] - 2026-11-20
 
 ### Added

@@ -22,7 +22,8 @@ SPACE_ERRORS = {
 }  # fmt: skip
 TIMEOUT_S = 20
 TRIES = 3
-PAUSE_S = 5.0
+# A GitHub page can answer HTTP 503 for a short time, so the tries cover about one minute
+PAUSE_S = 30.0
 USER_AGENT = "multiagent-ai-lab-health-check"
 
 
