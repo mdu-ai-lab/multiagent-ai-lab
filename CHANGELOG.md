@@ -5,8 +5,11 @@ Versions are tagged at the end of each phase (WORK_PLAN.md rule G).
 
 ## [Unreleased]
 
+## [0.1.0] - 2026-11-20
+
 ### Added
 
+- Plan and docs: the live demo is done and online at https://huggingface.co/spaces/hossain007bhuiyan/multiagent-ai-lab-demo. It answered a question on ZeroGPU with a streamed answer. The three fixes of its first builds are in docs/HANDOVER.md.
 - The demo Space starts although the package is not installed there: its version reads unknown, like the Git commit without Git.
 - The demo group locks Gradio with its mcp and oauth parts, as a Gradio Space installs it. pydantic goes from 2.14.2 to 2.12.5 because the mcp part needs it.
 - The demo Space gets no fixed spaces version, because a ZeroGPU Space installs its own. Two fixed versions stopped its first build.
