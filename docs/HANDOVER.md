@@ -2,6 +2,52 @@
 
 Report of the last work session. Read this after docs/WORK_PLAN.md at the start of every session.
 
+## Session 20 November 2026: live demo on its Space (step 1.8)
+
+- Checked again on huggingface.co/docs/hub/spaces-zerogpu: accounts older than 30 days with a
+  verified email can host 2 ZeroGPU Spaces for free.
+- Owner: created the Space hossain007bhuiyan/multiagent-ai-lab-demo (Gradio, ZeroGPU, public),
+  a fine-grained Hugging Face token with write access to this Space only, the GitHub secret
+  HF_TOKEN and the repository variable DEMO_SPACE.
+- The 7-day rule for argon2-cffi-bindings was removed from pyproject.toml (cea4c98). The lock
+  keeps 26.1.0.
+- First build, problem 1: a ZeroGPU Space installs its own spaces version (0.52.1) next to
+  Gradio, so the fixed spaces==0.52.0 in requirements.txt could not be installed. Fix (941b8e2):
+  ops/space_files.py leaves spaces out of requirements.txt.
+- Second build, problem 2: the Space installs gradio[mcp,oauth]. Its mcp part needs pydantic 2.12.5
+  or older, while the lock had 2.14.2. Fix (93d2520): the demo group asks for
+  gradio[mcp,oauth], so the lock has pydantic 2.12.5, mcp 1.30.0 and authlib 1.9.5 for the whole
+  project. authlib 1.9.9 was only 3 days old, so 1.9.5 (5 November 2026) was locked. Before the
+  push the Space's install command was run on the Mac for Linux x86_64: it failed with the old
+  lock and worked with the new one.
+- Start, problem 3: the Space gets the code as files and does not install the package, so
+  service.version() found no package version and the start stopped. Fix (27c8e97): the version
+  reads unknown there, like the Git commit without Git. Before the push the Space's app.py was
+  started on the Mac with the Space's packages and without .env: the page answered HTTP 200.
+- Result: the Space runs on ZeroGPU (zero-a10g). The page shows the note about the daily GPU
+  time. The question "What is the capital of Sweden? Answer in one sentence." got "The capital of
+  Sweden is Stockholm." from Qwen3.5-9B in 6 streamed parts within 6.6 s, through the Space's
+  chat API. torch 2.13.0 runs there.
+- Done-when: the Space URL works and each of the 4 merges to main rebuilt the Space with the new
+  code (Space commits 79ca0df, 1c68dd4, 016019d and 96f4c7e).
+- Also merged: pull request #10 (the status text of README.md). Dependabot's old branch was
+  deleted after pull request #6.
+- Tests: 348 unit tests and the 2 CI model tests passed in CI (run 44653215637 on main). With
+  pydantic 2.12.5 the Mac tests passed in a copy of the repo (16 passed, the 3 that need the
+  MLflow server were skipped because it was not running).
+
+Notes for later steps:
+- The Space installs its own spaces and gradio[mcp,oauth]. When Gradio changes in the lock,
+  check the pydantic range of its mcp part before the push.
+- The version on the Space reads unknown and so does its Git commit.
+- Visitors get 2 minutes of GPU time a day without a Hugging Face account and 5 with one.
+
+### Exact next step
+
+1. The end of Phase 1: a full check, the done and not-done table, version 0.1.0 in CHANGELOG.md,
+   a pull request to main and the tag v0.1.0.
+2. Then Phase 2 only when the owner says "start Phase 2".
+
 ## Session 15 to 17 November 2026: chat web page (step 1.10)
 
 - Plan D49 (3d34b70): Argon2id passwords, sessions on the server, a token against forged
