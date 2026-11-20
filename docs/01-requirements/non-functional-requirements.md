@@ -4,7 +4,7 @@
 |---|---|
 | Purpose | Quality, security, cost and portability requirements with unique IDs |
 | Status | Proposed |
-| Last updated | 2026-11-13 |
+| Last updated | 2026-11-20 |
 | Source of truth | [WORK_PLAN.md](../WORK_PLAN.md) v1.10 |
 | Related documents | [SRS](../01-requirements/srs.md), [Security requirements](../07-security/security-requirements.md), [Performance testing](../09-testing/performance-testing.md) |
 
@@ -37,7 +37,7 @@ Numbers come from the done-when tests in WORK_PLAN.md v1.10. They are starting t
 | NFR-SEC-006 | Personal data masked in traces, logs, MLflow and exports | 12.3 | Not implemented |
 | NFR-SEC-007 | Dependency and secret scanning on every push | 1.4 | Implemented (pip-audit on the three lock files in CI. Three setuptools advisories that cannot affect the vLLM environment are accepted for its lock only, with the reasons in ci.yml. A unit test fails once the lock has the setuptools that fixes one of them, so that exception must then be removed. GitHub's secret scanning with push protection, Dependabot alerts and security updates. Push protection not tested with a real secret) |
 | NFR-REPRO-001 | Models, datasets and packages pinned by version or hash | 1.3 | Partially implemented (models, packages and the Qdrant image pinned. Datasets from 2.1) |
-| NFR-REPRO-002 | Running the same evaluation twice gives identical numbers | 2.3 | Not implemented |
+| NFR-REPRO-002 | Scoring the same saved answers twice gives identical numbers. Changed answers on a repeated run are measured and reported | 2.3 | Not implemented |
 | NFR-REPRO-003 | Every result traces to its code, prompt, model and data versions | 1.3 | Partially implemented (code, configs, prompts and models traced and checked by ops/check_result.py. Data from 2.1) |
 | NFR-PORT-001 | Same code runs in Mac, GPU, demo, CI and company profiles by config | 0.1, 0.5 | Partially implemented (mac and demo profiles only) |
 | NFR-PORT-002 | Database switches from SQLite to PostgreSQL by config | 15.3 | Not implemented |

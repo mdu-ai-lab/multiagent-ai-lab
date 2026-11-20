@@ -32,10 +32,10 @@ Copied from the done-when column of WORK_PLAN.md section 12. The plan stays the 
 | AT-1.9 | Health checks | A deliberately wrong URL creates an issue. | Passed |
 | AT-1.10 | Chat web page | pytest tests for pages, sign-up, login, roles, chat and admin pass in CI. A streamed answer from the main model appears in the browser. A member cannot open another user's chat or the admin panel. | Passed |
 | AT-2.1 | Datasets | All datasets on the SSD. Every data card complete. | Not run |
-| AT-2.2 | Test sets | A manifest lists counts and file hashes. | Not run |
-| AT-2.3 | Evaluation script | Running the same test twice gives identical numbers. | Not run |
+| AT-2.2 | Test sets | A manifest lists counts and file hashes of every test set, including the fresh set and the set of own documents. | Not run |
+| AT-2.3 | Evaluation script | Scoring the same saved answers twice gives identical numbers. How many answers change when the same questions are asked twice is measured and reported. Where a dataset has an official scorer, it gives the same numbers as ours. | Not run |
 | AT-2.4 | Baselines | Baseline tables saved in MLflow and shown on the dashboard. | Not run |
-| AT-2.5 | Judge | Agreement number reported. Scoring guide frozen and versioned. | Not run |
+| AT-2.5 | Judge | Agreement number reported. The results of the three reliability tests are reported. Scoring guide frozen and versioned. | Not run |
 | AT-3.1 | Upload and background jobs | Kill the worker mid-job. After restart the job finishes. | Not run |
 | AT-3.2 | Parse every file type | A sample file of each type parses correctly. | Not run |
 | AT-3.3 | OCR test | Best engine chosen by numbers and set in config. | Not run |

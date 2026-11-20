@@ -4,7 +4,7 @@
 |---|---|
 | Purpose | Central entry point for all project documentation |
 | Status | Proposed |
-| Last updated | 2026-11-15 |
+| Last updated | 2026-11-20 |
 | Source of truth | [WORK_PLAN.md](WORK_PLAN.md) v1.10 |
 | Related documents | [WORK_PLAN.md](WORK_PLAN.md) |
 
@@ -127,7 +127,7 @@ Full list: [threat model](07-security/threat-model.md).
 | Q1 | Code licence for the repo. Proposal: Apache-2.0. Confirm with the group | Answered 31 October 2026: Apache-2.0 (D23) |
 | Q2 | Should private documents ever be backed up to Drive? Default: no. Option: encrypted with rclone crypt, only if you decide | Answered 2 November 2026: the whole project is backed up (D35) |
 | Q3 | Is your Hugging Face account older than 30 days with a verified email? (needed for the free ZeroGPU Space) | Answered 15 November 2026: the email is verified and the account was created about 20 October 2026, so it is older than 30 days from about 20 November 2026 (D47) |
-| Q4 | SPACE dataset licence (not yet verified). Replace if it blocks use | Step 2.1 |
+| Q4 | SPACE dataset licence. Checked 20 November 2026: its GitHub repo states no licence for the data. Replace if it blocks use | Step 2.1 |
 | Q5 | SPACE key points: written by hand (default) or LLM-assisted (counts as synthetic, needs your approval) | Step 9.3 |
 | Q6 | Swedish documents in v1 or later | Step 2.2 |
 | Q8 | Which role "full access" means: Owner (controls the whole organization, including deleting it) or Admin (full control of the repo only) | Answered 31 October 2026: Admin on the repo (D24) |

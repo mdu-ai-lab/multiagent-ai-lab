@@ -8,13 +8,13 @@ This file is the single source of truth for the project. It is stored in the rep
 
 | Item | Value |
 |---|---|
-| Plan status | Phase 1 done (tag v0.1.0) |
-| Last completed step | Step 1.8 done. All steps of Phase 1 are done. Details in docs/HANDOVER.md |
-| Current phase | Phase 1 done (branch phase-1). Next: Phase 2, when the owner says start Phase 2 |
+| Plan status | Phase 2 in progress (last tag v0.1.0) |
+| Last completed step | All steps of Phase 1 are done (v0.1.0). Step 2.1 is in progress. Details in docs/HANDOVER.md |
+| Current phase | Phase 2 (branch phase-2) |
 | Repo | github.com/mdu-ai-lab/multiagent-ai-lab (public, owned by the GitHub organization mdu-ai-lab). Created 31 October 2026 |
 | Live dashboard URL | https://mdu-ai-lab.github.io/multiagent-ai-lab/ |
 | Live demo URL | https://huggingface.co/spaces/hossain007bhuiyan/multiagent-ai-lab-demo (ZeroGPU, created 20 November 2026) |
-| Latest version tag | v0.0.2 |
+| Latest version tag | v0.1.0 |
 | Open issues | See section 4.2 (open questions) |
 
 ## 2. Project summary
@@ -132,7 +132,7 @@ This file is the single source of truth for the project. It is stored in the rep
 | Q1 | Code licence for the repo. Proposal: Apache-2.0. Confirm with the group | Answered 31 October 2026: Apache-2.0 (D23) |
 | Q2 | Should private documents ever be backed up to Drive? Default: no. Option: encrypted with rclone crypt, only if you decide | Answered 2 November 2026: the whole project is backed up (D35) |
 | Q3 | Is your Hugging Face account older than 30 days with a verified email? (needed for the free ZeroGPU Space) | Answered 15 November 2026: the email is verified and the account was created about 20 October 2026, so it is older than 30 days from about 20 November 2026 (D47) |
-| Q4 | SPACE dataset licence (not yet verified). Replace if it blocks use | Step 2.1 |
+| Q4 | SPACE dataset licence. Checked 20 November 2026: its GitHub repo states no licence for the data. Replace if it blocks use | Step 2.1 |
 | Q5 | SPACE key points: written by hand (default) or LLM-assisted (counts as synthetic, needs your approval) | Step 9.3 |
 | Q6 | Swedish documents in v1 or later | Step 2.2 |
 | Q8 | Which role "full access" means: Owner (controls the whole organization, including deleting it) or Admin (full control of the repo only) | Answered 31 October 2026: Admin on the repo (D24) |
@@ -445,10 +445,10 @@ weekly: health.yml checks both URLs and opens a GitHub issue if one is down
 | Step | What we will do | Why | Done-when test | Status |
 |---|---|---|---|---|
 | 2.1 Datasets | eval_data.py downloads LongDocURL, QASPER, TAT-DQA, CORD, GovReport, SPACE, 2WikiMultihopQA, MuSiQue and a public speech set, each with a fixed version. I read each licence and write a short data card: source, licence, size and use. If a licence blocks use (Q4), I propose a replacement and ask you. | Legal use. Anyone can repeat the results. | All datasets on the SSD. Every data card complete. | Not done |
-| 2.2 Test sets | For each route, build a JSONL test set: question, correct answer, correct evidence (page or paragraph) and route label. Split by document so one document is never in both dev and test (20% dev, fixed seed). Decide Q6. | Dev is for tuning. Test is only for final scores, so scores stay honest. | A manifest lists counts and file hashes. | Not done |
-| 2.3 Evaluation script | eval_metrics.py holds all metrics. Retrieval: Hit@5/10, MRR, nDCG@10. Answers: F1, exact match. Grounding: citation precision, FSCR, unsupported-claim rate. Summaries: coverage. Extraction: JSON validity, field accuracy with Wilson CI. Calculations: numeric match. Refusal: precision, recall, F1. Plus speed, RAM and cost per answer (tokens and model calls). eval_run.py runs a route on a test set and logs everything to MLflow. | Every later phase is judged by the same script. | Running the same test twice gives identical numbers. | Not done |
+| 2.2 Test sets | For each route, build a JSONL test set: question, correct answer, correct evidence (page or paragraph) and route label. Split by document so one document is never in both dev and test (20% dev, fixed seed). Decide Q6. Two more test sets: fresh questions over public documents published after the release of the main model and questions over the group's own documents with their answers and pages, kept in data/private/. Who writes the fresh questions is decided here. Questions drafted by the coding assistant count as synthetic data (R10). | Dev is for tuning. Test is only for final scores, so scores stay honest. A model can know public test sets from its training. Fresh questions show whether it does. The group's own documents show how the platform does on its real work. | A manifest lists counts and file hashes of every test set, including the fresh set and the set of own documents. | Not done |
+| 2.3 Evaluation script | eval_metrics.py holds all metrics. Retrieval: Hit@5/10, MRR, nDCG@10. Answers: F1, exact match. Grounding: citation precision, FSCR, unsupported-claim rate. Summaries: coverage. Extraction: JSON validity, field accuracy with Wilson CI. Calculations: numeric match. Refusal: precision, recall, F1. Plus speed, RAM and cost per answer (tokens and model calls). eval_run.py runs a route on a test set and logs everything to MLflow. Every question's answer and score are saved, so a change shows which questions got better or worse. Each wrong answer gets an error label: wrong search, wrong answer from correct evidence, made-up claim or wrong refusal. Two setups are compared on the same questions with a paired bootstrap of their difference. Where a dataset has an official scorer, our metric is checked against it on the same answers. | Every later phase is judged by the same script. A paired comparison finds a real difference with fewer questions. The official scorers prove that the metrics are computed correctly. | Scoring the same saved answers twice gives identical numbers. How many answers change when the same questions are asked twice is measured and reported. Where a dataset has an official scorer, it gives the same numbers as ours. | Not done |
 | 2.4 Baselines | Run the main model with no documents on every test set: Qwen3.5-9B on the Mac and the GPU profile models on Colab and Kaggle. | Shows how much the platform adds in each profile. | Baseline tables saved in MLflow and shown on the dashboard. | Not done |
-| 2.5 Judge | judge.py uses a fixed scoring guide (correctness and faithfulness, 0–10). The judge is from another family than the generator: the largest Gemma 4 model that fits the free GPU for main results and Gemma 4 12B for quick Mac checks. You hand-check 20 judged answers using a sheet I prepare. | A judge can be biased. We measure how far we can trust it. | Agreement number reported. Scoring guide frozen and versioned. | Not done |
+| 2.5 Judge | judge.py uses a fixed scoring guide (correctness and faithfulness, 0–10). The judge is from another family than the generator: the largest Gemma 4 model that fits the free GPU for main results and Gemma 4 12B for quick Mac checks. You hand-check 20 judged answers using a sheet I prepare. Three reliability tests: the same answer judged twice, the same answer judged with its sources in another order and a longer answer with the same content. | A judge can be biased. We measure how far we can trust it. A judge can give another score to the same answer, depend on the order of its input or prefer longer answers. | Agreement number reported. The results of the three reliability tests are reported. Scoring guide frozen and versioned. | Not done |
 
 ### Phase 3: Ingestion
 
@@ -603,16 +603,16 @@ weekly: health.yml checks both URLs and opens a GitHub issue if one is down
 
 | Dataset | Route | Licence (as checked so far) | Why |
 |---|---|---|---|
-| LongDocURL | Q&A, retrieval, visual | Apache 2.0 (Hugging Face card) | Long multimodal PDFs with evidence pages. Used by Chakravorty |
-| QASPER | Q&A, refusal | CC BY 4.0 | Evidence paragraphs plus unanswerable questions |
-| TAT-DQA | Tables, calculations | CC BY 4.0 | Real financial report pages with arithmetic |
-| CORD | Extraction, OCR | CC BY 4.0 | Gold JSON per receipt (Indonesian receipts) |
-| GovReport | Long-document summary | CC BY 4.0 (original release, confirm in 2.1) | Long reports with expert summaries |
-| SPACE | Review summary | Not verified (Q4) | Many reviews per hotel with human summaries |
+| LongDocURL | Q&A, retrieval, visual | Apache 2.0 (Hugging Face card, checked 20 November 2026) | Long multimodal PDFs with evidence pages. Used by Chakravorty |
+| QASPER | Q&A, refusal | CC BY 4.0 (Hugging Face card, checked 20 November 2026) | Evidence paragraphs plus unanswerable questions |
+| TAT-DQA | Tables, calculations | CC BY 4.0 (README of the authors' GitHub repo, checked 20 November 2026) | Real financial report pages with arithmetic |
+| CORD | Extraction, OCR | CC BY 4.0 (Hugging Face card and the authors' GitHub repo, checked 20 November 2026) | Gold JSON per receipt (Indonesian receipts) |
+| GovReport | Long-document summary | CC BY 4.0 (Hugging Face card of the authors' lab, launch/gov_report, checked 20 November 2026) | Long reports with expert summaries |
+| SPACE | Review summary | No licence stated for the data. The code in its GitHub repo is MIT (checked 20 November 2026, Q4) | Many reviews per hotel with human summaries |
 | MMLongBench-Doc (stretch) | Q&A visual | Apache 2.0 per a 2026 paper (confirm) | Second long-document check |
-| 2WikiMultihopQA | GraphRAG | Apache 2.0 (per several 2025 and 2026 papers, confirm in 2.1) | Multi-hop questions grounded in entity relations |
-| MuSiQue | GraphRAG | CC BY 4.0 per most sources. One paper says CC BY-SA 4.0. Confirm in 2.1 | Harder multi-hop questions |
-| Public speech set | Audio | Chosen and checked in 2.1 | Word error rate test |
+| 2WikiMultihopQA | GraphRAG | Apache 2.0 (licence file of the authors' GitHub repo, checked 20 November 2026) | Multi-hop questions grounded in entity relations |
+| MuSiQue | GraphRAG | CC BY 4.0 (README of the authors' GitHub repo, checked 20 November 2026) | Harder multi-hop questions |
+| Public speech set | Audio | Chosen in 2.1 from LibriSpeech, FLEURS and AMI, all CC BY 4.0 (Hugging Face cards, checked 20 November 2026) | Word error rate test |
 | Public injection set | Security | Chosen and checked in 12.2 | Attack tests |
 | Berkeley Function Calling Leaderboard (BFCL) | Tool calls | Apache 2.0 (Hugging Face card, confirm in 7.6) | Public test of whether the model picks the right tool with valid arguments |
 

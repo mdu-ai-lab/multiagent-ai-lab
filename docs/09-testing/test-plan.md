@@ -4,7 +4,7 @@
 |---|---|
 | Purpose | Tests per phase |
 | Status | Proposed |
-| Last updated | 2026-11-09 |
+| Last updated | 2026-11-20 |
 | Source of truth | [WORK_PLAN.md](../WORK_PLAN.md) v1.10 |
 | Related documents | [Acceptance test cases](../09-testing/acceptance-test-cases.md), [Testing status](../09-testing/testing-status.md) |
 
@@ -38,15 +38,15 @@ Each step in WORK_PLAN.md has a done-when test. These are the acceptance tests. 
 
 | Dataset | Route | Licence (as checked so far) | Why |
 |---|---|---|---|
-| LongDocURL | Q&A, retrieval, visual | Apache 2.0 (Hugging Face card) | Long multimodal PDFs with evidence pages. Used by Chakravorty |
-| QASPER | Q&A, refusal | CC BY 4.0 | Evidence paragraphs plus unanswerable questions |
-| TAT-DQA | Tables, calculations | CC BY 4.0 | Real financial report pages with arithmetic |
-| CORD | Extraction, OCR | CC BY 4.0 | Gold JSON per receipt (Indonesian receipts) |
-| GovReport | Long-document summary | CC BY 4.0 (original release, confirm in 2.1) | Long reports with expert summaries |
-| SPACE | Review summary | Not verified (Q4) | Many reviews per hotel with human summaries |
+| LongDocURL | Q&A, retrieval, visual | Apache 2.0 (Hugging Face card, checked 20 November 2026) | Long multimodal PDFs with evidence pages. Used by Chakravorty |
+| QASPER | Q&A, refusal | CC BY 4.0 (Hugging Face card, checked 20 November 2026) | Evidence paragraphs plus unanswerable questions |
+| TAT-DQA | Tables, calculations | CC BY 4.0 (README of the authors' GitHub repo, checked 20 November 2026) | Real financial report pages with arithmetic |
+| CORD | Extraction, OCR | CC BY 4.0 (Hugging Face card and the authors' GitHub repo, checked 20 November 2026) | Gold JSON per receipt (Indonesian receipts) |
+| GovReport | Long-document summary | CC BY 4.0 (Hugging Face card of the authors' lab, launch/gov_report, checked 20 November 2026) | Long reports with expert summaries |
+| SPACE | Review summary | No licence stated for the data. The code in its GitHub repo is MIT (checked 20 November 2026, Q4) | Many reviews per hotel with human summaries |
 | MMLongBench-Doc (stretch) | Q&A visual | Apache 2.0 per a 2026 paper (confirm) | Second long-document check |
-| 2WikiMultihopQA | GraphRAG | Apache 2.0 (per several 2025 and 2026 papers, confirm in 2.1) | Multi-hop questions grounded in entity relations |
-| MuSiQue | GraphRAG | CC BY 4.0 per most sources. One paper says CC BY-SA 4.0. Confirm in 2.1 | Harder multi-hop questions |
-| Public speech set | Audio | Chosen and checked in 2.1 | Word error rate test |
+| 2WikiMultihopQA | GraphRAG | Apache 2.0 (licence file of the authors' GitHub repo, checked 20 November 2026) | Multi-hop questions grounded in entity relations |
+| MuSiQue | GraphRAG | CC BY 4.0 (README of the authors' GitHub repo, checked 20 November 2026) | Harder multi-hop questions |
+| Public speech set | Audio | Chosen in 2.1 from LibriSpeech, FLEURS and AMI, all CC BY 4.0 (Hugging Face cards, checked 20 November 2026) | Word error rate test |
 | Public injection set | Security | Chosen and checked in 12.2 | Attack tests |
 | Berkeley Function Calling Leaderboard (BFCL) | Tool calls | Apache 2.0 (Hugging Face card, confirm in 7.6) | Public test of whether the model picks the right tool with valid arguments |

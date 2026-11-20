@@ -4,7 +4,7 @@
 |---|---|
 | Purpose | Fixed limits and open assumptions that shape the design |
 | Status | Proposed |
-| Last updated | 2026-11-11 |
+| Last updated | 2026-11-20 |
 | Source of truth | [WORK_PLAN.md](../WORK_PLAN.md) v1.10 |
 | Related documents | [SRS](../01-requirements/srs.md), [Risk register](../12-project-management/risk-register.md) |
 
@@ -33,8 +33,8 @@
 | ASM-005 | The Hugging Face account is over 30 days old with a verified email | Q3 |
 | ASM-006 | smolagents WebSearchTool works without a key or payment | Step 8.1 |
 | ASM-007 | v1 is evaluated in English. Swedish is open | Q6 |
-| ASM-008 | SPACE licence allows use | Q4 |
+| ASM-008 | SPACE licence allows use | Q4 (no data licence stated, checked 20 November 2026) |
 | ASM-009 | LinkML licence allows use | Step 9A.1 |
 | ASM-010 | LightRAG works with our model server and embeddings | Step 9A.3 |
-| ASM-011 | MuSiQue licence is CC BY 4.0 (one source says CC BY-SA 4.0) | Step 2.1 |
+| ASM-011 | MuSiQue licence is CC BY 4.0 | Confirmed 20 November 2026 in the README of the authors' GitHub repo |
 | ASM-012 | "Knowledge" means the knowledge base in R31 | Q11 |

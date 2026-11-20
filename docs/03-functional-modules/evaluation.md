@@ -4,7 +4,7 @@
 |---|---|
 | Purpose | Specification of the evaluation module |
 | Status | Proposed |
-| Last updated | 2026-11-05 |
+| Last updated | 2026-11-20 |
 | Source of truth | [WORK_PLAN.md](../WORK_PLAN.md) v1.10 |
 | Related documents | [Modules index](../03-functional-modules/README.md), [Traceability](../12-project-management/requirements-traceability.md) |
 
@@ -25,7 +25,7 @@
 | Error conditions | — |
 | Events and notifications | — |
 | Security considerations | Judge bias |
-| Testing requirements | Rerun gives identical numbers, human check |
+| Testing requirements | Scoring the same answers twice gives identical numbers, repeated answers measured, official scorers, human check |
 | Acceptance criteria | AT-2.1 to AT-2.5 |
 | Plan and paper references | Phase 2 |
 | Permissions | See [role permission matrix](../02-users-and-permissions/role-permission-matrix.md) |
