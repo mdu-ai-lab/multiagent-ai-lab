@@ -9,6 +9,7 @@ from collections.abc import Iterator
 from dataclasses import dataclass
 from datetime import datetime
 from functools import lru_cache
+from importlib.metadata import PackageNotFoundError
 from importlib.metadata import version as package_version
 from typing import Any
 
@@ -81,13 +82,22 @@ def health() -> Health:
     return Health("ok")
 
 
+def installed_version() -> str:
+    # The demo Space runs the code from its files without installing the package, so the
+    # version is unknown there, like the Git commit where Git is missing
+    try:
+        return package_version("multiagent-ai-lab")
+    except PackageNotFoundError:
+        return "unknown"
+
+
 @lru_cache
 def version() -> VersionInfo:
     # Fixed at the first call: a running program keeps the code, configs and prompts it loaded
     profile = get_settings().profile
     parts = tracing.pipeline_parts(profile)
     return VersionInfo(
-        package=package_version("multiagent-ai-lab"),
+        package=installed_version(),
         profile=profile,
         git_commit=parts["git_commit"],
         git_dirty=parts["git_dirty"] == "true",
