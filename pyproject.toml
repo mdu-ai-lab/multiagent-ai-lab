@@ -36,7 +36,8 @@ script_location = "%(here)s/migrations"
 # dev is installed by default. demo (transformers backend) only with --group demo
 [dependency-groups]
 demo = [
-    "gradio>=6.32.0",
+    # With the mcp and oauth parts, because a Gradio Space always installs them
+    "gradio[mcp,oauth]>=6.32.0",
     "pillow>=13.0.0",
     "spaces>=0.52.0",
     "torch==2.13.0",
