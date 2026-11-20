@@ -47,6 +47,7 @@ demo = [
 dev = [
     "mypy==2.4.1",
     "pip-audit==2.10.1",
+    "pyarrow>=26.0.1",
     "pytest>=9.2.0",
     "ruff==0.17.4",
     "types-PyYAML==6.0.12.20261103",
@@ -112,3 +113,8 @@ extra_checks = true
 module = ["torch", "transformers"]
 ignore_missing_imports = true
 follow_imports = "skip"
+
+# pyarrow ships no type information either. Only the test set builder reads Parquet with it
+[[tool.mypy.overrides]]
+module = ["pyarrow", "pyarrow.*"]
+ignore_missing_imports = true

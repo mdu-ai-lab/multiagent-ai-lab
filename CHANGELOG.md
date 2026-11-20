@@ -7,6 +7,7 @@ Versions are tagged at the end of each phase (WORK_PLAN.md rule G).
 
 ### Added
 
+- uv run python -m mrag.eval_sets build turns the 15 datasets into dev, test and regression sets in one format, with a manifest of their counts and SHA-256 in configs/eval/testsets.json. A rebuild gives byte-identical files.
 - The official dev splits of LibriSpeech, AMI and the Swedish part of FLEURS join the evaluation list, so their test sets stay whole.
 - Five Swedish datasets join the evaluation list: ScandiQA, Belebele, MKQA, SweFAQ and the Swedish part of FLEURS, each pinned by its size and SHA-256.
 - Docs: a data card for each evaluation dataset with its source, licence, size, content, use and limits.

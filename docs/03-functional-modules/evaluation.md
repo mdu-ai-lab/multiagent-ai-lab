@@ -16,7 +16,7 @@
 | Actors | Owner |
 | Functional requirements | FR-EVAL-001 to FR-EVAL-003 |
 | Business rules | BR-DATA-001 |
-| Planned files | eval_data.py, eval_metrics.py, eval_run.py, judge.py |
+| Planned files | eval_data.py, eval_sets.py, eval_metrics.py, eval_run.py, judge.py |
 | Models and tools | MLflow, HF datasets, Gemma 4 judge |
 | Data entities | Test sets (JSONL) |
 | API endpoints | — |

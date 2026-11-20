@@ -1,0 +1,261 @@
+{
+  "builder_version": "1",
+  "datasets_yaml_sha256": "7157aa94b88599b9a5c1ee5407a52c4eb5eb54b4f8ef1ba07ede0a5ccccddd76",
+  "sets": {
+    "2wikimultihopqa": {
+      "dev": {
+        "items": 2490,
+        "sha256": "efc5d818b319825d4779fbd9544c17f6ce5a713513fa2caea1602ae3949bda2f",
+        "unanswerable": 0
+      },
+      "regression": {
+        "items": 400,
+        "sha256": "68e4172c114935f9ebcb9e6dfd09572674a4a53755081640a522ac1b1c044d95",
+        "unanswerable": 0
+      },
+      "test": {
+        "items": 10086,
+        "sha256": "41bc6ab22cfb45914f47a77bbe4b9430c50ade31688767aa330a9a4a9c20e912",
+        "unanswerable": 0
+      }
+    },
+    "ami": {
+      "dev": {
+        "items": 13098,
+        "sha256": "c51cbda92e41fe8ef051736305dba6077b3aa04777a7a3f3e3f964051d94d8eb",
+        "unanswerable": 0
+      },
+      "regression": {
+        "items": 400,
+        "sha256": "8486b4c5fc78a2fb0774a0fc5d372f1eee96028532f123980aed0d8bbf1d4c9d",
+        "unanswerable": 0
+      },
+      "test": {
+        "items": 12643,
+        "sha256": "1ddd5da5bcb626036a094fd29edee1b0278166d104c3fd3e3c6e84b311c283d9",
+        "unanswerable": 0
+      }
+    },
+    "belebele-sv": {
+      "dev": {
+        "items": 207,
+        "sha256": "4c1168db8a87f0b27c0b4747de0d9897cf72456914589fae0317164e0f3672a5",
+        "unanswerable": 0
+      },
+      "regression": {
+        "items": 207,
+        "sha256": "4c1168db8a87f0b27c0b4747de0d9897cf72456914589fae0317164e0f3672a5",
+        "unanswerable": 0
+      },
+      "test": {
+        "items": 693,
+        "sha256": "5779e68684b77a7a5a2274c657cc4999108e6e9db140bc1b2fd29b06f0b13a3f",
+        "unanswerable": 0
+      }
+    },
+    "cord": {
+      "dev": {
+        "items": 100,
+        "sha256": "3a03b733900c7b33c24557fb60621af08696390729c9a29eaa602186b531910a",
+        "unanswerable": 0
+      },
+      "regression": {
+        "items": 100,
+        "sha256": "3a03b733900c7b33c24557fb60621af08696390729c9a29eaa602186b531910a",
+        "unanswerable": 0
+      },
+      "test": {
+        "items": 100,
+        "sha256": "aa74ffa5f0655702df350a3a063a89502784b24609cc2cbdd4e51e514bea78e1",
+        "unanswerable": 0
+      }
+    },
+    "fleurs-sv": {
+      "dev": {
+        "items": 330,
+        "sha256": "c1c05667c34a3c87514189730263ea7ddacd1aa1d1ea966d51fcc19e3d77fb77",
+        "unanswerable": 0
+      },
+      "regression": {
+        "items": 330,
+        "sha256": "c1c05667c34a3c87514189730263ea7ddacd1aa1d1ea966d51fcc19e3d77fb77",
+        "unanswerable": 0
+      },
+      "test": {
+        "items": 759,
+        "sha256": "0a0d357c4e08efba268bb201b118d9caa32cd0d75d4ca72edf2d4fa3189702e8",
+        "unanswerable": 0
+      }
+    },
+    "govreport": {
+      "dev": {
+        "items": 974,
+        "sha256": "e68aae2b503bfc8c040cb74a651364324f12ebbb10b010864c866063586581dc",
+        "unanswerable": 0
+      },
+      "regression": {
+        "items": 100,
+        "sha256": "7b8235384154ca20d0aa96a3e0df828a1068d24d85069a1d92509af5bcb50759",
+        "unanswerable": 0
+      },
+      "test": {
+        "items": 973,
+        "sha256": "24d350aa09893aefa9c25f9ebe7366a9fdbbf3fad90d0892875f8ae09a25419b",
+        "unanswerable": 0
+      }
+    },
+    "librispeech": {
+      "dev": {
+        "items": 5567,
+        "sha256": "3205394b72e738b9160c287ac95ea7803a0f3aea59dbe9ad8aa9a5d325adf49d",
+        "unanswerable": 0
+      },
+      "regression": {
+        "items": 400,
+        "sha256": "6dd321a660127a5911e92919f2f72721014e7ae6461ac04dcf47029b23021b6b",
+        "unanswerable": 0
+      },
+      "test": {
+        "items": 5559,
+        "sha256": "70a20c105766bc4b74245d3b64d31c0773b2f9c380ef8c9bc81791d9754063c1",
+        "unanswerable": 0
+      }
+    },
+    "longdocurl": {
+      "dev": {
+        "items": 394,
+        "sha256": "9829e96656c718c0283a4c7e33e5fa81fb033d41b04ed9ffff89f8dc14c1df8c",
+        "unanswerable": 2
+      },
+      "regression": {
+        "items": 394,
+        "sha256": "9829e96656c718c0283a4c7e33e5fa81fb033d41b04ed9ffff89f8dc14c1df8c",
+        "unanswerable": 2
+      },
+      "test": {
+        "items": 1931,
+        "sha256": "74fe3d8de54c3cd1debacdb52a749a8ae5f8383535f5e0111e23fb6539d54436",
+        "unanswerable": 6
+      }
+    },
+    "mkqa": {
+      "dev": {
+        "items": 1976,
+        "sha256": "dc0280af87155cae74bf11398fcfa504bd210e666ba386687fd6bd8e6aa30f96",
+        "unanswerable": 358
+      },
+      "regression": {
+        "items": 400,
+        "sha256": "dd7bf34dbcb5fafe4642691ad1ea6a3aa3081d807a6eed65ad6a22e6254b632e",
+        "unanswerable": 72
+      },
+      "test": {
+        "items": 8024,
+        "sha256": "5df23df41f12f09d4b4ef91971fc77f937b0434a5c2025eb49ff0740f319daa5",
+        "unanswerable": 1361
+      }
+    },
+    "musique": {
+      "dev": {
+        "items": 936,
+        "sha256": "ae87d78d58b4b863694d6d240e2b31649425cf1a8f37dd0a8ad6ef1293fdc050",
+        "unanswerable": 468
+      },
+      "regression": {
+        "items": 400,
+        "sha256": "6221a471b2841879ac065737c34513cc7bbac08179d7c8f7c3a85af3a92bb048",
+        "unanswerable": 200
+      },
+      "test": {
+        "items": 3898,
+        "sha256": "3071b6d22998c9f5c981d24c1dcb902cf443d70ccc9734504771a8b881fbed33",
+        "unanswerable": 1949
+      }
+    },
+    "peersum": {
+      "dev": {
+        "items": 1496,
+        "sha256": "3698a90947a54450890e214e2b1687db1961e9e2a84da20b9e141c86b006be5e",
+        "unanswerable": 0
+      },
+      "regression": {
+        "items": 100,
+        "sha256": "91514174d0ea6df94149864c921f2d088ea59ea39f587a20596db59ff3732db4",
+        "unanswerable": 0
+      },
+      "test": {
+        "items": 1505,
+        "sha256": "63737faa23a3d880ce3c398e04c391b381037c908ab52afb1a474357b870eb85",
+        "unanswerable": 0
+      }
+    },
+    "qasper": {
+      "dev": {
+        "items": 1005,
+        "sha256": "5d44c58736244efea6ee9fb074389b5379bc2d26ae1edd05f51b6cd95c469ba4",
+        "unanswerable": 60
+      },
+      "regression": {
+        "items": 400,
+        "sha256": "e1677a3fbaea2ba0eeb009ba8aa660eaa595264ea12c94a9288e41de5f7d7582",
+        "unanswerable": 24
+      },
+      "test": {
+        "items": 1451,
+        "sha256": "13843ec054742585a2a06672cceb731640849be95d60a424c00517aa9ee09218",
+        "unanswerable": 79
+      }
+    },
+    "scandiqa-sv": {
+      "dev": {
+        "items": 193,
+        "sha256": "7fbffe804d5e67bfacd0d8a04ce542898efd2cee1cd91b6687d45847a8cc6d20",
+        "unanswerable": 75
+      },
+      "regression": {
+        "items": 193,
+        "sha256": "7fbffe804d5e67bfacd0d8a04ce542898efd2cee1cd91b6687d45847a8cc6d20",
+        "unanswerable": 75
+      },
+      "test": {
+        "items": 807,
+        "sha256": "73eba965bb91cd1644b9939eacca5df9d18ff66e8b548077b2f13e067053dc4a",
+        "unanswerable": 346
+      }
+    },
+    "swefaq": {
+      "dev": {
+        "items": 110,
+        "sha256": "28e28e8892488af5ce608e0b525e56484f6dcfd76e598fc6daffcb5ec71554fc",
+        "unanswerable": 0
+      },
+      "regression": {
+        "items": 110,
+        "sha256": "28e28e8892488af5ce608e0b525e56484f6dcfd76e598fc6daffcb5ec71554fc",
+        "unanswerable": 0
+      },
+      "test": {
+        "items": 109,
+        "sha256": "05046f83923b26076ffa06fde3b136949bb4de242334e35cdcc88992344a2848",
+        "unanswerable": 0
+      }
+    },
+    "tatdqa": {
+      "dev": {
+        "items": 1644,
+        "sha256": "6e05417d454f0458a650c0ccc3e25afe2c93f854aa5f84e87dbb764cb84bccfa",
+        "unanswerable": 0
+      },
+      "regression": {
+        "items": 400,
+        "sha256": "f1435457a0d9ae6120d02b1fb145ec8f9b54ed62d205f9eb1554c17b4dd8ec28",
+        "unanswerable": 0
+      },
+      "test": {
+        "items": 1663,
+        "sha256": "8d9cdd4492e7bb1fa6aa90e9c52ed31128324a9f98cf986ebf0aafcf3e1b54c1",
+        "unanswerable": 0
+      }
+    }
+  }
+}
