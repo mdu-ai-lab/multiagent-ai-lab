@@ -89,7 +89,7 @@ Components, entities and APIs per requirement are listed in each module document
 | R7 | Zero cost for development, hosting, deployment and API. No paid tiers. No trials treated as free | Sections 5 and 7, rule Z | Planned |
 | R8 | Free open-weight Hugging Face models | Section 9 | Planned |
 | R9 | Private documents never leave the Mac | Sections 5 and 6, steps 8.4, 12.x | Planned |
-| R10 | Real public datasets. No synthetic data unless you agree | 2.1, 9.3 | Planned |
+| R10 | Real public datasets. No synthetic data unless you agree | 2.1, 9.3 | Partly done (real public datasets downloaded and pinned in 2.1) |
 | R11 | Every technology has a real purpose | Section 9 (why column) | Planned |
 | R12 | Project on the external 2 TB SSD | Section 6.3 | Done |
 | R13 | Full backup of the project on the SSD to Google Drive, restorable to another laptop or SSD | Section 6.4, step 0.6 | Done |

@@ -36,13 +36,13 @@ Numbers come from the done-when tests in WORK_PLAN.md v1.10. They are starting t
 | NFR-SEC-005 | Secrets never in Git or Google Drive | Section 6.4 | Partially implemented (.env ignored by Git, login token files left out of the backup. The GPU notebooks need no token because the repo and the models are public. A token that is ever needed comes from Kaggle Secrets or Colab Secrets) |
 | NFR-SEC-006 | Personal data masked in traces, logs, MLflow and exports | 12.3 | Not implemented |
 | NFR-SEC-007 | Dependency and secret scanning on every push | 1.4 | Implemented (pip-audit on the three lock files in CI. Three setuptools advisories that cannot affect the vLLM environment are accepted for its lock only, with the reasons in ci.yml. A unit test fails once the lock has the setuptools that fixes one of them, so that exception must then be removed. GitHub's secret scanning with push protection, Dependabot alerts and security updates. Push protection not tested with a real secret) |
-| NFR-REPRO-001 | Models, datasets and packages pinned by version or hash | 1.3 | Partially implemented (models, packages and the Qdrant image pinned. Datasets from 2.1) |
+| NFR-REPRO-001 | Models, datasets and packages pinned by version or hash | 1.3 | Implemented (models, packages and the Qdrant image pinned. Datasets pinned by address, size and SHA-256 in configs/eval/datasets.yaml) |
 | NFR-REPRO-002 | Scoring the same saved answers twice gives identical numbers. Changed answers on a repeated run are measured and reported | 2.3 | Not implemented |
-| NFR-REPRO-003 | Every result traces to its code, prompt, model and data versions | 1.3 | Partially implemented (code, configs, prompts and models traced and checked by ops/check_result.py. Data from 2.1) |
+| NFR-REPRO-003 | Every result traces to its code, prompt, model and data versions | 1.3 | Partially implemented (code, configs, prompts and models traced and checked by ops/check_result.py. Data versions on the runs from 2.3) |
 | NFR-PORT-001 | Same code runs in Mac, GPU, demo, CI and company profiles by config | 0.1, 0.5 | Partially implemented (mac and demo profiles only) |
 | NFR-PORT-002 | Database switches from SQLite to PostgreSQL by config | 15.3 | Not implemented |
 | NFR-OBS-001 | Every agent step and model call is traced with time and tokens. Each request also records its totals: tokens in and out, model calls, tool calls, time and the fallback used | 1.2, 7.2 | Partially implemented (model calls and request totals are traced. LangGraph steps from 7.2) |
 | NFR-MAINT-001 | Flat modules (one package for the agent harness, D43), CI checks and an updated plan after every step | Rules C2, G | Not implemented |
 | NFR-MAINT-002 | Local output and verification numbers match the expected output for every step | Rules C12, C13 | Not implemented |
-| NFR-LEGAL-001 | Licences of models, datasets and tools checked before use | 2.1, 5.2, 5.4 | Not implemented |
+| NFR-LEGAL-001 | Licences of models, datasets and tools checked before use | 2.1, 5.2, 5.4 | Partially implemented (dataset licences checked in 2.1, see docs/09-testing/data-cards.md. The embedding and reranker licences follow in 5.2 and 5.4) |
 | NFR-HON-001 | No claim of production-ready, real-time, automated or accurate without verification | Rule N | Not implemented |

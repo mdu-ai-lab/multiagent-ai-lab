@@ -2,6 +2,47 @@
 
 Report of the last work session. Read this after docs/WORK_PLAN.md at the start of every session.
 
+## Session 20 November 2026: start of Phase 2 and the evaluation datasets (step 2.1)
+
+- Branch phase-2 made from main (c6eac11) and pushed.
+- Plan (e1c9005): the evaluation saves every question's answer and score with an error label,
+  compares two setups with a paired bootstrap, checks its metrics against the official scorers
+  of the datasets, tests the judge for changing scores, input order and answer length and adds
+  two more test sets (fresh questions over recent public documents and questions over the
+  group's own documents). AT-2.3 now says: scoring the same saved answers twice gives identical
+  numbers and changed answers on a repeated run are measured and reported. The latest version
+  tag row reads v0.1.0 again.
+- Licences read at their sources on 20 November 2026 and recorded in section 13. MuSiQue is
+  CC BY 4.0 (ASM-011 confirmed). SPACE states no licence for its data, so PeerSum (Apache 2.0)
+  replaces it (66626d7, Q4 answered).
+- Dataset downloads (96e6300): configs/eval/datasets.yaml pins 24 files of 10 datasets by
+  address, size and SHA-256. 14 hashes come from Hugging Face. 10 were measured by streaming,
+  because AllenAI, Google Drive and Dropbox publish none. src/mrag/eval_data.py lists,
+  downloads, resumes, checks and unpacks them with the Python standard library only.
+- Found while testing: a dropped connection can end Python's read without an error, so the
+  first draft would have deleted a nearly finished download as a wrong hash. A short file now
+  counts as a cut connection and the next try continues it. 8 deliberate breaks of the
+  protections were each caught by a test.
+- Real checks: a QASPER download from AllenAI and a resumed TAT-DQA file from Google Drive
+  (HTTP 206) in a scratch copy. Then the owner downloaded all 24 files on the Mac and every
+  verify line read OK: 6.56 GB, 11 GB with the unpacked archives.
+- Data cards (docs/09-testing/data-cards.md, commit 2e8b9b6): counts read from the files.
+  Found: the 2WikiMultihopQA and MuSiQue test files have no answers, so their dev sets are the
+  pools. PeerSum's comments carry no dates. OpenReview releases every review and rating under
+  CC BY 4.0. The LongDocURL PDFs come from Common Crawl and keep their owners' copyright.
+- Tests: 367 unit tests and the 2 CI model tests passed in CI (run 44758575470). Verification
+  numbers: eval_data 9f14237998a2, test_eval_data ec7e52a35410.
+
+Notes for later steps:
+- The Mac's own python3 (3.14) has no certificate store. Always run the module through uv.
+- The "trend over time" statistic of 9.2 cannot be tested on PeerSum (no dates).
+- Google Drive and Dropbox addresses can change. The pinned SHA-256 shows any change.
+
+### Exact next step
+
+1. Step 2.2 test sets: measure the time per answer on the Mac first, then propose the sizes.
+   Decide Q6 (Swedish) and who writes the fresh questions.
+
 ## Session 20 November 2026: end of Phase 1 (version 0.1.0)
 
 - All 10 steps of Phase 1 are done and AT-1.1 to AT-1.10 passed.

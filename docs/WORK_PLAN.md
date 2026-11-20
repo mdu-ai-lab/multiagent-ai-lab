@@ -9,7 +9,7 @@ This file is the single source of truth for the project. It is stored in the rep
 | Item | Value |
 |---|---|
 | Plan status | Phase 2 in progress (last tag v0.1.0) |
-| Last completed step | All steps of Phase 1 are done (v0.1.0). Step 2.1 is in progress. Details in docs/HANDOVER.md |
+| Last completed step | Step 2.1 done. Details in docs/HANDOVER.md |
 | Current phase | Phase 2 (branch phase-2) |
 | Repo | github.com/mdu-ai-lab/multiagent-ai-lab (public, owned by the GitHub organization mdu-ai-lab). Created 31 October 2026 |
 | Live dashboard URL | https://mdu-ai-lab.github.io/multiagent-ai-lab/ |
@@ -42,7 +42,7 @@ This file is the single source of truth for the project. It is stored in the rep
 | R7 | Zero cost for development, hosting, deployment and API. No paid tiers. No trials treated as free | Sections 5 and 7, rule Z | Planned |
 | R8 | Free open-weight Hugging Face models | Section 9 | Planned |
 | R9 | Private documents never leave the Mac | Sections 5 and 6, steps 8.4, 12.x | Planned |
-| R10 | Real public datasets. No synthetic data unless you agree | 2.1, 9.3 | Planned |
+| R10 | Real public datasets. No synthetic data unless you agree | 2.1, 9.3 | Partly done (real public datasets downloaded and pinned in 2.1) |
 | R11 | Every technology has a real purpose | Section 9 (why column) | Planned |
 | R12 | Project on the external 2 TB SSD | Section 6.3 | Done |
 | R13 | Full backup of the project on the SSD to Google Drive, restorable to another laptop or SSD | Section 6.4, step 0.6 | Done |
@@ -444,7 +444,7 @@ weekly: health.yml checks both URLs and opens a GitHub issue if one is down
 
 | Step | What we will do | Why | Done-when test | Status |
 |---|---|---|---|---|
-| 2.1 Datasets | eval_data.py downloads LongDocURL, QASPER, TAT-DQA, CORD, GovReport, PeerSum, 2WikiMultihopQA, MuSiQue and a public speech set, each with a fixed version. I read each licence and write a short data card: source, licence, size and use. If a licence blocks use (Q4), I propose a replacement and ask you. | Legal use. Anyone can repeat the results. | All datasets on the SSD. Every data card complete. | Not done |
+| 2.1 Datasets | eval_data.py downloads LongDocURL, QASPER, TAT-DQA, CORD, GovReport, PeerSum, 2WikiMultihopQA, MuSiQue and a public speech set, each with a fixed version. I read each licence and write a short data card: source, licence, size and use. If a licence blocks use (Q4), I propose a replacement and ask you. | Legal use. Anyone can repeat the results. | All datasets on the SSD. Every data card complete. | Done |
 | 2.2 Test sets | For each route, build a JSONL test set: question, correct answer, correct evidence (page or paragraph) and route label. Split by document so one document is never in both dev and test (20% dev, fixed seed). Decide Q6. Two more test sets: fresh questions over public documents published after the release of the main model and questions over the group's own documents with their answers and pages, kept in data/private/. Who writes the fresh questions is decided here. Questions drafted by the coding assistant count as synthetic data (R10). | Dev is for tuning. Test is only for final scores, so scores stay honest. A model can know public test sets from its training. Fresh questions show whether it does. The group's own documents show how the platform does on its real work. | A manifest lists counts and file hashes of every test set, including the fresh set and the set of own documents. | Not done |
 | 2.3 Evaluation script | eval_metrics.py holds all metrics. Retrieval: Hit@5/10, MRR, nDCG@10. Answers: F1, exact match. Grounding: citation precision, FSCR, unsupported-claim rate. Summaries: coverage. Extraction: JSON validity, field accuracy with Wilson CI. Calculations: numeric match. Refusal: precision, recall, F1. Plus speed, RAM and cost per answer (tokens and model calls). eval_run.py runs a route on a test set and logs everything to MLflow. Every question's answer and score are saved, so a change shows which questions got better or worse. Each wrong answer gets an error label: wrong search, wrong answer from correct evidence, made-up claim or wrong refusal. Two setups are compared on the same questions with a paired bootstrap of their difference. Where a dataset has an official scorer, our metric is checked against it on the same answers. | Every later phase is judged by the same script. A paired comparison finds a real difference with fewer questions. The official scorers prove that the metrics are computed correctly. | Scoring the same saved answers twice gives identical numbers. How many answers change when the same questions are asked twice is measured and reported. Where a dataset has an official scorer, it gives the same numbers as ours. | Not done |
 | 2.4 Baselines | Run the main model with no documents on every test set: Qwen3.5-9B on the Mac and the GPU profile models on Colab and Kaggle. | Shows how much the platform adds in each profile. | Baseline tables saved in MLflow and shown on the dashboard. | Not done |
