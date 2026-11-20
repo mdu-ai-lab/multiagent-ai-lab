@@ -15,8 +15,8 @@
 - configs/eval/datasets.yaml pins every file by its address, size and SHA-256. Hugging Face addresses name a fixed revision.
 - `uv run python -m mrag.eval_data download` fetches the files into data/public/ (not in Git) and unpacks the archives. `uv run python -m mrag.eval_data verify` checks every file again.
 - A hash marked "source" is published by Hugging Face. A hash marked "measured" was measured once by streaming the file on 20 November 2026, because the source publishes no SHA-256.
-- Only the files the evaluation needs are fetched: no training splits (the plan does no training) and no ready-made page images (step 3.4 renders them).
-- Downloaded on 20 November 2026: 31 files of 15 datasets, 7.09 GB. With the unpacked archives the folder holds 12 GB.
+- Only the files the evaluation needs are fetched: no training splits (the plan does no training) and no ready-made page images (step 3.4 renders them). The speech sets come with their official dev splits, so their test sets stay whole.
+- Downloaded on 20 November 2026: 40 files of 15 datasets, 9.51 GB. With the unpacked archives the folder holds 15 GB.
 - Licences were read at their sources on 20 November 2026. The counts below were counted in the downloaded files on the same day.
 - 2.2 builds the dev and test sets from the pools named below, split by document.
 
@@ -124,29 +124,29 @@
 | Official scorer | evaluate_v1.0.py in the authors' GitHub repo (checked in 2.3) |
 | Limits | The authors warn that some single-hop questions also appear in the training sets of the datasets MuSiQue was built from |
 
-## LibriSpeech (test-clean and test-other)
+## LibriSpeech (clean and other, dev and test)
 
 | Item | Detail |
 |---|---|
 | Source | Hugging Face openslr/librispeech_asr at revision 71cacbfb7e23 |
 | Licence | CC BY 4.0 (Hugging Face card) |
-| Files | test-clean and test-other Parquet files (683 MB) |
-| Content | test-clean: 2,620 read English sentences by 40 speakers. test-other: 2,939 sentences by 33 speakers, harder to recognise. Each has its transcript |
+| Files | test-clean, test-other, dev-clean and dev-other Parquet files (1.34 GB) |
+| Content | test-clean: 2,620 read English sentences by 40 speakers. test-other: 2,939 sentences by 33 speakers, harder to recognise. dev-clean: 2,703 sentences by 40 speakers. dev-other: 2,864 sentences by 33 speakers. Each has its transcript |
 | Use | Speech to text, word error rate (step 14.1) |
-| Pool for 2.2 | Both files as test sets. They are already the standard test split |
+| Pool for 2.2 | The official dev and test splits |
 | Official scorer | None. Word error rate comes from eval_metrics.py |
 | Limits | Read audiobooks, clearer than lectures or meetings |
 
-## AMI meetings (headset microphones, test)
+## AMI meetings (headset microphones, dev and test)
 
 | Item | Detail |
 |---|---|
-| Source | Hugging Face edinburghcstr/ami at revision 46f28f2503e2, the ihm (headset) test split |
+| Source | Hugging Face edinburghcstr/ami at revision 46f28f2503e2, the ihm (headset) validation and test splits |
 | Licence | CC BY 4.0 (Hugging Face card) |
-| Files | 4 Parquet files (1.29 GB) |
-| Content | 12,643 spoken segments from 16 meetings, 8.68 hours, with transcripts, times and speaker IDs |
+| Files | 9 Parquet files (2.87 GB) |
+| Content | Test: 12,643 spoken segments from 16 meetings, 8.68 hours. Dev (validation): 13,098 segments from 18 meetings, 8.94 hours. Each segment has its transcript, times and speaker ID. Dev and test share no meeting |
 | Use | Speech to text on meetings, close to lectures (steps 14.1, 14.2) |
-| Pool for 2.2 | The test split |
+| Pool for 2.2 | The official dev and test splits |
 | Official scorer | None. Word error rate comes from eval_metrics.py |
 | Limits | English meetings only. Headset audio is cleaner than a room microphone |
 
@@ -202,16 +202,16 @@
 | Official scorer | The documentation sheet names Krippendorff's pseudoalpha, computed from the accuracy |
 | Limits | Small: 109 test questions give wide confidence intervals. Its files are a little smaller than those in the older swefaq.zip. The difference was not checked |
 
-## FLEURS (Swedish part, test)
+## FLEURS (Swedish part, dev and test)
 
 | Item | Detail |
 |---|---|
 | Source | Hugging Face google/fleurs at revision 70bb2e84b976, data/sv_se |
 | Licence | CC BY 4.0 (Hugging Face card) |
-| Files | test.tsv and audio/test.tar.gz (441.1 MB) |
-| Content | 759 recordings (2.33 hours, 16 kHz) of 341 different Swedish sentences, each with its transcript. 636 recordings are of male voices and 123 of female voices |
+| Files | test.tsv, audio/test.tar.gz, dev.tsv and audio/dev.tar.gz (627.8 MB) |
+| Content | Test: 759 recordings (2.33 hours, 16 kHz) of 341 different Swedish sentences, 636 of male voices and 123 of female voices. Dev: 330 recordings (0.98 hours) of 149 sentences. Each recording has its transcript. Dev and test share no sentence |
 | Use | Speech to text in Swedish (steps 14.1, 14.2) |
-| Pool for 2.2 | The test split |
+| Pool for 2.2 | The official dev and test splits |
 | Official scorer | None. Word error rate comes from eval_metrics.py |
 | Limits | Read sentences, not free speech. Most recordings are of male voices |
 

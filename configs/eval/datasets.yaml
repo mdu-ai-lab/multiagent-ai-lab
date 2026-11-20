@@ -166,7 +166,7 @@ datasets:
         unpack: true
 
   - name: librispeech
-    title: LibriSpeech (test-clean and test-other)
+    title: LibriSpeech (clean and other, dev and test)
     use: Speech to text
     licence: CC-BY-4.0
     licence_source: https://huggingface.co/datasets/openslr/librispeech_asr
@@ -181,9 +181,19 @@ datasets:
         size: 332873172
         sha256: 38e0c86a8104585c577badd707ca4331e20fa2c645f46180af0b7bcdecff9249
         hash_from: source
+      - path: dev-clean.parquet
+        url: https://huggingface.co/datasets/openslr/librispeech_asr/resolve/71cacbfb7e2354c4226d01e70d77d5fca3d04ba1/clean/validation/0000.parquet
+        size: 341833540
+        sha256: c816e936fed8b83d5e3de28795bff1bcd3b46b3f1a5815bad4395d20186a9770
+        hash_from: source
+      - path: dev-other.parquet
+        url: https://huggingface.co/datasets/openslr/librispeech_asr/resolve/71cacbfb7e2354c4226d01e70d77d5fca3d04ba1/other/validation/0000.parquet
+        size: 318349937
+        sha256: bcc1554c0d29e7e7f6902886ccdc089cc2cd3ce21b8396e62722bc7652cfcd06
+        hash_from: source
 
   - name: ami
-    title: AMI meetings (headset microphones, test)
+    title: AMI meetings (headset microphones, dev and test)
     use: Speech to text
     licence: CC-BY-4.0
     licence_source: https://huggingface.co/datasets/edinburghcstr/ami
@@ -207,6 +217,31 @@ datasets:
         url: https://huggingface.co/datasets/edinburghcstr/ami/resolve/46f28f2503e2ec48f8867a84eef356c70476beab/ihm/test-00003-of-00004.parquet
         size: 332016187
         sha256: 3312bb79400ddef62d5a0097e124dfabe86a693b4643e7fef7d72a62588280d7
+        hash_from: source
+      - path: ihm-validation-00000-of-00005.parquet
+        url: https://huggingface.co/datasets/edinburghcstr/ami/resolve/46f28f2503e2ec48f8867a84eef356c70476beab/ihm/validation-00000-of-00005.parquet
+        size: 339196635
+        sha256: 30a90f2fc82658c2f749864236813d1ca106060fc3870676a7e9afb423d45f47
+        hash_from: source
+      - path: ihm-validation-00001-of-00005.parquet
+        url: https://huggingface.co/datasets/edinburghcstr/ami/resolve/46f28f2503e2ec48f8867a84eef356c70476beab/ihm/validation-00001-of-00005.parquet
+        size: 354150072
+        sha256: a9414394253a17fcdad4f03455b84c6b4b965a46df9f7c7f1d45ba22bedcaec1
+        hash_from: source
+      - path: ihm-validation-00002-of-00005.parquet
+        url: https://huggingface.co/datasets/edinburghcstr/ami/resolve/46f28f2503e2ec48f8867a84eef356c70476beab/ihm/validation-00002-of-00005.parquet
+        size: 235500520
+        sha256: 95f38f49576d75388de4f57033852e64601ad3eefca4210406619edb93882821
+        hash_from: source
+      - path: ihm-validation-00003-of-00005.parquet
+        url: https://huggingface.co/datasets/edinburghcstr/ami/resolve/46f28f2503e2ec48f8867a84eef356c70476beab/ihm/validation-00003-of-00005.parquet
+        size: 407121544
+        sha256: 3422d00c865db1233defe58658b29cd7eef5dd535fa5c4e2c74f1ff80046f989
+        hash_from: source
+      - path: ihm-validation-00004-of-00005.parquet
+        url: https://huggingface.co/datasets/edinburghcstr/ami/resolve/46f28f2503e2ec48f8867a84eef356c70476beab/ihm/validation-00004-of-00005.parquet
+        size: 243840031
+        sha256: 299346934fce77a8c5da10f1727f8b0842dff33f13234fc23445d0c7cac97cfb
         hash_from: source
 
   - name: scandiqa-sv
@@ -267,7 +302,7 @@ datasets:
         unpack: true
 
   - name: fleurs-sv
-    title: FLEURS (Swedish part, test)
+    title: FLEURS (Swedish part, dev and test)
     use: Speech to text (Swedish)
     licence: CC-BY-4.0
     licence_source: https://huggingface.co/datasets/google/fleurs
@@ -281,5 +316,16 @@ datasets:
         url: https://huggingface.co/datasets/google/fleurs/resolve/70bb2e84b976b7e960aa89f1c648e09c59f894dd/data/sv_se/audio/test.tar.gz
         size: 440702047
         sha256: 3792fd432675e16d85a67f5caf9927ad608aefc2484d738f26704f75584a5a6f
+        hash_from: source
+        unpack: true
+      - path: dev.tsv
+        url: https://huggingface.co/datasets/google/fleurs/resolve/70bb2e84b976b7e960aa89f1c648e09c59f894dd/data/sv_se/dev.tsv
+        size: 182136
+        sha256: 86a2c98b9105cb65c7d4b358e71aec699f02e826bafeed7a9f97b539abbcaf6e
+        hash_from: measured
+      - path: dev.tar.gz
+        url: https://huggingface.co/datasets/google/fleurs/resolve/70bb2e84b976b7e960aa89f1c648e09c59f894dd/data/sv_se/audio/dev.tar.gz
+        size: 186447216
+        sha256: be0ef68902b1c5e332a71fd245b5bbaa828c8ebfc8a1174084132911eb6e09e0
         hash_from: source
         unpack: true
