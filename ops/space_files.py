@@ -18,10 +18,11 @@ FILES = {
     "configs/harness.yaml": "configs/harness.yaml",
 }
 FOLDERS = {"src/mrag": "src/mrag", "configs/prompts": "configs/prompts"}
-# The platform and the demo group, without the dev tools and without hashes
+# The platform and the demo group, without the dev tools and without hashes. spaces is left
+# out because a ZeroGPU Space installs its own version of it next to Gradio
 EXPORT = [
     "uv", "export", "--frozen", "--no-dev", "--group", "demo", "--no-emit-project",
-    "--no-hashes", "--format", "requirements-txt", "--quiet",
+    "--no-hashes", "--format", "requirements-txt", "--quiet", "--no-emit-package", "spaces",
 ]  # fmt: skip
 
 

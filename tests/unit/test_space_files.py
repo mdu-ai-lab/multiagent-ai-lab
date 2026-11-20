@@ -55,8 +55,10 @@ def test_the_requirements_are_the_locked_versions_without_dev_tools(tmp_path):
         if "==" in line and not line.startswith((" ", "#"))
     )
     assert pins["torch"].split(" ")[0] == "2.13.0"
-    for name in ("gradio", "spaces", "transformers", "mlflow-skinny"):
+    for name in ("gradio", "transformers", "mlflow-skinny"):
         assert pins[name].split(" ")[0] == locked(name), name
+    # The Space installs its own spaces version, so a fixed one would clash with it
+    assert "spaces" not in pins
     assert not {"pytest", "ruff", "mypy", "pip-audit"} & set(pins)
 
 

@@ -7,6 +7,7 @@ Versions are tagged at the end of each phase (WORK_PLAN.md rule G).
 
 ### Added
 
+- The demo Space gets no fixed spaces version, because a ZeroGPU Space installs its own. Two fixed versions stopped its first build.
 - The temporary limit that kept argon2-cffi-bindings at releases before 8 November 2026 is removed from pyproject.toml, because 26.2.0 is now 7 days old. The lock file keeps 26.1.0 until a normal update.
 - Plan and docs: the chat web page is done. A streamed answer from the main model appeared in the browser, a member could not open another user's chat or the admin panel and the tests pass in CI. The results and the notes for later steps are in docs/HANDOVER.md.
 - Admin panel of the preview (/admin with templates/ui/admin.html and static/admin.js): the dashboard numbers, the users with search and filters, create, make admin or member, block, reset password and delete, the feedback, the settings and the activity log. Admins see how many chats a user has, never the chat text. Blocking, a role change and a password reset end the logins of that account. An admin cannot change the own account here and the last admin always stays. New: the setting to allow guests and the Terminal command make-admin.
