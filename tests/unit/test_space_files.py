@@ -59,6 +59,8 @@ def test_the_requirements_are_the_locked_versions_without_dev_tools(tmp_path):
         assert pins[name].split(" ")[0] == locked(name), name
     # The Space installs its own spaces version, so a fixed one would clash with it
     assert "spaces" not in pins
+    # The Space installs Gradio with its mcp and oauth parts, so their packages are locked too
+    assert {"mcp", "authlib"} <= set(pins)
     assert not {"pytest", "ruff", "mypy", "pip-audit"} & set(pins)
 
 
