@@ -1,6 +1,8 @@
 # Unit tests for src/mrag/eval_sets.py with small made-up files in the formats of the real
 # datasets. The real build runs on the downloaded data in data/public/.
 
+import csv
+import hashlib
 import json
 
 import pyarrow as pa
@@ -235,3 +237,101 @@ def test_the_regression_set_fills_its_size_when_quotas_have_remainders():
         for number in range(666, 999)
     ]
     assert len(eval_sets.regression(items, 400)) == 400
+
+
+def fresh_row(number, verdict, question_type="fact", pages="2"):
+    return [
+        f"en-x-{number:02d}",
+        "en",
+        "arXiv x",
+        pages,
+        f"Question {number}?",
+        "",
+        "Not in the document" if question_type == "unanswerable" else "42",
+        "Why",
+        "number",
+        question_type,
+        "body",
+        "quote",
+        verdict,
+        "",
+    ]
+
+
+def write_fresh(folder, rows, header=None):
+    pdf = folder / "docs" / "en" / "x.pdf"
+    pdf.parent.mkdir(parents=True, exist_ok=True)
+    pdf.write_bytes(b"%PDF-1.4 made-up document")
+    document = {
+        "document": "arXiv x",
+        "file": "docs/en/x.pdf",
+        "pages": 3,
+        "sha256": hashlib.sha256(pdf.read_bytes()).hexdigest(),
+    }
+    (folder / "documents.json").write_text(json.dumps([document]))
+    with (folder / "questions.csv").open("w", newline="", encoding="utf-8") as handle:
+        csv.writer(handle).writerows([header or eval_sets.FRESH_COLUMNS, *rows])
+    return folder
+
+
+def test_fresh_keeps_only_rows_marked_correct(tmp_path):
+    rows = [
+        fresh_row(1, "correct"),
+        fresh_row(2, "wrong"),
+        fresh_row(3, "fix"),
+        fresh_row(4, "Correct ", "unanswerable", ""),
+    ]
+    entries = eval_sets.build_fresh(write_fresh(tmp_path / "f", rows), tmp_path / "out")
+    assert entries["test"]["items"] == 2 and entries["test"]["unanswerable"] == 1
+    items = list(eval_sets.jsonl(tmp_path / "out/fresh/test.jsonl"))
+    assert [item["id"] for item in items] == ["fresh:en-x-01", "fresh:en-x-04"]
+    assert items[0]["answers"] == ["42"] and items[0]["evidence"] == ["page 2"]
+    assert items[1]["answers"] == [] and items[1]["answerable"] is False
+    assert {item["split"] for item in items} == {"test"}
+
+
+def test_fresh_sends_calculations_to_the_calc_route(tmp_path):
+    rows = [fresh_row(1, "correct", "calculation"), fresh_row(2, "correct", "comparison")]
+    items = list(eval_sets.fresh(write_fresh(tmp_path, rows)))
+    assert [item.route for item in items] == ["calc", "qa"]
+
+
+@pytest.mark.parametrize(
+    ("change", "message"),
+    [
+        ("no verdict", "no verdict yet"),
+        ("changed pdf", "missing or changed"),
+        ("page outside", "page outside the document"),
+        ("wrong header", "columns of questions.csv"),
+        ("same id", "used twice"),
+    ],
+)
+def test_bad_fresh_input_stops_the_build(tmp_path, change, message):
+    rows = [fresh_row(1, "correct"), fresh_row(2, "" if change == "no verdict" else "correct")]
+    if change == "page outside":
+        rows[1] = fresh_row(2, "correct", pages="2, 4")
+    if change == "same id":
+        rows[1] = fresh_row(1, "wrong")
+    header = [*eval_sets.FRESH_COLUMNS[:-1], "notes"] if change == "wrong header" else None
+    folder = write_fresh(tmp_path, rows, header)
+    if change == "changed pdf":
+        (folder / "docs/en/x.pdf").write_bytes(b"%PDF-1.4 another document")
+    with pytest.raises(eval_sets.SetError, match=message):
+        list(eval_sets.fresh(folder))
+
+
+def test_a_public_rebuild_keeps_the_fresh_entry():
+    fresh_entry = {"test": {"items": 2, "unanswerable": 1, "sha256": "a"}}
+    old = {"sets": {"fresh": fresh_entry, "qasper": {}}}
+    manifest = eval_sets.with_local_sets({"sets": {"qasper": {"dev": {}}}}, old)
+    assert manifest["sets"] == {"qasper": {"dev": {}}, "fresh": fresh_entry}
+    assert eval_sets.with_local_sets({"sets": {}}, None) == {"sets": {}}
+
+
+def test_verify_passes_a_local_set_that_is_not_on_this_computer(tmp_path, capsys):
+    manifest = {"sets": {"fresh": {"test": {"items": 2, "unanswerable": 1, "sha256": "a"}}}}
+    assert eval_sets.verify(manifest, tmp_path) is True
+    assert "LOCAL" in capsys.readouterr().out
+    (tmp_path / "fresh").mkdir()
+    (tmp_path / "fresh" / "test.jsonl").write_text("changed\n")
+    assert eval_sets.verify(manifest, tmp_path) is False

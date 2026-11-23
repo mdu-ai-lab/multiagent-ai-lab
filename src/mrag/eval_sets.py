@@ -6,9 +6,12 @@
 # Official dev and test splits are kept where they share no document. The other datasets are
 # split by document with a hash of a fixed key, about 20% dev. The regression set is a fixed
 # sample of dev, kept in the mix of its strata. Test is used only for final scores.
-# Run: uv run python -m mrag.eval_sets build | verify
+# The fresh set (questions over recent public documents) stays on this computer in
+# data/annotations-local/fresh/. Only its counts and hash go into the manifest.
+# Run: uv run python -m mrag.eval_sets build | build-fresh | verify
 
 import argparse
+import csv
 import gzip
 import hashlib
 import json
@@ -32,6 +35,26 @@ REGRESSION_SIZE = 400
 # One summary takes much longer than one answer, so the regression sets of the two
 # summary datasets are smaller
 REGRESSION_SIZE_SUMMARY = 100
+# Test sets built from files that never leave this computer. A rebuild of the public sets
+# keeps their manifest entries
+LOCAL_SETS = ("fresh",)
+FRESH_COLUMNS = [
+    "id",
+    "language",
+    "document",
+    "pdf_pages",
+    "question",
+    "question_en",
+    "short_answer",
+    "answer_explained",
+    "answer_type",
+    "question_type",
+    "evidence_kind",
+    "quote",
+    "verdict (correct / wrong / fix)",
+    "note",
+]
+VERDICTS = ("correct", "wrong", "fix")
 
 Route = Literal["chat", "qa", "summary", "extract", "calc", "graph", "audio"]
 Split = Literal["dev", "test"]
@@ -44,7 +67,8 @@ class SetError(Exception):
 class Source(BaseModel):
     model_config = ConfigDict(extra="forbid", frozen=True)
 
-    # A file inside data/public/ and the place of this question in it
+    # A file inside data/public/ (data/annotations-local/fresh/ for the fresh set) and the
+    # place of this question in it
     path: str
     locator: str
 
@@ -549,6 +573,98 @@ BUILDERS: dict[str, Callable[[Path], Iterator[Item]]] = {
 }
 
 
+def verdict(row: dict[str, str]) -> str:
+    return row[FRESH_COLUMNS[12]].strip().lower()
+
+
+def fresh_rows(folder: Path) -> list[dict[str, str]]:
+    path = folder / "questions.csv"
+    if not path.is_file():
+        raise SetError(f"fresh: missing {path}")
+    with path.open(encoding="utf-8", newline="") as handle:
+        table = [row for row in csv.reader(handle) if any(cell.strip() for cell in row)]
+    if not table or table[0] != FRESH_COLUMNS:
+        raise SetError("fresh: the columns of questions.csv are not the expected ones")
+    if any(len(row) != len(FRESH_COLUMNS) for row in table[1:]):
+        raise SetError("fresh: a row of questions.csv has the wrong number of cells")
+    rows = [dict(zip(FRESH_COLUMNS, row, strict=True)) for row in table[1:]]
+    ids = [row["id"] for row in rows]
+    if len(ids) != len(set(ids)):
+        raise SetError("fresh: a question id is used twice")
+    # Every row must be checked first, so no unchecked question can reach the set
+    open_rows = [row["id"] for row in rows if verdict(row) not in VERDICTS]
+    if open_rows:
+        raise SetError(f"fresh: {len(open_rows)} rows have no verdict yet, first {open_rows[0]}")
+    return rows
+
+
+def fresh(folder: Path) -> Iterator[Item]:
+    # Questions over public documents published after the main model, drafted with the coding
+    # assistant and checked by hand, so they count as synthetic data. Only rows marked correct
+    # are used. Every document must match the SHA-256 in documents.json
+    listed = json.loads((folder / "documents.json").read_text(encoding="utf-8"))
+    documents = {entry["document"]: entry for entry in listed}
+    for entry in listed:
+        path = folder / entry["file"]
+        if not path.is_file() or sha256_of(path) != entry["sha256"]:
+            raise SetError(f"fresh: {entry['file']} is missing or changed")
+    for row in fresh_rows(folder):
+        if verdict(row) != "correct":
+            continue
+        document = documents.get(row["document"])
+        if document is None:
+            raise SetError(f"fresh: {row['id']} names an unknown document")
+        if row["language"] not in ("en", "sv"):
+            raise SetError(f"fresh: {row['id']} has an unknown language")
+        pages = [int(page) for page in row["pdf_pages"].split(",") if page.strip()]
+        if any(not 1 <= page <= document["pages"] for page in pages):
+            raise SetError(f"fresh: {row['id']} names a page outside the document")
+        answerable = row["question_type"] != "unanswerable"
+        yield Item(
+            id=f"fresh:{row['id']}",
+            dataset="fresh",
+            split="test",
+            language="sv" if row["language"] == "sv" else "en",
+            route="calc" if row["question_type"] == "calculation" else "qa",
+            task="document_qa",
+            group=row["document"],
+            question=row["question"],
+            source=Source(path=document["file"], locator=row["document"]),
+            answers=[row["short_answer"]] if answerable else [],
+            answerable=answerable,
+            evidence=[f"page {page}" for page in pages],
+            reference=row["answer_explained"] or None,
+            meta={
+                "question_type": row["question_type"],
+                "answer_type": row["answer_type"],
+                "evidence_kind": row["evidence_kind"],
+                "question_en": row["question_en"],
+                "quote": row["quote"],
+                "origin": "drafted with the coding assistant, checked by hand",
+            },
+        )
+
+
+def fresh_dir() -> Path:
+    return get_settings().data_dir / "annotations-local" / "fresh"
+
+
+def build_fresh(folder: Path, out: Path) -> dict[str, dict[str, Any]]:
+    # Every fresh question is a test question: the set only gives final scores and shows
+    # whether a model already knows the public test sets
+    items = sorted(fresh(folder), key=lambda item: item.id)
+    check_groups("fresh", items)
+    return write({"test": items}, out / "fresh")
+
+
+def with_local_sets(manifest: dict[str, Any], old: dict[str, Any] | None) -> dict[str, Any]:
+    kept = (old or {}).get("sets", {})
+    for name in LOCAL_SETS:
+        if name in kept:
+            manifest["sets"][name] = kept[name]
+    return manifest
+
+
 def stratum(item: Item) -> str:
     # The regression set keeps the mix of these keys from dev
     kind = item.meta.get("answer_format") or item.meta.get("answer_type") or item.meta.get("type")
@@ -639,6 +755,9 @@ def build(names: list[str], root: Path, out: Path) -> dict[str, Any]:
 def verify(manifest: dict[str, Any], out: Path) -> bool:
     all_ok = True
     for name, entries in manifest["sets"].items():
+        if name in LOCAL_SETS and not (out / name).is_dir():
+            print(f"{'LOCAL':<10} {name} (built only on the computer that holds its files)")
+            continue
         for split, entry in entries.items():
             path = out / name / f"{split}.jsonl"
             ok = path.is_file() and sha256_of(path) == entry["sha256"]
@@ -652,19 +771,31 @@ def verify(manifest: dict[str, Any], out: Path) -> bool:
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description="Evaluation test sets")
     commands = parser.add_subparsers(dest="command", required=True)
-    commands.add_parser("build", help="build every test set and write the manifest")
+    commands.add_parser("build", help="build every public test set and write the manifest")
+    commands.add_parser("build-fresh", help="build the local fresh set from the checked rows")
     commands.add_parser("verify", help="check the built files against the manifest")
     args = parser.parse_args(argv)
     root = get_settings().data_dir / "public"
     try:
+        old = None
+        if MANIFEST_FILE.is_file():
+            old = json.loads(MANIFEST_FILE.read_text(encoding="utf-8"))
+        if args.command == "verify":
+            if old is None:
+                raise SetError(f"missing manifest {MANIFEST_FILE}")
+            return 0 if verify(old, testsets_dir()) else 1
         if args.command == "build":
-            manifest = build(list(BUILDERS), root, testsets_dir())
-            text = json.dumps(manifest, indent=2, sort_keys=True) + "\n"
-            MANIFEST_FILE.write_text(text, encoding="utf-8")
-            print(f"Manifest written: {MANIFEST_FILE}")
-            return 0
-        manifest = json.loads(MANIFEST_FILE.read_text(encoding="utf-8"))
-        return 0 if verify(manifest, testsets_dir()) else 1
+            manifest = with_local_sets(build(list(BUILDERS), root, testsets_dir()), old)
+        else:
+            if old is None:
+                raise SetError("build the public sets first: the manifest is missing")
+            test = build_fresh(fresh_dir(), testsets_dir())["test"]
+            manifest = old | {"sets": old["sets"] | {"fresh": {"test": test}}}
+            print(f"fresh: test {test['items']}, unanswerable {test['unanswerable']}")
+        text = json.dumps(manifest, indent=2, sort_keys=True) + "\n"
+        MANIFEST_FILE.write_text(text, encoding="utf-8")
+        print(f"Manifest written: {MANIFEST_FILE}")
+        return 0
     except SetError as error:
         print(f"Stopped: {error}", file=sys.stderr)
         return 1
